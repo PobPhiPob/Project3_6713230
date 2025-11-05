@@ -11,7 +11,7 @@ package Project3_6713230;
 import java.util.*;
 import javax.swing.*;
 
-public class Knight extends JLabel {
+class Knight extends JLabel {
     private GameIcon idleImg;
     
     private int hp = 100;
