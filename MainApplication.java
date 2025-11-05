@@ -15,6 +15,9 @@ import java.util.*;
 
 public class MainApplication extends JFrame {
     private JPanel contentpane;
+    private GameIcon backgroundImg;
+    private JLabel drawpane;
+    private GameSoundEffect themeSound;
     
     private int framewidth  = GameConstants.FRAME_WIDTH;
     private int frameheight = GameConstants.FRAME_HEIGHT;
@@ -31,6 +34,19 @@ public class MainApplication extends JFrame {
 	setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
         contentpane = (JPanel)getContentPane();
 	contentpane.setLayout( new BorderLayout() );
+        addComponent();
+    }
+    
+    public void addComponent() {
+        backgroundImg  = new GameIcon(GameConstants.FILE_BG).resize(framewidth, frameheight);
+	drawpane = new JLabel();
+	drawpane.setIcon(backgroundImg);
+        drawpane.setLayout(null);
+
+//	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
+//        themeSound.playLoop(); themeSound.setVolume(0.2f);
+        
+        contentpane.add(drawpane);
         validate();
     }
 }

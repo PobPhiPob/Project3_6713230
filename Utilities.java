@@ -16,7 +16,7 @@ interface GameConstants
 {
     //----- Resource files
     static final String PATH             = "src/main/java/Project3_6713230/resources/";
-    static final String FILE_BG          = PATH + ""; 
+    static final String FILE_BG          = PATH + "tokyo.jpg";
     
     static final String FILE_THEME       = PATH + "theme.wav";
 
@@ -24,25 +24,25 @@ interface GameConstants
     static final int FRAME_HEIGHT = 720;
 }
 
-class MyImageIcon extends ImageIcon
+class GameIcon extends ImageIcon
 {
-    public MyImageIcon(String fname)  { super(fname); }
-    public MyImageIcon(Image image)   { super(image); }
+    public GameIcon(String fname)  { super(fname); }
+    public GameIcon(Image image)   { super(image); }
 
-    public MyImageIcon resize(int width, int height)
+    public GameIcon resize(int width, int height)
     {
 	Image oldimg = this.getImage();
 	Image newimg = oldimg.getScaledInstance(width, height, java.awt.Image.SCALE_DEFAULT);
-        return new MyImageIcon(newimg);
+        return new GameIcon(newimg);
     }
 }
 
-class MySoundEffect
+class GameSoundEffect
 {
     private Clip         clip;
     private FloatControl gainControl;         
 
-    public MySoundEffect(String filename)
+    public GameSoundEffect(String filename)
     {
 	try
 	{
