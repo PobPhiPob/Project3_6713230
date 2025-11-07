@@ -19,6 +19,9 @@ public class MainApplication extends JFrame {
     private JLabel drawpane;
     private GameSoundEffect themeSound;
     
+    private Knight mc;
+    private MainApplication currentFrame;
+    
     private int framewidth  = GameConstants.FRAME_WIDTH;
     private int frameheight = GameConstants.FRAME_HEIGHT;
     
@@ -29,6 +32,7 @@ public class MainApplication extends JFrame {
     public MainApplication() {
         setTitle("Game Game");
 	setSize(framewidth, frameheight);
+        setResizable(false);
         setLocationRelativeTo(null);
 	setVisible(true);
 	setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
@@ -43,6 +47,7 @@ public class MainApplication extends JFrame {
 	drawpane.setIcon(backgroundImg);
         drawpane.setLayout(null);
 
+        mc = new Knight(currentFrame); 
 //	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
 //        themeSound.playLoop(); themeSound.setVolume(0.2f);
         

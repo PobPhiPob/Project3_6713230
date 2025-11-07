@@ -12,7 +12,11 @@ import java.util.*;
 import javax.swing.*;
 
 class Knight extends JLabel {
-    private GameIcon idleImg;
+    private MainApplication parentFrame;
+    private GameIcon idleGif;
+    
+    private int width = GameConstants.MC_WIDTH;
+    private int height = GameConstants.MC_HEIGHT;
     
     private int hp = 100;
     private int attackPoint;
@@ -21,6 +25,12 @@ class Knight extends JLabel {
     private boolean attack;
     private boolean parry;
     
+    public Knight(MainApplication pf) {
+        parentFrame = pf;
+        
+        idleGif = new GameIcon(GameConstants.FILE_MC_IDLE).resize(width, height);
+    }
+        
     public void setHit(boolean h) {
         hit = h;
     }

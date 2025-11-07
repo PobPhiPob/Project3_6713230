@@ -19,9 +19,14 @@ interface GameConstants
     static final String FILE_BG          = PATH + "tokyo.jpg";
     
     static final String FILE_THEME       = PATH + "theme.wav";
+    
+    static final String FILE_MC_IDLE     = PATH + "/Sprite/mc_Idle";
 
     static final int FRAME_WIDTH  = 1280;
     static final int FRAME_HEIGHT = 720;
+    
+    static final int MC_WIDTH = 50;
+    static final int MC_HEIGHT = 50;
 }
 
 class GameIcon extends ImageIcon
