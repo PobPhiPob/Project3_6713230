@@ -38,16 +38,36 @@ public class MainApplication extends JFrame {
 	setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
         contentpane = (JPanel)getContentPane();
 	contentpane.setLayout( new BorderLayout() );
+        
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_A)
+                    mc.moveLeft();
+                if (e.getKeyCode() == KeyEvent.VK_D)
+                    mc.moveRight();
+            }
+            
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_A)
+                    mc.setIdle();
+                if (e.getKeyCode() == KeyEvent.VK_D)
+                    mc.setIdle();
+            }
+        });
+        
         addComponent();
     }
     
     public void addComponent() {
         backgroundImg  = new GameIcon(GameConstants.FILE_BG).resize(framewidth, frameheight);
 	drawpane = new JLabel();
-	drawpane.setIcon(backgroundImg);
+	//drawpane.setIcon(backgroundImg);
         drawpane.setLayout(null);
 
-        mc = new Knight(currentFrame); 
+        mc = new Knight(currentFrame);
+        drawpane.add(mc);
 //	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
 //        themeSound.playLoop(); themeSound.setVolume(0.2f);
         
