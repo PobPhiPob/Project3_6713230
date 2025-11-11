@@ -16,18 +16,18 @@ interface GameConstants
 {
     //----- Resource files
     static final String PATH             = "src/main/java/Project3_6713230/resources/";
-    static final String FILE_BG          = PATH + "tokyo.jpg";
+    static final String FILE_BG          = PATH + "tilebase1.jpg";
     
     static final String FILE_THEME       = PATH + "theme.wav";
     
     static final String FILE_MC_IDLE     = PATH + "/Sprite/mc_Idle.gif";
     static final String FILE_MC_RUN      = PATH + "/Sprite/mc_Run.gif";
 
-    static final int FRAME_WIDTH  = 1280;
-    static final int FRAME_HEIGHT = 720;
+    static final int FRAME_WIDTH  = 960;
+    static final int FRAME_HEIGHT = 600;
     
-    static final int MC_WIDTH = 250;
-    static final int MC_HEIGHT = 250;
+    static final int MC_WIDTH = 128;
+    static final int MC_HEIGHT = 128;
 }
 
 class GameIcon extends ImageIcon

@@ -31,13 +31,14 @@ public class MainApplication extends JFrame {
     
     public MainApplication() {
         setTitle("Game Game");
-	setSize(framewidth, frameheight);
         setResizable(false);
         setLocationRelativeTo(null);
 	setVisible(true);
 	setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
         contentpane = (JPanel)getContentPane();
 	contentpane.setLayout( new BorderLayout() );
+        contentpane.setPreferredSize(new Dimension(framewidth, frameheight)); 
+        pack();
         
         addKeyListener(new KeyAdapter() {
             @Override
@@ -63,11 +64,24 @@ public class MainApplication extends JFrame {
     public void addComponent() {
         backgroundImg  = new GameIcon(GameConstants.FILE_BG).resize(framewidth, frameheight);
 	drawpane = new JLabel();
-	//drawpane.setIcon(backgroundImg);
+        Image bg = new ImageIcon(GameConstants.FILE_BG).getImage();
+        bg = bg.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        backgroundImg = new GameIcon(bg);
+        drawpane.setIcon(backgroundImg);
+
         drawpane.setLayout(null);
 
         mc = new Knight(currentFrame);
+/*
+        int mcX = 200;  
+        int mcY = 350;
+
+        mc.setBounds(mcX, mcY, GameConstants.MC_WIDTH, GameConstants.MC_HEIGHT);
+        mc.setIcon(new GameIcon(GameConstants.FILE_MC_IDLE)
+                .resize(GameConstants.MC_WIDTH, GameConstants.MC_HEIGHT));
+*/
         drawpane.add(mc);
+
 //	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
 //        themeSound.playLoop(); themeSound.setVolume(0.2f);
         
