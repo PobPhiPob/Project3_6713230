@@ -11,13 +11,13 @@ package Project3_6713230;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.util.*;
 
 public class MainApplication extends JFrame {
     private JPanel contentpane;
     private GameIcon backgroundImg;
     private JLabel drawpane;
     private GameSoundEffect themeSound;
+    private Timer timer;
     
     private Knight mc;
     private MainApplication currentFrame;
@@ -32,13 +32,13 @@ public class MainApplication extends JFrame {
     public MainApplication() {
         setTitle("Game Game");
         setResizable(false);
-        setLocationRelativeTo(null);
-	setVisible(true);
 	setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
         contentpane = (JPanel)getContentPane();
 	contentpane.setLayout( new BorderLayout() );
         contentpane.setPreferredSize(new Dimension(framewidth, frameheight)); 
         pack();
+        setLocationRelativeTo(null);
+	setVisible(true);
         
         addKeyListener(new KeyAdapter() {
             @Override
@@ -47,18 +47,26 @@ public class MainApplication extends JFrame {
                     mc.moveLeft();
                 if (e.getKeyCode() == KeyEvent.VK_D)
                     mc.moveRight();
+                if (e.getKeyCode() == KeyEvent.VK_SPACE)
+                    mc.jump();
             }
             
             @Override
             public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_A)
-                    mc.setIdle();
-                if (e.getKeyCode() == KeyEvent.VK_D)
-                    mc.setIdle();
+                if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_D)
+                    mc.stopMoving();
             }
         });
         
         addComponent();
+        timer = new Timer(16, new ActionListener() {
+           @Override
+           public void actionPerformed(ActionEvent e) {
+               mc.updateLocation();
+               repaint();
+           }
+        });
+        timer.start();
     }
     
     public void addComponent() {

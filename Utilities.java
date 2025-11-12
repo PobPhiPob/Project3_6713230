@@ -8,8 +8,10 @@
  */
 package Project3_6713230;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
 import javax.swing.ImageIcon;
+import java.awt.image.BufferedImage;
 import javax.sound.sampled.*;
 
 interface GameConstants
@@ -22,12 +24,14 @@ interface GameConstants
     
     static final String FILE_MC_IDLE     = PATH + "/Sprite/mc_Idle.gif";
     static final String FILE_MC_RUN      = PATH + "/Sprite/mc_Run.gif";
+    static final String FILE_MC_JUMP     = PATH + "/Sprite/mc_Jump.gif";
 
     static final int FRAME_WIDTH  = 960;
     static final int FRAME_HEIGHT = 600;
     
-    static final int MC_WIDTH = 128;
-    static final int MC_HEIGHT = 128;
+    static final int MC_WIDTH = 150;
+    static final int MC_HEIGHT = 150;
+    static final int GRAVITY = 1;
 }
 
 class GameIcon extends ImageIcon
@@ -40,6 +44,16 @@ class GameIcon extends ImageIcon
 	Image oldimg = this.getImage();
 	Image newimg = oldimg.getScaledInstance(width, height, java.awt.Image.SCALE_DEFAULT);
         return new GameIcon(newimg);
+    }
+    
+    public GameIcon flip(int width, int height) {
+        Image img = this.getImage();
+        BufferedImage flipped = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = flipped.createGraphics();
+        g2.drawImage(img, 0, 0, width, height, width, 0, 0, height, null);
+        g2.dispose();
+        
+        return new GameIcon(flipped);
     }
 }
 
