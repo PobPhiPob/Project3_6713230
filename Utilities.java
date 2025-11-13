@@ -22,15 +22,18 @@ interface GameConstants
     
     static final String FILE_THEME       = PATH + "theme.wav";
     
-    static final String FILE_MC_IDLE     = PATH + "/Sprite/mc_Idle.gif";
-    static final String FILE_MC_RUN      = PATH + "/Sprite/mc_Run.gif";
-    static final String FILE_MC_JUMP     = PATH + "/Sprite/mc_Jump.gif";
+    static final String FILE_MC_IDLE     = PATH + "/Sprite/Knight/mc_Idle.gif";
+    static final String FILE_MC_IDLEFLIP = PATH + "/Sprite/Knight/mc_IdleFlip.gif";
+    static final String FILE_MC_RUN      = PATH + "/Sprite/Knight/mc_Run.gif";
+    static final String FILE_MC_RUNFLIP  = PATH + "/Sprite/Knight/mc_RunFlip.gif";
+    static final String FILE_MC_JUMP     = PATH + "/Sprite/Knight/mc_Jump.gif";
+    static final String FILE_MC_JUMPFLIP = PATH + "/Sprite/Knight/mc_JumpFlip.gif";
 
     static final int FRAME_WIDTH  = 960;
     static final int FRAME_HEIGHT = 600;
     
-    static final int MC_WIDTH = 150;
-    static final int MC_HEIGHT = 150;
+    static final int MC_WIDTH = 45;
+    static final int MC_HEIGHT = 80;
     static final int GRAVITY = 1;
 }
 

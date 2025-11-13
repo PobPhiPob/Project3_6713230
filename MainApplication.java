@@ -11,6 +11,7 @@ package Project3_6713230;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.Border;
 
 public class MainApplication extends JFrame {
     private JPanel contentpane;
@@ -88,6 +89,8 @@ public class MainApplication extends JFrame {
         mc.setIcon(new GameIcon(GameConstants.FILE_MC_IDLE)
                 .resize(GameConstants.MC_WIDTH, GameConstants.MC_HEIGHT));
 */
+        Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
+        mc.setBorder(hitbox);
         drawpane.add(mc);
 
 //	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
