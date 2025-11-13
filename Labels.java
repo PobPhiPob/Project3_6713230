@@ -36,8 +36,11 @@ class Knight extends JLabel {
     private boolean attack;
     private boolean parry;
     
-    public Knight(MainApplication pf) {
+    private GameMap map;
+    
+    public Knight(MainApplication pf, GameMap m) {
         parentFrame = pf;
+        this.map = m;
         
         idleGif = new GameIcon(GameConstants.FILE_MC_IDLE).resize(width, height);
         runGif = new GameIcon(GameConstants.FILE_MC_RUN).resize(width, height);
@@ -87,21 +90,42 @@ class Knight extends JLabel {
     public void updateLocation() {
         vy += gravity;
         
-        curX += vx;
-        curY += vy;
+        int nextY = curY + vy;
         
-        if (curY >= 400) {
-            curY = 400;
+        boolean leftFoot  = map.isSolid(curX + 10,         nextY + height); 
+        boolean rightFoot = map.isSolid(curX + width - 10, nextY + height);
+        
+        if (vy >= 0 && (leftFoot || rightFoot)) { 
             vy = 0;
             onGround = true;
+            
+            int tileRow = (nextY + height) / map.TILE_SIZE;
+            curY = (tileRow * map.TILE_SIZE) - height;
+        } 
+        else {
+            curY = nextY;
+            onGround = false;
         }
         
-        if (vy == 0 && onGround && turnRight) setRun();
-        if (vy == 0 && onGround && turnLeft) setRunFlip();
+        curX += vx; 
         
-        if (vx == 0 && onGround && turnRight) setIdle();
-        if (vx == 0 && onGround && turnLeft) setIdleFlip();
+        if (curX < 0) curX = 0;
+        if (curX > 960 - width) curX = 960 - width;
         
+        if (onGround) {
+            if (vx == 0) {
+                if (turnRight) setIdle();
+                else setIdleFlip();
+            } 
+            else {
+                if (turnRight) setRun();
+                else setRunFlip();
+            }
+        } 
+        else {
+            if (turnRight) setJump();
+            else setJumpFlip();
+        }
         setLocation(curX, curY);
     }
     

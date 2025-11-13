@@ -23,6 +23,8 @@ public class MainApplication extends JFrame {
     private Knight mc;
     private MainApplication currentFrame;
     
+    private GameMap gameMap = new GameMap();
+    
     private int framewidth  = GameConstants.FRAME_WIDTH;
     private int frameheight = GameConstants.FRAME_HEIGHT;
     
@@ -79,16 +81,11 @@ public class MainApplication extends JFrame {
         drawpane.setIcon(backgroundImg);
 
         drawpane.setLayout(null);
+        
+        GameMap gameMap = new GameMap(); 
 
-        mc = new Knight(currentFrame);
-/*
-        int mcX = 200;  
-        int mcY = 350;
+        mc = new Knight(currentFrame ,gameMap);
 
-        mc.setBounds(mcX, mcY, GameConstants.MC_WIDTH, GameConstants.MC_HEIGHT);
-        mc.setIcon(new GameIcon(GameConstants.FILE_MC_IDLE)
-                .resize(GameConstants.MC_WIDTH, GameConstants.MC_HEIGHT));
-*/
         Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
         mc.setBorder(hitbox);
         drawpane.add(mc);
