@@ -52,6 +52,8 @@ public class MainApplication extends JFrame {
                     mc.moveRight();
                 if (e.getKeyCode() == KeyEvent.VK_SPACE)
                     mc.jump();
+                if (e.getKeyCode() == KeyEvent.VK_J)
+                    mc.attack();
             }
             
             @Override
