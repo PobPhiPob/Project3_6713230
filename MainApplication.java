@@ -26,6 +26,9 @@ public class MainApplication extends JFrame {
     private Knight mc;
     private MainApplication currentFrame;
     
+    private boolean movingLeft = false; // fix character movement bug when release key
+    private boolean movingRight = false;
+    
     private GameMap gameMap = new GameMap();
     
     private int framewidth  = GameConstants.FRAME_WIDTH;
@@ -51,9 +54,9 @@ public class MainApplication extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_A)
-                    mc.moveLeft();
+                    movingLeft = true;
                 if (e.getKeyCode() == KeyEvent.VK_D)
-                    mc.moveRight();
+                    movingRight = true;
                 if (e.getKeyCode() == KeyEvent.VK_SPACE)
                     mc.jump();
                 if (e.getKeyCode() == KeyEvent.VK_J)
@@ -70,6 +73,13 @@ public class MainApplication extends JFrame {
         timer = new Timer(16, new ActionListener() {
            @Override
            public void actionPerformed(ActionEvent e) {
+               if (movingLeft && !movingRight) {
+                    mc.moveLeft();
+                } else if (movingRight && !movingLeft) {
+                    mc.moveRight();
+                } else {
+                    mc.stopMoving();
+                }
                mc.updateLocation();
                if (mc.getX() > 910) { 
                     gameMap.nextLevel();
