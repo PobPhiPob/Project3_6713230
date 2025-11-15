@@ -44,6 +44,10 @@ interface GameConstants
     
     static final int MC_WIDTH = 45;
     static final int MC_HEIGHT = 80;
+    
+    static final int MC_ATK_WIDTH = 120;
+    static final int MC_ATK_HEIGHT = 110;
+    
     static final int GRAVITY = 1;
 }
 

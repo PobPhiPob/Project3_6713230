@@ -14,11 +14,26 @@ import java.awt.event.*;
 
 class Knight extends JLabel {
     private MainApplication parentFrame;
-    private GameIcon idleGif, runGif, jumpGif, attack1Gif, attack2Gif, attack3Gif;
-    private GameIcon idleFlip, runFlip, jumpFlip, attack1Flip, attack2Flip, attack3Flip;
+//    private GameIcon idleGif, runGif, jumpGif, attack1Gif, attack2Gif, attack3Gif;
+//    private GameIcon idleFlip, runFlip, jumpFlip, attack1Flip, attack2Flip, attack3Flip;
+    private GameIcon idleGif, runGif, jumpGif;
+    private GameIcon idleFlip, runFlip, jumpFlip;
+    
+    //For attack animation
+    private JLabel attackLabel;
+    private GameIcon attack1Gif, attack2Gif, attack3Gif;
+    private GameIcon attack1Flip, attack2Flip, attack3Flip;
     
     private int width = GameConstants.MC_WIDTH;
     private int height = GameConstants.MC_HEIGHT;
+    
+    //Get MC_ATTACK Sprite scale
+    private int attackImageWidth = GameConstants.MC_ATK_WIDTH;
+    private int attackImageHeight = GameConstants.MC_ATK_HEIGHT;
+    
+    //Seperate the hitbox
+    private int hitboxWidth = GameConstants.MC_WIDTH;
+    private int hitboxHeight = GameConstants.MC_HEIGHT;
     
     private int curX = 10;
     private int curY = 400;
@@ -48,18 +63,27 @@ class Knight extends JLabel {
         idleGif = new GameIcon(GameConstants.FILE_MC_IDLE).resize(width, height);
         runGif = new GameIcon(GameConstants.FILE_MC_RUN).resize(width, height);
         jumpGif = new GameIcon(GameConstants.FILE_MC_JUMP).resize(width, height);
-        attack1Gif = new GameIcon(GameConstants.FILE_MC_ATTACK1).resize(65, 160);
-        attack2Gif = new GameIcon(GameConstants.FILE_MC_ATTACK2).resize(65, 160);
-        attack3Gif = new GameIcon(GameConstants.FILE_MC_ATTACK3).resize(65, 160);
         
         idleFlip = new GameIcon(GameConstants.FILE_MC_IDLEFLIP).resize(width, height);
         runFlip = new GameIcon(GameConstants.FILE_MC_RUNFLIP).resize(width, height);
         jumpFlip = new GameIcon(GameConstants.FILE_MC_JUMPFLIP).resize(width, height);
-        attack1Flip = new GameIcon(GameConstants.FILE_MC_ATTACK1FLIP).resize(65, 160);
-        attack2Flip = new GameIcon(GameConstants.FILE_MC_ATTACK2FLIP).resize(65, 160);
-        attack3Flip = new GameIcon(GameConstants.FILE_MC_ATTACK3FLIP).resize(65, 160);
+        
+        attack1Gif = new GameIcon(GameConstants.FILE_MC_ATTACK1).resize(attackImageWidth, attackImageHeight);
+        attack2Gif = new GameIcon(GameConstants.FILE_MC_ATTACK2).resize(attackImageWidth, attackImageHeight);
+        attack3Gif = new GameIcon(GameConstants.FILE_MC_ATTACK3).resize(attackImageWidth, attackImageHeight);
+       
+        attack1Flip = new GameIcon(GameConstants.FILE_MC_ATTACK1FLIP).resize(attackImageWidth, attackImageHeight);
+        attack2Flip = new GameIcon(GameConstants.FILE_MC_ATTACK2FLIP).resize(attackImageWidth, attackImageHeight);
+        attack3Flip = new GameIcon(GameConstants.FILE_MC_ATTACK3FLIP).resize(attackImageWidth, attackImageHeight);
+        
+        attackLabel = new JLabel();
+        attackLabel.setVisible(false);
+        
         setBounds(curX, curY, width, height);
     }
+    
+    public JLabel getAttackLabel() {return attackLabel;}
+    public Rectangle getHitBox() {return new Rectangle(curX, curY, hitboxWidth, hitboxHeight);}
     
     public void setIdle() {
         if (turnLeft) {
@@ -92,32 +116,52 @@ class Knight extends JLabel {
     }
     
     public void setAttack1() {
+        setIcon(null); //Hide normal size sprite
+        attackLabel.setVisible(true);
+        
         if (turnLeft) {
-            setIcon(attack1Flip);
-            setSize(attack1Flip.getIconWidth(), attack1Flip.getIconHeight() - 80);
+//            setIcon(attack1Flip);
+//            setSize(attack1Flip.getIconWidth(), attack1Flip.getIconHeight() - 80);
+              attackLabel.setIcon(attack1Flip);
+              attackLabel.setBounds(curX -(attackImageWidth - width),curY - (attackImageHeight - height),attackImageWidth, attackImageHeight);
+              
         } else {
-            setIcon(attack1Gif);
-            setSize(attack1Gif.getIconWidth() + 15, attack1Gif.getIconHeight() - 80);
+//            setIcon(attack1Gif);
+//            setSize(attack1Gif.getIconWidth() + 15, attack1Gif.getIconHeight() - 80);
+              attackLabel.setIcon(attack1Gif);
+              attackLabel.setBounds(curX,curY - (attackImageHeight - height),attackImageWidth, attackImageHeight);
         }
     }
     
     public void setAttack2() {
+        setIcon(null);
+        attackLabel.setVisible(true);
+        
         if (turnLeft) {
-            setIcon(attack2Flip);
-            setSize(attack2Flip.getIconWidth(), attack2Flip.getIconHeight() - 80);
+//            setIcon(attack2Flip);
+//            setSize(attack2Flip.getIconWidth(), attack2Flip.getIconHeight() - 80);
+              attackLabel.setIcon(attack2Flip);
+              attackLabel.setBounds(curX -(attackImageWidth - width),curY - (attackImageHeight - height),attackImageWidth, attackImageHeight);
+              
         } else {
-            setIcon(attack2Gif);
-            setSize(attack2Gif.getIconWidth() + 15, attack2Gif.getIconHeight() - 80);
+//            setIcon(attack2Gif);
+//            setSize(attack2Gif.getIconWidth() + 15, attack2Gif.getIconHeight() - 80);
+              attackLabel.setIcon(attack2Gif);
+              attackLabel.setBounds(curX ,curY - (attackImageHeight - height),attackImageWidth, attackImageHeight);
         }
     }
     
     public void setAttack3() {
         if (turnLeft) {
-            setIcon(attack3Flip);
-            setSize(attack3Flip.getIconWidth(), attack3Flip.getIconHeight() - 80);
+//            setIcon(attack3Flip);
+//            setSize(attack3Flip.getIconWidth(), attack3Flip.getIconHeight() - 80);
+              attackLabel.setIcon(attack3Flip);
+              attackLabel.setBounds(curX -(attackImageWidth - width),curY - (attackImageHeight - height),attackImageWidth, attackImageHeight);
         } else {
-            setIcon(attack3Gif);
-            setSize(attack3Gif.getIconWidth() + 15, attack3Gif.getIconHeight() - 80);
+//            setIcon(attack3Gif);
+//            setSize(attack3Gif.getIconWidth() + 15, attack3Gif.getIconHeight() - 80);
+              attackLabel.setIcon(attack3Gif);
+              attackLabel.setBounds(curX ,curY - (attackImageHeight - height),attackImageWidth, attackImageHeight);
         }
     }
         
@@ -151,14 +195,15 @@ class Knight extends JLabel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 attack = false;
-                
+                attackLabel.setVisible(false); //Hide attack Label
+                setIdle();   //Show the normal Idle
                 ((Timer)e.getSource()).stop();
             }
         }).start();
     }
     
     public void updateLocation() {
-        if (attack) return;
+//        if (attack) return;
         vy += gravity;
         
         int nextY = curY + vy;

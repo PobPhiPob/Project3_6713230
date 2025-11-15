@@ -116,13 +116,14 @@ public class MainApplication extends JFrame {
         drawpane.repaint();//usefordebug
 
         drawpane.setIcon(backgroundImages.get(currentBgIndex));
-
         drawpane.setLayout(null);
 
         mc = new Knight(currentFrame ,gameMap);
 
         Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
         mc.setBorder(hitbox);
+        
+        drawpane.add(mc.getAttackLabel());
         drawpane.add(mc);
 
 //	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
