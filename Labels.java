@@ -9,13 +9,13 @@
 package Project3_6713230;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 
 class Knight extends JLabel {
     private MainApplication parentFrame;
     private GameIcon idleGif, runGif, jumpGif, attack1Gif, attack2Gif, attack3Gif;
     private GameIcon idleFlip, runFlip, jumpFlip, attack1Flip, attack2Flip, attack3Flip;
-    
     
     private int width = GameConstants.MC_WIDTH;
     private int height = GameConstants.MC_HEIGHT;
@@ -37,7 +37,7 @@ class Knight extends JLabel {
     private int stamina;
     private boolean hit;
     private boolean attack;
-    private boolean parry;
+    private boolean roll;
     
     private GameMap map;
     
@@ -55,46 +55,70 @@ class Knight extends JLabel {
         idleFlip = new GameIcon(GameConstants.FILE_MC_IDLEFLIP).resize(width, height);
         runFlip = new GameIcon(GameConstants.FILE_MC_RUNFLIP).resize(width, height);
         jumpFlip = new GameIcon(GameConstants.FILE_MC_JUMPFLIP).resize(width, height);
-        attack1Flip = new GameIcon(GameConstants.FILE_MC_ATTACK1FLIP).resize(width, height);
-        attack2Flip = new GameIcon(GameConstants.FILE_MC_ATTACK2FLIP).resize(width, height);
-        attack3Flip = new GameIcon(GameConstants.FILE_MC_ATTACK3FLIP).resize(width, height);
+        attack1Flip = new GameIcon(GameConstants.FILE_MC_ATTACK1FLIP).resize(65, 160);
+        attack2Flip = new GameIcon(GameConstants.FILE_MC_ATTACK2FLIP).resize(65, 160);
+        attack3Flip = new GameIcon(GameConstants.FILE_MC_ATTACK3FLIP).resize(65, 160);
         setBounds(curX, curY, width, height);
     }
     
     public void setIdle() {
-        setIcon(idleGif);
+        if (turnLeft) {
+            setIcon(idleFlip);
+            setSize(idleFlip.getIconWidth(), idleFlip.getIconHeight());
+        } else {
+            setIcon(idleGif);
+            setSize(idleGif.getIconWidth(), idleGif.getIconHeight());
+        }
     }
     
     public void setRun() {
-        setIcon(runGif);
+        if (turnLeft) {
+            setIcon(runFlip);
+            setSize(runFlip.getIconWidth(), runFlip.getIconHeight());
+        } else {
+            setIcon(runGif);
+            setSize(runGif.getIconWidth(), runGif.getIconHeight());
+        }
     }
     
     public void setJump() {
-        setIcon(jumpGif);
-    }
-    
-    public void setIdleFlip() {
-        setIcon(idleFlip);
-    }
-    
-    public void setRunFlip() {
-        setIcon(runFlip);
-    }
-    
-    public void setJumpFlip() {
-        setIcon(jumpFlip);
+        if (turnLeft) {
+            setIcon(jumpFlip);
+            setSize(jumpFlip.getIconWidth(), jumpFlip.getIconHeight());
+        } else {
+            setIcon(jumpGif);
+            setSize(jumpGif.getIconWidth(), jumpGif.getIconHeight());
+        }
     }
     
     public void setAttack1() {
-        setIcon(attack1Gif);
+        if (turnLeft) {
+            setIcon(attack1Flip);
+            setSize(attack1Flip.getIconWidth() + 15, attack1Flip.getIconHeight() - 80);
+        } else {
+            setIcon(attack1Gif);
+            setSize(attack1Gif.getIconWidth() + 15, attack1Gif.getIconHeight() - 80);
+        }
     }
     
     public void setAttack2() {
-        setIcon(attack2Gif);
+        if (turnLeft) {
+            setIcon(attack2Flip);
+            setSize(attack2Flip.getIconWidth() + 15, attack2Flip.getIconHeight() - 80);
+        } else {
+            setIcon(attack2Gif);
+            setSize(attack2Gif.getIconWidth() + 15, attack2Gif.getIconHeight() - 80);
+        }
     }
     
     public void setAttack3() {
-        setIcon(attack3Gif);
+        if (turnLeft) {
+            setIcon(attack3Flip);
+            setSize(attack3Flip.getIconWidth() + 15, attack3Flip.getIconHeight() - 80);
+        } else {
+            setIcon(attack3Gif);
+            setSize(attack3Gif.getIconWidth() + 15, attack3Gif.getIconHeight() - 80);
+        }
     }
         
     public void setHit(boolean h) {
@@ -134,6 +158,7 @@ class Knight extends JLabel {
     }
     
     public void updateLocation() {
+        if (attack) return;
         vy += gravity;
         
         int nextY = curY + vy;
@@ -157,22 +182,17 @@ class Knight extends JLabel {
         
         if (curX < 0) curX = 0;
         if (curX > 960 - width) curX = 960 - width;
-        
-        if (attack) return;
-        
+
         if (onGround) {
             if (vx == 0) {
-                if (turnRight) setIdle();
-                else setIdleFlip();
+                setIdle();
             } 
             else {
-                if (turnRight) setRun();
-                else setRunFlip();
+                setRun();
             }
         } 
         else {
-            if (turnRight) setJump();
-            else setJumpFlip();
+            setJump();
         }
         setLocation(curX, curY);
     }

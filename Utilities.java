@@ -58,14 +58,14 @@ class GameIcon extends ImageIcon
 	Image newimg = oldimg.getScaledInstance(width, height, java.awt.Image.SCALE_DEFAULT);
         return new GameIcon(newimg);
     }
-    
+
     public GameIcon flip(int width, int height) {
         Image img = this.getImage();
         BufferedImage flipped = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = flipped.createGraphics();
         g2.drawImage(img, 0, 0, width, height, width, 0, 0, height, null);
         g2.dispose();
-        
+
         return new GameIcon(flipped);
     }
 }
