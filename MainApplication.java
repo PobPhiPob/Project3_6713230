@@ -65,8 +65,10 @@ public class MainApplication extends JFrame {
             
             @Override
             public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_D)
-                    mc.stopMoving();
+                if (e.getKeyCode() == KeyEvent.VK_A)
+                    movingLeft = false;
+                if (e.getKeyCode() == KeyEvent.VK_D)
+                    movingRight = false;
             }
         });
         
