@@ -19,6 +19,8 @@ interface GameConstants
     //----- Resource files
     static final String PATH             = "src/main/java/Project3_6713230/resources/";
     static final String FILE_BG          = PATH + "tilebase1.jpg";
+    static final String FILE_BG_MAP1          = PATH + "tilebase1.jpg";
+    static final String FILE_BG_MAP2          = PATH + "tilebase2.jpg";
     
     static final String FILE_THEME       = PATH + "theme.wav";
     

@@ -199,4 +199,12 @@ class Knight extends JLabel {
             onGround = false;
         }
     }
+    
+    public void setStartPosition() {
+        curX = 10; 
+        curY = 200;
+        vx = 0;    
+        vy = 0;     
+        setLocation(curX, curY);
+    }
 }

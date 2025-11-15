@@ -12,13 +12,16 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.Border;
+import java.util.ArrayList;
 
 public class MainApplication extends JFrame {
     private JPanel contentpane;
-    private GameIcon backgroundImg;
     private JLabel drawpane;
     private GameSoundEffect themeSound;
     private Timer timer;
+    
+    private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
+    private int currentBgIndex = 0;
     
     private Knight mc;
     private MainApplication currentFrame;
@@ -43,6 +46,7 @@ public class MainApplication extends JFrame {
         setLocationRelativeTo(null);
 	setVisible(true);
         
+        addComponent();
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -63,11 +67,22 @@ public class MainApplication extends JFrame {
             }
         });
         
-        addComponent();
         timer = new Timer(16, new ActionListener() {
            @Override
            public void actionPerformed(ActionEvent e) {
                mc.updateLocation();
+               if (mc.getX() > 910) { 
+                    gameMap.nextLevel();
+                    mc.setStartPosition();
+                    currentBgIndex++;
+                    if (currentBgIndex >= backgroundImages.size()) {
+                        currentBgIndex = 0;
+                    }
+                    drawpane.setIcon(backgroundImages.get(currentBgIndex));
+                    gameMap.drawMap(drawpane);//usefordebug
+                    drawpane.remove(mc);//usefordebug
+                    drawpane.add(mc);//usefordebug
+               }
                repaint();
            }
         });
@@ -75,16 +90,22 @@ public class MainApplication extends JFrame {
     }
     
     public void addComponent() {
-        backgroundImg  = new GameIcon(GameConstants.FILE_BG).resize(framewidth, frameheight);
+        //backgroundImg  = new GameIcon(GameConstants.FILE_BG).resize(framewidth, frameheight);
 	drawpane = new JLabel();
-        Image bg = new ImageIcon(GameConstants.FILE_BG).getImage();
-        bg = bg.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-        backgroundImg = new GameIcon(bg);
-        drawpane.setIcon(backgroundImg);
+        
+        Image bg1 = new ImageIcon(GameConstants.FILE_BG).getImage();
+        bg1 = bg1.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        backgroundImages.add(new GameIcon(bg1));
+        Image bg2 = new ImageIcon(GameConstants.FILE_BG_MAP2).getImage();
+        bg2 = bg2.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        backgroundImages.add(new GameIcon(bg2));
+        gameMap.drawMap(drawpane);//usefordebug
+        drawpane.revalidate();//usefordebug
+        drawpane.repaint();//usefordebug
+
+        drawpane.setIcon(backgroundImages.get(currentBgIndex));
 
         drawpane.setLayout(null);
-        
-        GameMap gameMap = new GameMap(); 
 
         mc = new Knight(currentFrame ,gameMap);
 
