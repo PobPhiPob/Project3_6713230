@@ -25,7 +25,7 @@ class Knight extends JLabel {
     private int speed = 5;
     private int vx = 0;
     private int vy = 0;
-    private int jumpStrength = -15;
+    private int jumpStrength = -12;
     private int gravity = GameConstants.GRAVITY;
     private boolean onGround = true;
     private boolean turnLeft = false;
@@ -94,7 +94,7 @@ class Knight extends JLabel {
     public void setAttack1() {
         if (turnLeft) {
             setIcon(attack1Flip);
-            setSize(attack1Flip.getIconWidth() + 15, attack1Flip.getIconHeight() - 80);
+            setSize(attack1Flip.getIconWidth(), attack1Flip.getIconHeight() - 80);
         } else {
             setIcon(attack1Gif);
             setSize(attack1Gif.getIconWidth() + 15, attack1Gif.getIconHeight() - 80);
@@ -104,7 +104,7 @@ class Knight extends JLabel {
     public void setAttack2() {
         if (turnLeft) {
             setIcon(attack2Flip);
-            setSize(attack2Flip.getIconWidth() + 15, attack2Flip.getIconHeight() - 80);
+            setSize(attack2Flip.getIconWidth(), attack2Flip.getIconHeight() - 80);
         } else {
             setIcon(attack2Gif);
             setSize(attack2Gif.getIconWidth() + 15, attack2Gif.getIconHeight() - 80);
@@ -114,7 +114,7 @@ class Knight extends JLabel {
     public void setAttack3() {
         if (turnLeft) {
             setIcon(attack3Flip);
-            setSize(attack3Flip.getIconWidth() + 15, attack3Flip.getIconHeight() - 80);
+            setSize(attack3Flip.getIconWidth(), attack3Flip.getIconHeight() - 80);
         } else {
             setIcon(attack3Gif);
             setSize(attack3Gif.getIconWidth() + 15, attack3Gif.getIconHeight() - 80);
@@ -130,7 +130,7 @@ class Knight extends JLabel {
         }
     }
     public void attack() {
-        if (attack) return;
+        if (attack || !onGround) return;
         attack = true;
         switch(currentAttack) {
             case 0:
