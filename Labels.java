@@ -203,7 +203,7 @@ class Knight extends JLabel {
     }
     
     public void updateLocation() {
-//        if (attack) return;
+        if (attack) return;
         vy += gravity;
         
         int nextY = curY + vy;
