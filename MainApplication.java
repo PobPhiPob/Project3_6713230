@@ -12,7 +12,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.Border;
-import java.security.Key;
 import java.util.ArrayList;
 
 public class MainApplication extends JFrame {
