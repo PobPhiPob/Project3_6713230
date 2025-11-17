@@ -223,7 +223,36 @@ class Knight extends JLabel {
             onGround = false;
         }
         
-        curX += vx; 
+        //curX += vx;
+        int nextX = curX + vx;
+        
+        int checkY_top = curY + 5; 
+        int checkY_bottom = curY + height - 5; 
+
+        if (vx > 0) { 
+            boolean headHit = map.isSolid(nextX + width, checkY_top);
+            boolean feetHit = map.isSolid(nextX + width, checkY_bottom);
+            
+            if (headHit || feetHit) {
+                vx = 0; 
+                int tileCol = (nextX + width) / map.TILE_SIZE;
+                curX = (tileCol * map.TILE_SIZE) - width;
+            } else {
+                curX = nextX; 
+            }
+            
+        } else if (vx < 0) { 
+            boolean headHit = map.isSolid(nextX, checkY_top);
+            boolean feetHit = map.isSolid(nextX, checkY_bottom);
+            
+            if (headHit || feetHit) {
+                vx = 0; 
+                int tileCol = nextX / map.TILE_SIZE;
+                curX = (tileCol + 1) * map.TILE_SIZE;
+            } else {
+                curX = nextX; 
+            }
+        }
         
         if (curX < 0) curX = 0;
         if (curX > 960 - width) curX = 960 - width;
