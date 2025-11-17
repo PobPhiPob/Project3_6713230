@@ -30,6 +30,8 @@ interface GameConstants
     static final String FILE_MC_RUNFLIP  = PATH + "/Sprite/Knight/mc_RunFlip.gif";
     static final String FILE_MC_JUMP     = PATH + "/Sprite/Knight/mc_Jump.gif";
     static final String FILE_MC_JUMPFLIP = PATH + "/Sprite/Knight/mc_JumpFlip.gif";
+    static final String FILE_MC_ROLL     = PATH + "/Sprite/Knight/mc_Roll.gif";
+    static final String FILE_MC_ROLLFLIP = PATH + "/Sprite/Knight/mc_RollFlip.gif";
     static final String FILE_MC_ATTACK1  = PATH + "/Sprite/Knight/mc_Attack1.gif";
     static final String FILE_MC_ATTACK1FLIP  = PATH + "/Sprite/Knight/mc_Attack1Flip.gif";
     static final String FILE_MC_ATTACK2  = PATH + "/Sprite/Knight/mc_Attack2.gif";

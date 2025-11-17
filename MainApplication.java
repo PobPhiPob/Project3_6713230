@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.Border;
+import java.security.Key;
 import java.util.ArrayList;
 
 public class MainApplication extends JFrame {
@@ -44,7 +45,7 @@ public class MainApplication extends JFrame {
 	setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
         contentpane = (JPanel)getContentPane();
 	contentpane.setLayout( new BorderLayout() );
-        contentpane.setPreferredSize(new Dimension(framewidth, frameheight)); 
+        contentpane.setPreferredSize(new Dimension(framewidth, frameheight));
         pack();
         setLocationRelativeTo(null);
 	setVisible(true);
@@ -61,6 +62,10 @@ public class MainApplication extends JFrame {
                     mc.jump();
                 if (e.getKeyCode() == KeyEvent.VK_J)
                     mc.attack();
+                if (e.getKeyCode() == KeyEvent.VK_K)
+                    mc.roll();
+                if (e.getKeyCode() == KeyEvent.VK_L)
+                    mc.regenHp();
             }
             
             @Override
@@ -128,7 +133,7 @@ public class MainApplication extends JFrame {
 
 //	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
 //        themeSound.playLoop(); themeSound.setVolume(0.2f);
-        
+
         contentpane.add(drawpane);
         validate();
     }
