@@ -16,6 +16,10 @@ public class GameMap {
     
     public final int TILE_SIZE = 32;
     private int currentLevel = 0;
+    
+    public int getCurrentLevel() {
+        return currentLevel;
+    }
 
     private int[][][] allmapData = {
         //map1

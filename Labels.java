@@ -91,6 +91,8 @@ class Knight extends JLabel {
     
     public JLabel getAttackLabel() {return attackLabel;}
     public Rectangle getHitBox() {return new Rectangle(curX, curY, hitboxWidth, hitboxHeight);}
+    public int getCurX()   {return curX;}
+    public int getCurY()   {return curY;}
     
     public void setIdle() {
         if (turnLeft) {
@@ -356,5 +358,13 @@ class Knight extends JLabel {
         vx = 0;    
         vy = 0;     
         setLocation(curX, curY);
+    }
+    
+    public boolean isAttacking() {
+        return attack;
+    }
+
+    public int getAttackPoint() {
+        return attackPoint;
     }
 }

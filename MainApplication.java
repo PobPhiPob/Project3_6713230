@@ -21,6 +21,7 @@ public class MainApplication extends JFrame {
     private Timer timer;
     
     private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
+    private ArrayList<Monsters> monsters = new ArrayList<>();
     private int currentBgIndex = 0;
     
     private Knight mc;
@@ -50,6 +51,7 @@ public class MainApplication extends JFrame {
 	setVisible(true);
         
         addComponent();
+        spawnMonsters();
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -87,6 +89,25 @@ public class MainApplication extends JFrame {
                     mc.stopMoving();
                 }
                mc.updateLocation();
+               
+               for (Monsters m : monsters) {
+                    m.updateBehavior(mc);
+                    m.updateLocation();
+                    if (mc.getHitBox().intersects(m.getHitBox())) {
+                        mc.damage(m.getAttackPoint());
+                    }
+                }
+
+                if (mc.isAttacking()) {
+                    Rectangle mcAttackBox = mc.getAttackLabel().getBounds();
+                    for (int i = 0; i < monsters.size(); i++) {
+                        Monsters m = monsters.get(i);
+                        if (mcAttackBox.intersects(m.getHitBox()) && mc.getAttackLabel().isVisible()) {
+                            m.damage(mc.getAttackPoint());
+                        }
+                    }
+                    monsters.removeIf(m -> m.getHp() <= 0);
+                }
                if (mc.getX() > 910) { 
                     gameMap.nextLevel();
                     mc.setStartPosition();
@@ -98,6 +119,7 @@ public class MainApplication extends JFrame {
                     gameMap.drawMap(drawpane);//usefordebug
                     drawpane.remove(mc);//usefordebug
                     drawpane.add(mc);//usefordebug
+                    spawnMonsters();
                }
                repaint();
            }
@@ -131,9 +153,33 @@ public class MainApplication extends JFrame {
         drawpane.add(mc);
 
 //	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
-//        themeSound.playLoop(); themeSound.setVolume(0.2f);
+//      themeSound.playLoop(); themeSound.setVolume(0.2f);
 
         contentpane.add(drawpane);
         validate();
+        repaint();
+    }
+    public JLabel getDrawPane() {
+        return drawpane;
+    }
+
+    private void spawnMonsters() {
+        for (Monsters m : monsters) {
+            drawpane.remove(m);
+        }
+        monsters.clear();
+
+        if (gameMap.getCurrentLevel() == 0) {
+             monsters.add(new Monsters(this, gameMap, 300, 400));
+             monsters.add(new Monsters(this, gameMap, 600, 400));
+        } else if (gameMap.getCurrentLevel() == 1) {
+             monsters.add(new Monsters(this, gameMap, 500, 300));
+        }
+
+        for (Monsters m : monsters) {
+            drawpane.add(m);
+        }
+        drawpane.revalidate(); 
+        drawpane.repaint();
     }
 }

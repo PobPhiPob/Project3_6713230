@@ -19,8 +19,8 @@ interface GameConstants
     //----- Resource files
     static final String PATH             = "src/main/java/Project3_6713230/resources/";
     static final String FILE_BG          = PATH + "tilebase1.jpg";
-    static final String FILE_BG_MAP1          = PATH + "tilebase1.jpg";
-    static final String FILE_BG_MAP2          = PATH + "tilebase2.jpg";
+    static final String FILE_BG_MAP1     = PATH + "tilebase1.jpg";
+    static final String FILE_BG_MAP2     = PATH + "tilebase2.jpg";
     
     static final String FILE_THEME       = PATH + "theme.wav";
     
@@ -33,13 +33,23 @@ interface GameConstants
     static final String FILE_MC_ROLL     = PATH + "/Sprite/Knight/mc_Roll.gif";
     static final String FILE_MC_ROLLFLIP = PATH + "/Sprite/Knight/mc_RollFlip.gif";
     static final String FILE_MC_ATTACK1  = PATH + "/Sprite/Knight/mc_Attack1.gif";
-    static final String FILE_MC_ATTACK1FLIP  = PATH + "/Sprite/Knight/mc_Attack1Flip.gif";
-    static final String FILE_MC_ATTACK2  = PATH + "/Sprite/Knight/mc_Attack2.gif";
-    static final String FILE_MC_ATTACK2FLIP  = PATH + "/Sprite/Knight/mc_Attack2Flip.gif";
-    static final String FILE_MC_ATTACK3  = PATH + "/Sprite/Knight/mc_AttackCombo2hit.gif";
-    static final String FILE_MC_ATTACK3FLIP  = PATH + "/Sprite/Knight/mc_AttackCombo2hitFlip.gif";
-    static final String FILE_MC_HIT      = PATH + "/Sprite/Knight/mc_Hit.gif";
-    static final String FILE_MC_HITFLIP  = PATH + "/Sprite/Knight/mc_HitFlip.gif";
+    static final String FILE_MC_ATTACK1FLIP     = PATH + "/Sprite/Knight/mc_Attack1Flip.gif";
+    static final String FILE_MC_ATTACK2         = PATH + "/Sprite/Knight/mc_Attack2.gif";
+    static final String FILE_MC_ATTACK2FLIP     = PATH + "/Sprite/Knight/mc_Attack2Flip.gif";
+    static final String FILE_MC_ATTACK3         = PATH + "/Sprite/Knight/mc_AttackCombo2hit.gif";
+    static final String FILE_MC_ATTACK3FLIP     = PATH + "/Sprite/Knight/mc_AttackCombo2hitFlip.gif";
+    static final String FILE_MC_HIT             = PATH + "/Sprite/Knight/mc_Hit.gif";
+    static final String FILE_MC_HITFLIP         = PATH + "/Sprite/Knight/mc_HitFlip.gif";
+    static final String FILE_SKELETON_ATTACK       = PATH + "/Sprite/Monsters/Skeleton/Attack.gif";
+    static final String FILE_SKELETON_IDLE         = PATH + "/Sprite/Monsters/Skeleton/Idle.gif";
+    static final String FILE_SKELETON_WALK         = PATH + "/Sprite/Monsters/Skeleton/Walk.gif";
+    static final String FILE_SKELETON_HIT          = PATH + "/Sprite/Monsters/Skeleton/Onehit.gif";
+    static final String FILE_SKELETON_DEAD         = PATH + "/Sprite/Monsters/Skeleton/Dead.gif";
+    static final String FILE_SKELETON_ATTACKFLIP   = PATH + "/Sprite/Monsters/Skeleton/Attackflip.gif";
+    static final String FILE_SKELETON_IDLEFLIP     = PATH + "/Sprite/Monsters/Skeleton/Idleflip.gif";
+    static final String FILE_SKELETON_WALKFLIP     = PATH + "/Sprite/Monsters/Skeleton/Walkflip.gif";
+    static final String FILE_SKELETON_HITFLIP      = PATH + "/Sprite/Monsters/Skeleton/Onehitflip.gif";
+    static final String FILE_SKELETON_DEADFLIP     = PATH + "/Sprite/Monsters/Skeleton/Deadflip.gif";
 
     static final int FRAME_WIDTH  = 960;
     static final int FRAME_HEIGHT = 640;
@@ -50,7 +60,11 @@ interface GameConstants
     static final int MC_ATK_WIDTH = 120;
     static final int MC_ATK_HEIGHT = 110;
     
+    static final int SKELETON_WIDTH  = 50;
+    static final int SKELETON_HEIGHT = 80;
+    
     static final int GRAVITY = 1;
+    static final int DURATION_MS = 500; //Dalay
 }
 
 class GameIcon extends ImageIcon
