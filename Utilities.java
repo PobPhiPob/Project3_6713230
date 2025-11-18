@@ -51,6 +51,8 @@ interface GameConstants
     static final String FILE_SKELETON_HITFLIP      = PATH + "/Sprite/Monsters/Skeleton/Onehitflip.gif";
     static final String FILE_SKELETON_DEADFLIP     = PATH + "/Sprite/Monsters/Skeleton/Deadflip.gif";
 
+    static final String FILE_DUMMY       = PATH + "dummy.png";
+
     static final int FRAME_WIDTH  = 960;
     static final int FRAME_HEIGHT = 640;
     

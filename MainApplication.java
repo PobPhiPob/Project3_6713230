@@ -25,6 +25,7 @@ public class MainApplication extends JFrame {
     private int currentBgIndex = 0;
     
     private Knight mc;
+    private Dummy dm;
     private MainApplication currentFrame;
     
     private boolean movingLeft = false; // fix character movement bug when release key
@@ -38,11 +39,20 @@ public class MainApplication extends JFrame {
     public static void main(String[] args) {
         new MainApplication();
     }
+
+    public Knight getMc() {
+        return mc;
+    }
+
+    public Dummy getDm() {
+        return dm;
+    }
     
     public MainApplication() {
         setTitle("Game Game");
         setResizable(false);
 	setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+        currentFrame = this;
         contentpane = (JPanel)getContentPane();
 	contentpane.setLayout( new BorderLayout() );
         contentpane.setPreferredSize(new Dimension(framewidth, frameheight));
@@ -148,9 +158,11 @@ public class MainApplication extends JFrame {
 
         Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
         mc.setBorder(hitbox);
+        dm = new Dummy(currentFrame);
         
         drawpane.add(mc.getAttackLabel());
         drawpane.add(mc);
+        drawpane.add(dm);
 
 //	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
 //      themeSound.playLoop(); themeSound.setVolume(0.2f);
