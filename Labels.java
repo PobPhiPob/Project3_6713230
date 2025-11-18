@@ -32,6 +32,9 @@ class Knight extends JLabel {
     private int attackImageWidth = GameConstants.MC_ATK_WIDTH;
     private int attackImageHeight = GameConstants.MC_ATK_HEIGHT;
     
+    private int hitboxWidth = GameConstants.MC_WIDTH;
+    private int hitboxHeight = GameConstants.MC_HEIGHT;
+    
     private int curX = 10;
     private int curY = 420;
     private int speed = 5;
@@ -88,12 +91,10 @@ class Knight extends JLabel {
     }
     
     public JLabel getAttackLabel() {return attackLabel;}
-<<<<<<< HEAD
+    public Rectangle getAttackHitBox() {return new Rectangle(curX, curY, attackImageWidth, attackImageHeight);}
     public Rectangle getHitBox() {return new Rectangle(curX, curY, hitboxWidth, hitboxHeight);}
     public int getCurX()   {return curX;}
     public int getCurY()   {return curY;}
-=======
->>>>>>> 4c5557f9e3eb2182426423255f0df058d52c43c1
     
     public void setIdle() {
         if (turnLeft) {

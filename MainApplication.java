@@ -103,23 +103,27 @@ public class MainApplication extends JFrame {
                for (Monsters m : monsters) {
                     m.updateBehavior(mc);
                     m.updateLocation();
-                    if (mc.getHitBox().intersects(m.getHitBox())) {
+
+                    if (!m.isDead() && mc.getHitBox().intersects(m.getHitBox())) {
                         mc.damage(m.getAttackPoint());
+                    }
+
+                    if (mc.isAttacking() && mc.getAttackHitBox().intersects(m.getHitBox())) {
+                        m.damage(mc.getAttackPoint());
                     }
                 }
 
-                if (mc.isAttacking()) {
-                    Rectangle mcAttackBox = mc.getAttackLabel().getBounds();
-                    for (int i = 0; i < monsters.size(); i++) {
-                        Monsters m = monsters.get(i);
-                        if (mcAttackBox.intersects(m.getHitBox()) && mc.getAttackLabel().isVisible()) {
-                            m.damage(mc.getAttackPoint());
-                        }
+                monsters.removeIf(m -> {
+                    if (m.isDead() && m.isDeathAnimationFinished()) {
+                        drawpane.remove(m);
+                        drawpane.remove(m.getAttackLabel());
+                        return true;
                     }
-                    monsters.removeIf(m -> m.getHp() <= 0);
-                }
+                    return false;
+                });
                if (mc.getX() > 910) { 
                     gameMap.nextLevel();
+                    gameMap.clearMapVisuals(drawpane);
                     mc.setStartPosition();
                     currentBgIndex++;
                     if (currentBgIndex >= backgroundImages.size()) {
@@ -131,6 +135,7 @@ public class MainApplication extends JFrame {
                     drawpane.add(mc);//usefordebug
                     spawnMonsters();
                }
+               drawpane.revalidate();
                repaint();
            }
         });
@@ -177,6 +182,7 @@ public class MainApplication extends JFrame {
 
     private void spawnMonsters() {
         for (Monsters m : monsters) {
+            drawpane.remove(m.getAttackLabel());
             drawpane.remove(m);
         }
         monsters.clear();
@@ -189,6 +195,7 @@ public class MainApplication extends JFrame {
         }
 
         for (Monsters m : monsters) {
+            drawpane.add(m.getAttackLabel());
             drawpane.add(m);
         }
         drawpane.revalidate(); 

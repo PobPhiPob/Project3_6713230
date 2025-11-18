@@ -10,12 +10,15 @@ package Project3_6713230;
 
 import javax.swing.JLabel;
 import java.awt.Color; //usefordebug
+import java.util.ArrayList;
 import javax.swing.BorderFactory; //usefordebug
 
 public class GameMap {
     
     public final int TILE_SIZE = 32;
     private int currentLevel = 0;
+    
+    private ArrayList<JLabel> mapTiles = new ArrayList<>();
     
     public int getCurrentLevel() {
         return currentLevel;
@@ -89,6 +92,14 @@ public class GameMap {
         return currentmapData[row][col] != 0; 
     }
     
+    //for clear
+    public void clearMapVisuals(JLabel drawpane) {
+        for (JLabel tile : mapTiles) {
+            drawpane.remove(tile);
+        }
+        mapTiles.clear();
+    }
+    
     //usefordebug
     public void drawMap(JLabel drawpane) {
         int[][] currentMapData = allmapData[currentLevel]; 
@@ -107,6 +118,8 @@ public class GameMap {
                     debugTile.setBorder(BorderFactory.createLineBorder(Color.RED));
 
                     drawpane.add(debugTile);
+                    
+                    mapTiles.add(debugTile);
                 }
             }
         }
