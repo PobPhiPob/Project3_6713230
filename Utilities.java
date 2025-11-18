@@ -41,6 +41,8 @@ interface GameConstants
     static final String FILE_MC_HIT      = PATH + "/Sprite/Knight/mc_Hit.gif";
     static final String FILE_MC_HITFLIP  = PATH + "/Sprite/Knight/mc_HitFlip.gif";
 
+    static final String FILE_DUMMY       = PATH + "dummy.png";
+
     static final int FRAME_WIDTH  = 960;
     static final int FRAME_HEIGHT = 640;
     
