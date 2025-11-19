@@ -40,6 +40,8 @@ interface GameConstants
     static final String FILE_MC_ATTACK3FLIP     = PATH + "/Sprite/Knight/mc_AttackCombo2hitFlip.gif";
     static final String FILE_MC_HIT             = PATH + "/Sprite/Knight/mc_Hit.gif";
     static final String FILE_MC_HITFLIP         = PATH + "/Sprite/Knight/mc_HitFlip.gif";
+    static final String FILE_MC_DEAD            = PATH + "/Sprite/Knight/mc_Dead.gif";
+    static final String FILE_MC_DEADFLIP            = PATH + "/Sprite/Knight/mc_DeadFlip.gif";
     static final String FILE_SKELETON_ATTACK       = PATH + "/Sprite/Monsters/Skeleton/Attack.gif";
     static final String FILE_SKELETON_IDLE         = PATH + "/Sprite/Monsters/Skeleton/Idle.gif";
     static final String FILE_SKELETON_WALK         = PATH + "/Sprite/Monsters/Skeleton/Walk.gif";
@@ -58,7 +60,9 @@ interface GameConstants
     
     static final int MC_WIDTH = 45;
     static final int MC_HEIGHT = 80;
-    
+
+    static final int MC_ROLL_WIDTH = 100;
+    static final int MC_ROLL_HEIGHT = 80;
     static final int MC_ATK_WIDTH = 120;
     static final int MC_ATK_HEIGHT = 110;
     
@@ -84,16 +88,6 @@ class GameIcon extends ImageIcon
 	Image oldimg = this.getImage();
 	Image newimg = oldimg.getScaledInstance(width, height, java.awt.Image.SCALE_DEFAULT);
         return new GameIcon(newimg);
-    }
-
-    public GameIcon flip(int width, int height) {
-        Image img = this.getImage();
-        BufferedImage flipped = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = flipped.createGraphics();
-        g2.drawImage(img, 0, 0, width, height, width, 0, 0, height, null);
-        g2.dispose();
-
-        return new GameIcon(flipped);
     }
 }
 

@@ -20,6 +20,7 @@ public class MainApplication extends JFrame {
     private JLabel hpLabel;
     private GameSoundEffect themeSound;
     private Timer timer;
+    private int counter = 0;
     
     private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
     private ArrayList<Monsters> monsters = new ArrayList<>();
@@ -62,7 +63,7 @@ public class MainApplication extends JFrame {
 	setVisible(true);
         
         addComponent();
-        spawnMonsters();
+        //spawnMonsters();
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -153,6 +154,12 @@ public class MainApplication extends JFrame {
                }
                drawpane.revalidate();
                repaint();
+               if (counter == 150) {
+                   mc.regenHp();
+                   mc.regenStamina();
+                   counter = 0;
+               } else counter++;
+               //System.out.println("Counter: " + counter);
            }
         });
         timer.start();
@@ -189,6 +196,7 @@ public class MainApplication extends JFrame {
         drawpane.add(hpLabel);
         
         drawpane.add(mc.getAttackLabel());
+        drawpane.add(mc.getRollLabel());
         drawpane.add(mc);
         drawpane.add(dm);
 
