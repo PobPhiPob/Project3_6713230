@@ -396,28 +396,51 @@ class Knight extends JLabel {
         int checkY_bottom = curY + height - 5; 
 
         if (vx > 0) { 
-            boolean headHit = map.isSolid(nextX + width, checkY_top);
+            //boolean headHit = map.isSolid(nextX + width, checkY_top);
             boolean feetHit = map.isSolid(nextX + width, checkY_bottom);
             
-            if (headHit || feetHit) {
+            if /*(headHit || feetHit)*/ (feetHit) {
                 vx = 0; 
                 int tileCol = (nextX + width) / map.TILE_SIZE;
                 curX = (tileCol * map.TILE_SIZE) - width;
             } else {
                 curX = nextX; 
-            }
-            
-        } else if (vx < 0) { 
-            boolean headHit = map.isSolid(nextX, checkY_top);
+            }            
+        } 
+        else if (vx < 0) { 
+            //boolean headHit = map.isSolid(nextX, checkY_top);
             boolean feetHit = map.isSolid(nextX, checkY_bottom);
             
-            if (headHit || feetHit) {
+            if /*(headHit || feetHit)*/ (feetHit)  {
                 vx = 0; 
                 int tileCol = nextX / map.TILE_SIZE;
                 curX = (tileCol + 1) * map.TILE_SIZE;
             } else {
                 curX = nextX; 
             }
+        }
+        
+        boolean hitHazard = false;
+        
+        if (map.isHazard(curX + 15, curY + height) || map.isHazard(curX + width - 15, curY + height)) {
+            hitHazard = true;
+        }
+        else if (map.isHazard(curX + 15, curY) || map.isHazard(curX + width - 15, curY)) {
+            hitHazard = true;
+        }
+        else if (map.isHazard(curX, curY + height/2) || map.isHazard(curX + width, curY + height/2)) {
+            hitHazard = true;
+        }
+        if (hitHazard) {
+            damage(25);
+            vy = -10; 
+                onGround = false;
+                if (turnLeft) {
+                    vx = 8; 
+                } 
+                else {
+                    vx = -8;
+                }
         }
         
         if (curX < 0) curX = 0;
@@ -462,7 +485,7 @@ class Knight extends JLabel {
     
     public void setStartPosition() {
         curX = 10; 
-        curY = 200;
+        curY = 350;
         vx = 0;    
         vy = 0;     
         setLocation(curX, curY);

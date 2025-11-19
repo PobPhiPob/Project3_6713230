@@ -175,6 +175,9 @@ public class MainApplication extends JFrame {
         Image bg2 = new ImageIcon(GameConstants.FILE_BG_MAP2).getImage();
         bg2 = bg2.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
         backgroundImages.add(new GameIcon(bg2));
+        Image bg3 = new ImageIcon(GameConstants.FILE_BG_MAP3).getImage();
+        bg3 = bg3.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        backgroundImages.add(new GameIcon(bg3));
         gameMap.drawMap(drawpane);//usefordebug
         drawpane.revalidate();//usefordebug
         drawpane.repaint();//usefordebug
