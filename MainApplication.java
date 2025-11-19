@@ -62,7 +62,7 @@ public class MainApplication extends JFrame {
 	setVisible(true);
         
         addComponent();
-        spawnMonsters();
+        //spawnMonsters();
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {

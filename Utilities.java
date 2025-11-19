@@ -40,6 +40,8 @@ interface GameConstants
     static final String FILE_MC_ATTACK3FLIP     = PATH + "/Sprite/Knight/mc_AttackCombo2hitFlip.gif";
     static final String FILE_MC_HIT             = PATH + "/Sprite/Knight/mc_Hit.gif";
     static final String FILE_MC_HITFLIP         = PATH + "/Sprite/Knight/mc_HitFlip.gif";
+    static final String FILE_MC_DEAD            = PATH + "/Sprite/Knight/mc_Dead.gif";
+    static final String FILE_MC_DEADFLIP            = PATH + "/Sprite/Knight/mc_DeadFlip.gif";
     static final String FILE_SKELETON_ATTACK       = PATH + "/Sprite/Monsters/Skeleton/Attack.gif";
     static final String FILE_SKELETON_IDLE         = PATH + "/Sprite/Monsters/Skeleton/Idle.gif";
     static final String FILE_SKELETON_WALK         = PATH + "/Sprite/Monsters/Skeleton/Walk.gif";

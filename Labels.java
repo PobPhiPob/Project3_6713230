@@ -15,8 +15,8 @@ import java.awt.event.*;
 class Knight extends JLabel {
     private MainApplication parentFrame;
 
-    private GameIcon idleGif, runGif, jumpGif, hitGif, rollGif;
-    private GameIcon idleFlip, runFlip, jumpFlip, hitFlip, rollFlip;
+    private GameIcon idleGif, runGif, jumpGif, hitGif, rollGif, deadGif;
+    private GameIcon idleFlip, runFlip, jumpFlip, hitFlip, rollFlip, deadFlip;
 
     private JLabel rollLabel;
 
@@ -47,15 +47,16 @@ class Knight extends JLabel {
     private int gravity = GameConstants.GRAVITY;
     private boolean onGround = true;
     private boolean turnLeft = false;
-    private boolean turnRight = true;
     
     private int hp = 100;
-    private int attackPoint = 5;
+    private int attackPoint = 25;
     private int currentAttack;
     private int stamina = 50;
     private boolean attack;
+    private boolean isHit;
     private boolean canInput = true;
     private boolean roll;
+    private boolean isDead;
     
     private GameMap map;
     
@@ -68,12 +69,14 @@ class Knight extends JLabel {
         jumpGif = new GameIcon(GameConstants.FILE_MC_JUMP).resize(width, height);
         hitGif = new GameIcon(GameConstants.FILE_MC_HIT).resize(width, height);
         rollGif = new GameIcon(GameConstants.FILE_MC_ROLL).resize(130, 120);
+        deadGif = new GameIcon(GameConstants.FILE_MC_DEAD).resize(width, height);
         
         idleFlip = new GameIcon(GameConstants.FILE_MC_IDLEFLIP).resize(width, height);
         runFlip = new GameIcon(GameConstants.FILE_MC_RUNFLIP).resize(width, height);
         jumpFlip = new GameIcon(GameConstants.FILE_MC_JUMPFLIP).resize(width, height);
         hitFlip = new GameIcon(GameConstants.FILE_MC_HITFLIP).resize(width, height);
         rollFlip = new GameIcon(GameConstants.FILE_MC_ROLLFLIP).resize(130, 120);
+        deadFlip = new GameIcon(GameConstants.FILE_MC_DEADFLIP).resize(width, height);
         
         attack1Gif = new GameIcon(GameConstants.FILE_MC_ATTACK1).resize(attackImageWidth, attackImageHeight);
         attack2Gif = new GameIcon(GameConstants.FILE_MC_ATTACK2).resize(attackImageWidth, attackImageHeight);
@@ -128,7 +131,7 @@ class Knight extends JLabel {
         if (turnLeft) {
             setIcon(hitFlip);
         } else {
-            setIcon(jumpGif);
+            setIcon(hitGif);
         }
     }
 
@@ -142,6 +145,26 @@ class Knight extends JLabel {
             rollLabel.setIcon(rollGif);
             rollLabel.setBounds(curX,curY - (rollHeight - height),rollWidth, rollHeight);
         }
+    }
+
+    public void setDead() {
+        attackLabel.setVisible(false);
+        rollLabel.setVisible(false);
+
+        if (turnLeft) {
+            setIcon(deadFlip);
+        } else {
+            setIcon(deadGif);
+        }
+
+        new Timer(650, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setIdle();
+            }
+        });
+
+        setVisible(false);
     }
     
     public void setAttack1() {
@@ -196,8 +219,20 @@ class Knight extends JLabel {
     }
 
     public void damage(int d) {
+        if (isDead) return;
+        System.out.println("Dodge: " + roll);
         if (roll) return;
+        isHit = true;
+        setHit();
         hp -= d;
+
+        new Timer(650, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                isHit = false;
+                ((Timer)e.getSource()).stop();
+            }
+        }).start();
     }
 
     public void regenHp() {
@@ -225,7 +260,7 @@ class Knight extends JLabel {
     }
 
     public void attack() {
-        if (!canInput || roll) return;
+        if (!canInput || roll || isDead) return;
         canInput = false;
         attack = true;
         switch(currentAttack) {
@@ -268,7 +303,7 @@ class Knight extends JLabel {
     }
 
     public void roll() {
-        if (!canInput || attack || !onGround || stamina < 10) return;
+        if (!canInput || attack || !onGround || stamina < 10 || isDead) return;
         canInput = false;
         roll = true;
         setRoll();
@@ -281,13 +316,14 @@ class Knight extends JLabel {
             }
         }).start();
 
+        if (turnLeft) curX -= 100;
+        else curX += 100;
+        stamina -= 10;
+
         new Timer(650, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 roll = false;
-                if (turnLeft) curX -= 60;
-                else curX += 60;
-                stamina -= 10;
                 rollLabel.setVisible(false);
                 setIdle();
                 ((Timer)e.getSource()).stop();
@@ -296,8 +332,11 @@ class Knight extends JLabel {
     }
 
     public void updateLocation() {
-        if (attack || roll) return;
-        if (hp <= 0) this.removeAll();
+        if (attack || roll || isHit || isDead) return;
+        if (hp <= 0) {
+            setDead();
+            isDead = true;
+        }
         vy += gravity;
         
         int nextY = curY + vy;
@@ -369,14 +408,12 @@ class Knight extends JLabel {
         if (roll) return;
         vx = -speed;
         turnLeft = true;
-        turnRight = false;
     }
     
     public void moveRight() {
         if (roll) return;
         vx = speed;
         turnLeft = false;
-        turnRight = true;
     }
     
     public void stopMoving() {
