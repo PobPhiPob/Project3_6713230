@@ -56,12 +56,9 @@ class Knight extends JLabel {
     private boolean isHit;
     private boolean canInput = true;
     private boolean roll;
-<<<<<<< HEAD
-    private boolean invincible = false;
     private long invincibleEndTime = 0;
-=======
+    private boolean invincible = false;
     private boolean isDead;
->>>>>>> 263bf7cc0cec5cd162e7816aa459fb8286a2cfda
     
     private GameMap map;
     
@@ -93,6 +90,7 @@ class Knight extends JLabel {
         
         attackLabel = new JLabel();
         attackLabel.setVisible(false);
+        attackLabel.setBorder(BorderFactory.createLineBorder(Color.PINK, 2));
 
         rollLabel = new JLabel();
         rollLabel.setVisible(false);
@@ -224,21 +222,17 @@ class Knight extends JLabel {
     }
 
     public void damage(int d) {
-<<<<<<< HEAD
         long now = System.currentTimeMillis();
         if (invincible) {
             if (now < invincibleEndTime) return;
             invincible = false;
         }
-=======
         if (isDead) return;
         System.out.println("Dodge: " + roll);
->>>>>>> 263bf7cc0cec5cd162e7816aa459fb8286a2cfda
         if (roll) return;
         isHit = true;
         setHit();
         hp -= d;
-<<<<<<< HEAD
         if (hp < 0) hp = 0;
         invincible = true;
         invincibleEndTime = now + (2*GameConstants.DURATION_MS);
@@ -263,7 +257,6 @@ class Knight extends JLabel {
             }
         });
         flashTimer.start();
-=======
 
         new Timer(650, new ActionListener() {
             @Override
@@ -272,7 +265,6 @@ class Knight extends JLabel {
                 ((Timer)e.getSource()).stop();
             }
         }).start();
->>>>>>> 263bf7cc0cec5cd162e7816aa459fb8286a2cfda
     }
 
     public void regenHp() {

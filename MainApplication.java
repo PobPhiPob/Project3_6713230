@@ -226,8 +226,9 @@ public class MainApplication extends JFrame {
         }
 
         for (Monsters m : monsters) {
-            drawpane.add(m.getAttackLabel());
             drawpane.add(m);
+            drawpane.add(m.getAttackLabel());
+            
         }
         drawpane.revalidate(); 
         drawpane.repaint();

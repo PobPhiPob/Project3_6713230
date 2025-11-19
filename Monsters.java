@@ -156,7 +156,7 @@ public abstract class Monsters extends JLabel{
     
     // --- Combat Logic
     public void damage(int d) {
-        if (hp <= 0) return;
+        if (isDead()) return;
         if (System.currentTimeMillis() < hitTime){
             setHit();
             return;
@@ -249,6 +249,10 @@ public abstract class Monsters extends JLabel{
 
     // --- Animation Setters
     protected void setWalk() {
+        if (isDead()) {
+            setDead();
+            return;
+        }
         this.setVisible(true);
         attack.setVisible(false);
         if (turnLeft) {
