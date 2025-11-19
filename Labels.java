@@ -272,8 +272,8 @@ class Knight extends JLabel {
         new Timer(2000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                hp += 25;
                 if (hp >= 100) hp = 100;
-                else hp += 25;
                 System.out.println("HP: " + hp);
                 ((Timer)e.getSource()).stop();
             }
@@ -284,8 +284,8 @@ class Knight extends JLabel {
         new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                stamina += 10;
                 if (stamina >= 50) stamina = 50;
-                else stamina += 10;
                 System.out.println("Stamina: " + stamina);
                 ((Timer)e.getSource()).stop();
             }
