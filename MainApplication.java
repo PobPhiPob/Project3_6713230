@@ -22,6 +22,7 @@ public class MainApplication extends JFrame {
     private int counter = 0;
     
     private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
+    private ArrayList<Monsters> monsters = new ArrayList<>();
     private int currentBgIndex = 0;
     
     private Knight mc;
@@ -61,6 +62,7 @@ public class MainApplication extends JFrame {
 	setVisible(true);
         
         addComponent();
+        spawnMonsters();
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -98,8 +100,31 @@ public class MainApplication extends JFrame {
                     mc.stopMoving();
                 }
                mc.updateLocation();
+               
+               for (Monsters m : monsters) {
+                    m.updateBehavior(mc);
+                    m.updateLocation();
+
+                    if (!m.isDead() && mc.getHitBox().intersects(m.getHitBox())) {
+                        mc.damage(m.getAttackPoint());
+                    }
+
+                    if (mc.isAttacking() && mc.getAttackHitBox().intersects(m.getHitBox())) {
+                        m.damage(mc.getAttackPoint());
+                    }
+                }
+
+                monsters.removeIf(m -> {
+                    if (m.isDead() && m.isDeathAnimationFinished()) {
+                        drawpane.remove(m);
+                        drawpane.remove(m.getAttackLabel());
+                        return true;
+                    }
+                    return false;
+                });
                if (mc.getX() > 910) { 
                     gameMap.nextLevel();
+                    gameMap.clearMapVisuals(drawpane);
                     mc.setStartPosition();
                     currentBgIndex++;
                     if (currentBgIndex >= backgroundImages.size()) {
@@ -109,7 +134,9 @@ public class MainApplication extends JFrame {
                     gameMap.drawMap(drawpane);//usefordebug
                     drawpane.remove(mc);//usefordebug
                     drawpane.add(mc);//usefordebug
+                    spawnMonsters();
                }
+               drawpane.revalidate();
                repaint();
                if (counter == 150) {
                    mc.regenHp();
@@ -151,9 +178,35 @@ public class MainApplication extends JFrame {
         drawpane.add(dm);
 
 //	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
-//        themeSound.playLoop(); themeSound.setVolume(0.2f);
+//      themeSound.playLoop(); themeSound.setVolume(0.2f);
 
         contentpane.add(drawpane);
         validate();
+        repaint();
+    }
+    public JLabel getDrawPane() {
+        return drawpane;
+    }
+
+    private void spawnMonsters() {
+        for (Monsters m : monsters) {
+            drawpane.remove(m.getAttackLabel());
+            drawpane.remove(m);
+        }
+        monsters.clear();
+
+        if (gameMap.getCurrentLevel() == 0) {
+             monsters.add(new Monsters(this, gameMap, 300, 400));
+             monsters.add(new Monsters(this, gameMap, 600, 400));
+        } else if (gameMap.getCurrentLevel() == 1) {
+             monsters.add(new Monsters(this, gameMap, 500, 300));
+        }
+
+        for (Monsters m : monsters) {
+            drawpane.add(m.getAttackLabel());
+            drawpane.add(m);
+        }
+        drawpane.revalidate(); 
+        drawpane.repaint();
     }
 }
