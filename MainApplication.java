@@ -19,6 +19,7 @@ public class MainApplication extends JFrame {
     private JLabel drawpane;
     private GameSoundEffect themeSound;
     private Timer timer;
+    private int counter = 0;
     
     private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
     private int currentBgIndex = 0;
@@ -110,6 +111,12 @@ public class MainApplication extends JFrame {
                     drawpane.add(mc);//usefordebug
                }
                repaint();
+               if (counter == 150) {
+                   mc.regenHp();
+                   mc.regenStamina();
+                   counter = 0;
+               } else counter++;
+               //System.out.println("Counter: " + counter);
            }
         });
         timer.start();
@@ -139,6 +146,7 @@ public class MainApplication extends JFrame {
         dm = new Dummy(currentFrame);
         
         drawpane.add(mc.getAttackLabel());
+        drawpane.add(mc.getRollLabel());
         drawpane.add(mc);
         drawpane.add(dm);
 

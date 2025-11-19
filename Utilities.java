@@ -48,7 +48,9 @@ interface GameConstants
     
     static final int MC_WIDTH = 45;
     static final int MC_HEIGHT = 80;
-    
+
+    static final int MC_ROLL_WIDTH = 100;
+    static final int MC_ROLL_HEIGHT = 80;
     static final int MC_ATK_WIDTH = 120;
     static final int MC_ATK_HEIGHT = 110;
     
@@ -65,16 +67,6 @@ class GameIcon extends ImageIcon
 	Image oldimg = this.getImage();
 	Image newimg = oldimg.getScaledInstance(width, height, java.awt.Image.SCALE_DEFAULT);
         return new GameIcon(newimg);
-    }
-
-    public GameIcon flip(int width, int height) {
-        Image img = this.getImage();
-        BufferedImage flipped = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = flipped.createGraphics();
-        g2.drawImage(img, 0, 0, width, height, width, 0, 0, height, null);
-        g2.dispose();
-
-        return new GameIcon(flipped);
     }
 }
 
