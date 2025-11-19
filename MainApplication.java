@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class MainApplication extends JFrame {
     private JPanel contentpane;
     private JLabel drawpane;
+    private JLabel hpLabel;
     private GameSoundEffect themeSound;
     private Timer timer;
     
@@ -88,7 +89,7 @@ public class MainApplication extends JFrame {
             }
         });
         
-        timer = new Timer(16, new ActionListener() {
+        timer = new Timer(GameConstants.FRAME_RATE_MS, new ActionListener() {
            @Override
            public void actionPerformed(ActionEvent e) {
                if (movingLeft && !movingRight) {
@@ -103,15 +104,27 @@ public class MainApplication extends JFrame {
                for (Monsters m : monsters) {
                     m.updateBehavior(mc);
                     m.updateLocation();
+                    
+                    if (m.isAttacking() && m.isHitboxActive()) {
+                            Rectangle monsterAttackBox = m.getAttackLabel().getBounds();
+                            Rectangle mcHitBox = mc.getHitBox();
+                            
+                            if (monsterAttackBox.intersects(mcHitBox)) {
+                                mc.damage(m.getAttackPoint());
 
+                                System.out.println("MC hit by Monster! HP left: " + mc.getHp());
+                            }
+
+                    }
                     if (!m.isDead() && mc.getHitBox().intersects(m.getHitBox())) {
                         mc.damage(m.getAttackPoint());
+                        System.out.println("MC body-collided! HP left: " + mc.getHp());
                     }
 
                     if (mc.isAttacking() && mc.getAttackHitBox().intersects(m.getHitBox())) {
                         m.damage(mc.getAttackPoint());
                     }
-                }
+                    }
 
                 monsters.removeIf(m -> {
                     if (m.isDead() && m.isDeathAnimationFinished()) {
@@ -121,6 +134,9 @@ public class MainApplication extends JFrame {
                     }
                     return false;
                 });
+                
+                hpLabel.setText("HP: " + mc.getHp());
+                
                if (mc.getX() > 910) { 
                     gameMap.nextLevel();
                     gameMap.clearMapVisuals(drawpane);
@@ -165,6 +181,13 @@ public class MainApplication extends JFrame {
         mc.setBorder(hitbox);
         dm = new Dummy(currentFrame);
         
+        hpLabel = new JLabel("HP: " + mc.getHp());
+        hpLabel.setBounds(10, 10, 150, 30);
+        hpLabel.setForeground(Color.WHITE);
+        hpLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
+        
+        drawpane.add(hpLabel);
+        
         drawpane.add(mc.getAttackLabel());
         drawpane.add(mc);
         drawpane.add(dm);
@@ -188,10 +211,10 @@ public class MainApplication extends JFrame {
         monsters.clear();
 
         if (gameMap.getCurrentLevel() == 0) {
-             monsters.add(new Monsters(this, gameMap, 300, 400));
-             monsters.add(new Monsters(this, gameMap, 600, 400));
+             monsters.add(new Skeleton(this, gameMap, 300, 400));
+             monsters.add(new Skeleton(this, gameMap, 600, 400));
         } else if (gameMap.getCurrentLevel() == 1) {
-             monsters.add(new Monsters(this, gameMap, 500, 300));
+             monsters.add(new Skeleton(this, gameMap, 500, 300));
         }
 
         for (Monsters m : monsters) {

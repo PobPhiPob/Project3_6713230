@@ -53,6 +53,8 @@ class Knight extends JLabel {
     private boolean attack;
     private boolean canInput = true;
     private boolean roll;
+    private boolean invincible = false;
+    private long invincibleEndTime = 0;
     
     private GameMap map;
     
@@ -82,7 +84,6 @@ class Knight extends JLabel {
         
         attackLabel = new JLabel();
         attackLabel.setVisible(false);
-        attackLabel.setBorder(BorderFactory.createLineBorder(Color.PINK, 2));
 
         rollLabel = new JLabel();
         rollLabel.setVisible(false);
@@ -95,6 +96,7 @@ class Knight extends JLabel {
     public Rectangle getHitBox() {return new Rectangle(curX, curY, hitboxWidth, hitboxHeight);}
     public int getCurX()   {return curX;}
     public int getCurY()   {return curY;}
+    public int getHp()     { return hp; }
     
     public void setIdle() {
         if (turnLeft) {
@@ -191,8 +193,37 @@ class Knight extends JLabel {
     }
 
     public void damage(int d) {
+        long now = System.currentTimeMillis();
+        if (invincible) {
+            if (now < invincibleEndTime) return;
+            invincible = false;
+        }
         if (roll) return;
         hp -= d;
+        if (hp < 0) hp = 0;
+        invincible = true;
+        invincibleEndTime = now + (2*GameConstants.DURATION_MS);
+        flashEffect();
+    }
+    
+    private void flashEffect() {
+        Timer flashTimer = new Timer(60, null);
+        flashTimer.addActionListener(new ActionListener() {
+            private int count = 0;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (count >= 6 || !invincible) {
+                    setVisible(true);
+                    flashTimer.stop();
+                    return;
+                }
+
+                setVisible(!isVisible());
+                count++;
+            }
+        });
+        flashTimer.start();
     }
 
     public void regenHp() {

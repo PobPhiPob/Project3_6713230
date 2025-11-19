@@ -66,8 +66,10 @@ interface GameConstants
     static final int SKELETON_HEIGHT = 80;
     
     static final int SKELETON_ATK_WIDTH  = 80;
-    static final int SKELETON_ATK_HEIGHT = 110;
+    static final int SKELETON_ATK_HEIGHT = 95;
+    static final int KNOCKBACK = 3;
     
+    static final int FRAME_RATE_MS = 16; //Timer
     static final int GRAVITY = 1;
     static final int DURATION_MS = 500; //Dalay
 }
