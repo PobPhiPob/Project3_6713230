@@ -62,7 +62,7 @@ public class MainApplication extends JFrame {
 	setVisible(true);
         
         addComponent();
-        //spawnMonsters();
+        spawnMonsters();
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -183,9 +183,6 @@ public class MainApplication extends JFrame {
         contentpane.add(drawpane);
         validate();
         repaint();
-    }
-    public JLabel getDrawPane() {
-        return drawpane;
     }
 
     private void spawnMonsters() {
