@@ -72,7 +72,7 @@ public class MainApplication extends JFrame {
                     movingLeft = true;
                 if (e.getKeyCode() == KeyEvent.VK_D)
                     movingRight = true;
-                if (e.getKeyCode() == KeyEvent.VK_SPACE)
+                if (e.getKeyCode() == KeyEvent.VK_W)
                     mc.jump();
                 if (e.getKeyCode() == KeyEvent.VK_J)
                     mc.attack();
@@ -212,8 +212,8 @@ public class MainApplication extends JFrame {
         drawpane.add(mc);
         drawpane.add(dm);
 
-//	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
-//      themeSound.playLoop(); themeSound.setVolume(0.2f);
+	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
+      themeSound.playLoop(); themeSound.setVolume(0.2f);
 
         contentpane.add(drawpane);
         validate();
