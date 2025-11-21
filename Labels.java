@@ -102,9 +102,10 @@ class Knight extends JLabel {
     public JLabel getRollLabel() {return rollLabel;}
     public Rectangle getAttackHitBox() {return new Rectangle(curX, curY, attackImageWidth, attackImageHeight);}
     public Rectangle getHitBox() {return new Rectangle(curX, curY, hitboxWidth, hitboxHeight);}
-    public int getCurX()   {return curX;}
-    public int getCurY()   {return curY;}
-    public int getHp()     { return hp; }
+    public int getCurX()    { return curX; }
+    public int getCurY()    { return curY; }
+    public int getHp()      { return hp; }
+    public int getStamina() { return stamina; }
     
     public void setIdle() {
         if (turnLeft) {
@@ -284,7 +285,7 @@ class Knight extends JLabel {
         new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                stamina += 10;
+                stamina += 25;
                 if (stamina >= 50) stamina = 50;
                 System.out.println("Stamina: " + stamina);
                 ((Timer)e.getSource()).stop();
@@ -299,15 +300,12 @@ class Knight extends JLabel {
         switch(currentAttack) {
             case 0:
                 setAttack1();
-                currentAttack = 1;
                 break;
             case 1:
-                setAttack2(); 
-                currentAttack = 2;
+                setAttack2();
                 break;
             case 2:
-                setAttack3(); 
-                currentAttack = 0;
+                setAttack3();
                 break;
         }
 
@@ -318,25 +316,40 @@ class Knight extends JLabel {
                 ((Timer)e.getSource()).stop();
             }
         }).start();
-        
-        new Timer(300, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                attack = false;
-                attackLabel.setVisible(false); //Hide attack Label
-                setIdle();   //Show the normal Idle
-                ((Timer)e.getSource()).stop();
-            }
-        }).start();
+
+        if (currentAttack == 2) {
+            new Timer(650, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    attack = false;
+                    attackLabel.setVisible(false); //Hide attack Label
+                    currentAttack = 0;
+                    setIdle();   //Show the normal Idle
+                    ((Timer)e.getSource()).stop();
+                }
+            }).start();
+        } else {
+            new Timer(300, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    attack = false;
+                    attackLabel.setVisible(false); //Hide attack Label
+                    setIdle();   //Show the normal Idle
+                    ((Timer)e.getSource()).stop();
+                }
+            }).start();
+        }
 
         Dummy dm = parentFrame.getDm();
         if (attackLabel.getBounds().intersects(dm.getBounds())) {
             dm.damage(attackPoint);
         }
+
+        currentAttack++;
     }
 
     public void roll() {
-        if (!canInput || attack || !onGround || stamina < 10 || isDead) return;
+        if (!canInput || attack || !onGround || stamina < 25 || isDead) return;
         canInput = false;
         roll = true;
         setRoll();
@@ -354,9 +367,9 @@ class Knight extends JLabel {
             public void actionPerformed(ActionEvent e) {
                 roll = false;
                 rollLabel.setVisible(false);
-                if (turnLeft) curX -= 150;
-                else curX += 150;
-                stamina -= 10;
+                if (turnLeft) curX -= rollLabel.getWidth();
+                else curX += rollLabel.getWidth();
+                stamina -= 25;
                 setIdle();
                 ((Timer)e.getSource()).stop();
             }
@@ -374,7 +387,7 @@ class Knight extends JLabel {
         
         int nextY = curY + vy;
         
-        boolean leftFoot  = map.isSolid(curX + 10,         nextY + height); 
+        boolean leftFoot  = map.isSolid(curX + 10,         nextY + height);
         boolean rightFoot = map.isSolid(curX + width - 10, nextY + height);
         
         if (vy >= 0 && (leftFoot || rightFoot)) { 
