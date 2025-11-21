@@ -37,7 +37,7 @@ public abstract class Monsters extends JLabel{
     protected boolean isHit = false;
     protected long attackTimeStart = 0;
     protected long attackTimeEnd = 0;
-    private boolean hitboxActive = false;
+    protected boolean hitboxActive = false;
     
     protected JLabel attack;
     protected int atk_width;
@@ -46,6 +46,7 @@ public abstract class Monsters extends JLabel{
     protected GameIcon idleGif, walkGif, deadGif, attackGif, hitGif;
     protected GameIcon idleFlip, walkFlip, deadFlip, attackFlip, hitFlip;
     
+    protected GameSoundEffect hitSFX;
 
     public Monsters(MainApplication pf, GameMap m, int startX, int startY, 
                    int monsterWidth, int monsterHeight, int atkWidth, int atkHeight, 
@@ -69,6 +70,8 @@ public abstract class Monsters extends JLabel{
         attack = new JLabel();
         attack.setVisible(false);
         attack.setBorder(BorderFactory.createLineBorder(Color.PINK, 2));
+        
+        hitSFX = new GameSoundEffect(GameConstants.FILE_MONSTER_HIT_SFX);
 
         setBounds(curX, curY, width, height);
         setBorder(BorderFactory.createLineBorder(Color.RED, 2));
@@ -84,6 +87,12 @@ public abstract class Monsters extends JLabel{
     public JLabel getAttackLabel()              { return attack; }
     public boolean isDeathAnimationFinished()   { return isDead() && System.currentTimeMillis() > deathTimeEnd; }
     
+    protected abstract void playIdleSound();
+    protected abstract void playAttackSound();
+    protected abstract void playWalkSound();
+    protected abstract void playHitSound();
+    protected abstract void playDeadSound();
+    
     // --- Movement and Physics
     public void updateLocation() {
         if (isDead()) {
@@ -98,7 +107,6 @@ public abstract class Monsters extends JLabel{
 
         int nextY = curY + vy;
         int checkY_top = curY + 5;
-        int checkY_bottom = curY + height - 5;
         
         if (vy < 0) {
             checkY_top = nextY;
@@ -131,23 +139,33 @@ public abstract class Monsters extends JLabel{
         }
 
         int nextX = curX + vx;
+        int checkY_middle = curY + height / 2;
+        boolean leftWallHit = map.isSolid(nextX, checkY_middle);
+        boolean rightWallHit = map.isSolid(nextX + width, checkY_middle);
         
         boolean isKnockedBack = System.currentTimeMillis() < hitTime;
-
+        
         if (vx > 0) {
-            boolean feetHit = map.isSolid(nextX + width, checkY_bottom);
-            if (feetHit && isKnockedBack) {
+            if (rightWallHit) {
+                vx = 0;
+            } 
+
+            if (rightWallHit && isKnockedBack) {
                 vx = 0;
                 turnLeft = true;
-            } else {
+            } else if (!rightWallHit) {
                 curX = nextX;
             }
+
         } else if (vx < 0) {
-            boolean feetHit = map.isSolid(nextX, checkY_bottom);
-            if (feetHit && isKnockedBack) {
+            if (leftWallHit) {
+                vx = 0;
+            }
+
+            if (leftWallHit && isKnockedBack) {
                 vx = 0;
                 turnLeft = false;
-            } else {
+            } else if (!leftWallHit) {
                 curX = nextX;
             }
         }
@@ -163,7 +181,7 @@ public abstract class Monsters extends JLabel{
             return;
         }
         hp -= d;
-        if (hp <= 0) {
+        if (isDead()) {
             hp = 0;
             vx = 0;
             vy = 0;
@@ -171,6 +189,9 @@ public abstract class Monsters extends JLabel{
         }else {
             hitTime = System.currentTimeMillis() + GameConstants.DURATION_MS;
             isHit = true;
+            if (hitSFX != null) {
+                hitSFX.playOnce();
+            }
             setHit();
             
             int kb = GameConstants.KNOCKBACK;
@@ -198,6 +219,22 @@ public abstract class Monsters extends JLabel{
         int distanceX = playerCenterX - monsterCenterX;
         int absDistanceX = Math.abs(distanceX);
         int distanceY = Math.abs(player.getCurY() - curY);
+                
+        if (onGround) {
+
+            int nextX = turnLeft ? curX - speed : curX + width + speed;
+            int nextY = curY + height;
+
+            boolean groundAhead = map.isSolid(nextX, nextY + 1);
+
+            boolean hazardAhead = map.isHazard(nextX, nextY) || map.isLethal(nextX, nextY);
+
+            if (!groundAhead || hazardAhead) {                
+                vx = 0;
+                setIdle();
+                return;
+            }
+        }
 
         if (absDistanceX < ATTACK_RANGE && distanceY < height) {
             if (!isAttacking) {
@@ -253,6 +290,7 @@ public abstract class Monsters extends JLabel{
         }
         this.setVisible(true);
         attack.setVisible(false);
+        playWalkSound();
         if (turnLeft) {
             setIcon(walkFlip);
         } else {
@@ -261,6 +299,8 @@ public abstract class Monsters extends JLabel{
     }
     
     protected void setIdle() {
+        this.setVisible(true);
+        attack.setVisible(false);
         if (turnLeft) {
             setIcon(idleFlip);
         } else {
@@ -272,6 +312,9 @@ public abstract class Monsters extends JLabel{
     }
     
     public void setDead() {
+        this.setVisible(true);
+        attack.setVisible(false);
+        playDeadSound();
         if (turnLeft) {
             setIcon(deadFlip);
         } else {
@@ -285,7 +328,7 @@ public abstract class Monsters extends JLabel{
     public void setAttack() {
         this.setVisible(false);
         attack.setVisible(true);
-        
+        playAttackSound();
         if (turnLeft) {
               attack.setIcon(attackFlip);
               attack.setBounds(curX -(atk_width - width),curY - (atk_height - height),atk_width, atk_height);

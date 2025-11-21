@@ -18,6 +18,8 @@ public class Skeleton extends Monsters {
     private static final int ATTACK_POINT = 20;
     private static final int SPEED = 2;
     
+    protected GameSoundEffect attackSFX, walkSFX, hitSFX, deadSFX;
+    
     public Skeleton(MainApplication pf, GameMap m, int startX, int startY) {
         
         super(pf, m, startX, startY, 
@@ -37,7 +39,47 @@ public class Skeleton extends Monsters {
         attackFlip = new GameIcon(GameConstants.FILE_SKELETON_ATTACKFLIP).resize(atk_width, atk_height);
         deadFlip   = new GameIcon(GameConstants.FILE_SKELETON_DEADFLIP).resize(width, height);
         
+        attackSFX  = new GameSoundEffect(GameConstants.FILE_SKELETON_ATTACK_SFX);
+        walkSFX    = new GameSoundEffect(GameConstants.FILE_SKELETON_WALK_SFX);
+        hitSFX     = new GameSoundEffect(GameConstants.FILE_SKELETON_HIT_SFX);
+        deadSFX    = new GameSoundEffect(GameConstants.FILE_SKELETON_DEAD_SFX);
+        
         setIcon(idleGif);
+    }
+    
+    @Override
+    protected void playIdleSound() {
+//        if (idleSFX != null) {
+//            idleSFX.playOnce();
+//        }
+    }
+    
+    @Override
+    protected void playAttackSound() {
+        if (attackSFX != null) {
+            attackSFX.playOnce();
+        }
+    }
+    
+    @Override
+    protected void playWalkSound() {
+        if (walkSFX != null) {
+            walkSFX.playLoop();
+        }
+    }
+    
+    @Override
+    protected void playHitSound() {
+        if (hitSFX != null) {
+            hitSFX.playOnce();
+        }
+    }
+    
+    @Override
+    protected void playDeadSound() {
+        if (deadSFX != null) {
+            deadSFX.playOnce();
+        }
     }
     
 }

@@ -13,6 +13,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MainApplication extends JFrame {
     private JPanel contentpane;
@@ -251,18 +252,100 @@ public class MainApplication extends JFrame {
         }
         monsters.clear();
 
-        if (gameMap.getCurrentLevel() == 0) {
-             monsters.add(new Skeleton(this, gameMap, 300, 400));
-             monsters.add(new Skeleton(this, gameMap, 600, 400));
-        } else if (gameMap.getCurrentLevel() == 1) {
-             monsters.add(new Skeleton(this, gameMap, 500, 300));
+        Random rand = new Random();
+        final int TILE_SIZE = GameConstants.TILE_SIZE;
+        final int MIN_X = 50;
+        final int MAX_X = 900;
+        final int MIN_Y = 50;
+        final int MAX_Y = 550; 
+        final int AIR_MAX_Y = 300; 
+
+        if (gameMap.getCurrentLevel() == 0 || gameMap.getCurrentLevel() == 6) {
+            return;
+        } else {
+
+            int minMonsters = 3;
+            int maxMonsters = 6;
+            int numToSpawn = rand.nextInt(maxMonsters - minMonsters + 1) + minMonsters;
+
+            for (int i = 0; i < numToSpawn; i++) {
+
+                int monsterType = rand.nextInt(2);
+                int startX = 0;
+                int startY = 0;
+
+                if (monsterType == 0) {
+                    int skeletonHeight = GameConstants.SKELETON_HEIGHT;
+                    int skeletonWidth = GameConstants.SKELETON_WIDTH;
+
+                    boolean validSpawnFound = false;
+                    for (int attempt = 0; attempt < 100; attempt++) {
+
+                        startX = rand.nextInt(MAX_X - MIN_X + 1) + MIN_X;
+
+                        int minRow = MIN_Y / TILE_SIZE; 
+                        int maxRow = MAX_Y / TILE_SIZE; 
+                        int randomStandingRow = rand.nextInt(maxRow - minRow) + minRow;
+
+                        int groundLevelY = randomStandingRow * TILE_SIZE;
+
+                        startY = groundLevelY - skeletonHeight;
+
+                        int checkY_below_ground = groundLevelY + 1;
+                        boolean hasSupport = gameMap.isSolid(startX + 10, checkY_below_ground) && 
+                                             gameMap.isSolid(startX + skeletonWidth - 10, checkY_below_ground);
+
+                        boolean notCeiling = !gameMap.isSolid(startX + 10, startY + 1) && 
+                                             !gameMap.isSolid(startX + skeletonWidth - 10, startY + 1);
+                        
+                        boolean notInMap = !gameMap.isSolid(startX/2 + 10, startY/2 + 1) && 
+                                           !gameMap.isSolid((startX + skeletonWidth)/2 - 10, startY/2 + 1);
+
+                        boolean isLethalArea = gameMap.isLethal(startX + 10, groundLevelY) || 
+                                               gameMap.isLethal(startX + skeletonWidth - 10, groundLevelY);
+
+                        if (hasSupport && !isLethalArea && notCeiling && notInMap) {
+                            validSpawnFound = true;
+                            break;
+                        }
+                    }
+
+                    if (validSpawnFound) {
+                        monsters.add(new Skeleton(this, gameMap, startX, startY));
+                    }
+
+                } else {
+
+                    while (true){
+                        startX = rand.nextInt(MAX_X - MIN_X + 1) + MIN_X;
+
+                        if (rand.nextBoolean()) {
+                            startY = rand.nextInt(AIR_MAX_Y - MIN_Y + 1) + MIN_Y;
+                        } else {
+                            startY = rand.nextInt(MAX_Y - AIR_MAX_Y + 1) + AIR_MAX_Y;
+                        }
+
+                        int checkX_center = startX + GameConstants.BAT_WIDTH / 2;
+                        int checkY_center = startY + GameConstants.BAT_HEIGHT / 2;
+
+                        boolean isColliding = gameMap.isSolid(checkX_center, checkY_center) ||
+                                              gameMap.isLethal(checkX_center, checkY_center);
+
+                        if (!isColliding) {
+                            break;
+                        }
+                    } 
+
+                    monsters.add(new Bat(this, gameMap, startX, startY));
+                }
+            }
         }
 
         for (Monsters m : monsters) {
             drawpane.add(m);
             drawpane.add(m.getAttackLabel());
-            
         }
+
         drawpane.revalidate(); 
         drawpane.repaint();
     }

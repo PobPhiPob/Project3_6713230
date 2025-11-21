@@ -15,7 +15,7 @@ import javax.swing.BorderFactory; //usefordebug
 
 public class GameMap {
     
-    public final int TILE_SIZE = 32;
+    public final int TILE_SIZE = GameConstants.TILE_SIZE;
     private int currentLevel = 0;
     
     private ArrayList<JLabel> mapTiles = new ArrayList<>();
