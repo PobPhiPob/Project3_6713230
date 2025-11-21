@@ -22,8 +22,6 @@ interface GameConstants
     static final String FILE_BG_MAP1     = PATH + "tilebase1.jpg";
     static final String FILE_BG_MAP2     = PATH + "tilebase2.jpg";
     
-    static final String FILE_THEME       = PATH + "theme.wav";
-    
     static final String FILE_MC_IDLE     = PATH + "/Sprite/Knight/mc_Idle.gif";
     static final String FILE_MC_IDLEFLIP = PATH + "/Sprite/Knight/mc_IdleFlip.gif";
     static final String FILE_MC_RUN      = PATH + "/Sprite/Knight/mc_Run.gif";
@@ -41,7 +39,7 @@ interface GameConstants
     static final String FILE_MC_HIT             = PATH + "/Sprite/Knight/mc_Hit.gif";
     static final String FILE_MC_HITFLIP         = PATH + "/Sprite/Knight/mc_HitFlip.gif";
     static final String FILE_MC_DEAD            = PATH + "/Sprite/Knight/mc_Dead.gif";
-    static final String FILE_MC_DEADFLIP            = PATH + "/Sprite/Knight/mc_DeadFlip.gif";
+    static final String FILE_MC_DEADFLIP           = PATH + "/Sprite/Knight/mc_DeadFlip.gif";
     static final String FILE_SKELETON_ATTACK       = PATH + "/Sprite/Monsters/Skeleton/Attack.gif";
     static final String FILE_SKELETON_IDLE         = PATH + "/Sprite/Monsters/Skeleton/Idle.gif";
     static final String FILE_SKELETON_WALK         = PATH + "/Sprite/Monsters/Skeleton/Walk.gif";

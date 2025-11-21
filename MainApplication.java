@@ -155,7 +155,7 @@ public class MainApplication extends JFrame {
                drawpane.revalidate();
                repaint();
                if (counter == 150) {
-                   mc.regenHp();
+//                   mc.regenHp();
                    mc.regenStamina();
                    counter = 0;
                } else counter++;
