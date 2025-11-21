@@ -22,6 +22,9 @@ interface GameConstants
     static final String FILE_BG_MAP1     = PATH + "tilebase1.jpg";
     static final String FILE_BG_MAP2     = PATH + "tilebase2.jpg";
     static final String FILE_BG_MAP3     = PATH + "tilebase3.jpg";
+    static final String FILE_BG_MAP4     = PATH + "tilebase4.jpg";
+    static final String FILE_BG_MAP5     = PATH + "tilebase5.jpg";
+    static final String FILE_BG_MAP6     = PATH + "tilebase6.jpg";
     
     static final String FILE_THEME       = PATH + "CardCastle.wav";
     
