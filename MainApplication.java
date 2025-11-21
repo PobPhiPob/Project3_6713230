@@ -18,6 +18,7 @@ public class MainApplication extends JFrame {
     private JPanel contentpane;
     private JLabel drawpane;
     private JLabel hpLabel;
+    private JProgressBar hpBar;
     private GameSoundEffect themeSound;
     private Timer timer;
     private int counter = 0;
@@ -71,7 +72,7 @@ public class MainApplication extends JFrame {
                     movingLeft = true;
                 if (e.getKeyCode() == KeyEvent.VK_D)
                     movingRight = true;
-                if (e.getKeyCode() == KeyEvent.VK_SPACE)
+                if (e.getKeyCode() == KeyEvent.VK_W)
                     mc.jump();
                 if (e.getKeyCode() == KeyEvent.VK_J)
                     mc.attack();
@@ -137,6 +138,7 @@ public class MainApplication extends JFrame {
                 });
                 
                 hpLabel.setText("HP: " + mc.getHp());
+                hpBar.setValue(mc.getHp());
                 
                if (mc.getX() > 910) { 
                     gameMap.nextLevel();
@@ -175,6 +177,9 @@ public class MainApplication extends JFrame {
         Image bg2 = new ImageIcon(GameConstants.FILE_BG_MAP2).getImage();
         bg2 = bg2.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
         backgroundImages.add(new GameIcon(bg2));
+        Image bg3 = new ImageIcon(GameConstants.FILE_BG_MAP3).getImage();
+        bg3 = bg3.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        backgroundImages.add(new GameIcon(bg3));
         gameMap.drawMap(drawpane);//usefordebug
         drawpane.revalidate();//usefordebug
         drawpane.repaint();//usefordebug
@@ -189,19 +194,26 @@ public class MainApplication extends JFrame {
         dm = new Dummy(currentFrame);
         
         hpLabel = new JLabel("HP: " + mc.getHp());
-        hpLabel.setBounds(10, 10, 150, 30);
+        hpLabel.setBounds(10, 40, 150, 30);
         hpLabel.setForeground(Color.WHITE);
         hpLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
-        
+
+        hpBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, mc.getHp());
+        hpBar.setBounds(10, 10, 200, 30);
+        hpBar.setValue(mc.getHp());
+        hpBar.setForeground(Color.RED);
+        hpBar.setBackground(Color.DARK_GRAY);
+
         drawpane.add(hpLabel);
-        
+        drawpane.add(hpBar);
+
         drawpane.add(mc.getAttackLabel());
         drawpane.add(mc.getRollLabel());
         drawpane.add(mc);
         drawpane.add(dm);
 
-//	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
-//      themeSound.playLoop(); themeSound.setVolume(0.2f);
+	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
+      themeSound.playLoop(); themeSound.setVolume(0.2f);
 
         contentpane.add(drawpane);
         validate();

@@ -21,6 +21,9 @@ interface GameConstants
     static final String FILE_BG          = PATH + "tilebase1.jpg";
     static final String FILE_BG_MAP1     = PATH + "tilebase1.jpg";
     static final String FILE_BG_MAP2     = PATH + "tilebase2.jpg";
+    static final String FILE_BG_MAP3     = PATH + "tilebase3.jpg";
+    
+    static final String FILE_THEME       = PATH + "CardCastle.wav";
     
     static final String FILE_MC_IDLE     = PATH + "/Sprite/Knight/mc_Idle.gif";
     static final String FILE_MC_IDLEFLIP = PATH + "/Sprite/Knight/mc_IdleFlip.gif";
