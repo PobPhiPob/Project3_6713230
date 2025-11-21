@@ -35,6 +35,7 @@ public abstract class Monsters extends JLabel{
     protected long deathTimeEnd = 0;
     protected long hitTime = 0;
     protected boolean isHit = false;
+    protected long attackTimeStart = 0;
     protected long attackTimeEnd = 0;
     private boolean hitboxActive = false;
     
@@ -198,12 +199,11 @@ public abstract class Monsters extends JLabel{
         int absDistanceX = Math.abs(distanceX);
         int distanceY = Math.abs(player.getCurY() - curY);
 
-        isAttacking = false;
-
         if (absDistanceX < ATTACK_RANGE && distanceY < height) {
             if (!isAttacking) {
                 isAttacking = true;
-                attackTimeEnd = System.currentTimeMillis() + (3*GameConstants.DURATION_MS);
+                attackTimeStart = System.currentTimeMillis() + (2*GameConstants.DURATION_MS);
+                attackTimeEnd = System.currentTimeMillis() + (4*GameConstants.DURATION_MS);
             }
             vx = 0;
 
@@ -220,16 +220,14 @@ public abstract class Monsters extends JLabel{
         }
         
         if (isAttacking) {
-            
-            long elapsedTime = attackTimeEnd - System.currentTimeMillis();
         
-            if (elapsedTime >= GameConstants.DURATION_MS && 
-                elapsedTime < (2 * GameConstants.DURATION_MS)) 
-            {
-                hitboxActive = true;
-            } else {
-                hitboxActive = false;
-            }
+            long now = System.currentTimeMillis();
+            
+                if (now >= attackTimeStart && now <= attackTimeEnd) {
+                    hitboxActive = true;
+                } else {
+                    hitboxActive = false;
+                }
             if (System.currentTimeMillis() > attackTimeEnd) {
                 isAttacking = false;
                 attack.setVisible(false);
