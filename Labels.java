@@ -428,11 +428,34 @@ class Knight extends JLabel {
         else if (map.isHazard(curX + 15, curY) || map.isHazard(curX + width - 15, curY)) {
             hitHazard = true;
         }
-        else if (map.isHazard(curX, curY + height/2) || map.isHazard(curX + width, curY + height/2)) {
+        else if (map.isHazard(curX - 1, curY + height - 10) || map.isHazard(curX + width + 1, curY + height - 10)) {
             hitHazard = true;
         }
         if (hitHazard) {
             damage(25);
+            vy = -10; 
+                onGround = false;
+                if (turnLeft) {
+                    vx = 8; 
+                } 
+                else {
+                    vx = -8;
+                }
+        }
+        
+        boolean hitLethal = false;
+        
+        if (map.isLethal(curX + 15, curY + height) || map.isLethal(curX + width - 15, curY + height)) {
+            hitLethal = true;
+        }
+        else if (map.isLethal(curX + 15, curY) || map.isLethal(curX + width - 15, curY)) {
+            hitLethal = true;
+        }
+        else if (map.isLethal(curX - 1, curY + height - 10) || map.isLethal(curX + width + 1, curY + height - 10)) {
+            hitLethal = true;
+        }
+        if (hitLethal) {
+            damage(99);
             vy = -10; 
                 onGround = false;
                 if (turnLeft) {
