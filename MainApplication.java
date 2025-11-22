@@ -29,7 +29,6 @@ public class MainApplication extends JFrame {
     private int currentBgIndex = 0;
     
     private Knight mc;
-    private Dummy dm;
     private MainApplication currentFrame;
     
     private boolean movingLeft = false; // fix character movement bug when release key
@@ -46,10 +45,6 @@ public class MainApplication extends JFrame {
 
     public Knight getMc() {
         return mc;
-    }
-
-    public Dummy getDm() {
-        return dm;
     }
     
     public MainApplication() {
@@ -127,7 +122,7 @@ public class MainApplication extends JFrame {
                     if (mc.isAttacking() && mc.getAttackHitBox().intersects(m.getHitBox())) {
                         m.damage(mc.getAttackPoint(), mc.getTurn());
                     }
-                    }
+               }
 
                 monsters.removeIf(m -> {
                     if (m.isDead() && m.isDeathAnimationFinished()) {
@@ -159,11 +154,14 @@ public class MainApplication extends JFrame {
                }
                drawpane.revalidate();
                repaint();
-               if (counter == 150) {
+               if (counter == 188 && mc.getHp() < 100) {
                    mc.regenHp();
+               }
+               if (counter == 188 && mc.getStamina() < 50) {
                    mc.regenStamina();
-                   counter = 0;
-               } else counter++;
+               }
+               counter++;
+               if (counter > 188) counter = 0;
                //System.out.println("Counter: " + counter);
            }
         });
@@ -203,7 +201,6 @@ public class MainApplication extends JFrame {
 
         Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
         mc.setBorder(hitbox);
-        dm = new Dummy(currentFrame);
         
         hpLabel = new JLabel("HP: " + mc.getHp());
         hpLabel.setBounds(10, 40, 150, 30);
@@ -235,7 +232,6 @@ public class MainApplication extends JFrame {
         drawpane.add(mc.getAttackLabel());
         drawpane.add(mc.getRollLabel());
         drawpane.add(mc);
-        drawpane.add(dm);
 
 	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
       themeSound.playLoop(); themeSound.setVolume(0.2f);
