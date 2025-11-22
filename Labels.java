@@ -42,7 +42,7 @@ class Knight extends JLabel {
     private int curX = 10;
     private int curY = 420;
     private int speed = 5;
-    private int rollSpeed = 8; 
+    private int rollSpeed = 6;
     private int vx = 0;
     private int vy = 0;
     private int jumpStrength = -12;
@@ -54,8 +54,6 @@ class Knight extends JLabel {
     private int attackPoint = 25;
     private int currentAttack;
     private int stamina = 50;
-    private boolean canRegenHp = false;
-    private boolean canRegenStamina = false;
     private boolean attack;
     private boolean isHit;
     private boolean canInput = true;
@@ -100,16 +98,11 @@ class Knight extends JLabel {
         rollLabel = new JLabel();
         rollLabel.setVisible(false);
 
-        // Load sound effects with error handling
-        try {
-            attackSFX = new GameSoundEffect(GameConstants.FILE_MC_ATTACK_SFX);
-            runSFX = new GameSoundEffect(GameConstants.FILE_MC_RUN_SFX);
-            rollSFX = new GameSoundEffect(GameConstants.FILE_MC_ROLL_SFX);
-            hitSFX = new GameSoundEffect(GameConstants.FILE_MC_HIT_SFX);
-            deadSFX = new GameSoundEffect(GameConstants.FILE_MC_DEAD_SFX);
-        } catch (Exception e) {
-            System.out.println("Could not load Knight sound effects");
-        }
+        attackSFX = new GameSoundEffect(GameConstants.FILE_MC_ATTACK_SFX);
+        runSFX = new GameSoundEffect(GameConstants.FILE_MC_RUN_SFX);
+        rollSFX = new GameSoundEffect(GameConstants.FILE_MC_ROLL_SFX);
+        hitSFX = new GameSoundEffect(GameConstants.FILE_MC_HIT_SFX);
+        deadSFX = new GameSoundEffect(GameConstants.FILE_MC_DEAD_SFX);
         
         setBounds(curX, curY, width, height);
     }
@@ -140,7 +133,6 @@ class Knight extends JLabel {
             } else {
                 runSFX.stop();
             }
-            runSFX.setVolume(0.5f);
         }
     }
     
@@ -265,7 +257,6 @@ class Knight extends JLabel {
         playSound(hitSFX);
         hp -= d;
         if (hp < 0) hp = 0;
-        canRegenHp = true;
         invincible = true;
         invincibleEndTime = now + (2 * GameConstants.DURATION_MS);
         flashEffect();
@@ -300,25 +291,17 @@ class Knight extends JLabel {
     }
 
     public void regenHp() {
-        if (canRegenHp) {
-            hp += 25;
-            if (hp >= 100) {
-                hp = 100;
-                canRegenHp = false;
-            }
-            System.out.println("HP: " + hp);
-        }
+        hp += 25;
+        if (hp >= 100)
+            hp = 100;
+        System.out.println("HP: " + hp);
     }
 
     public void regenStamina() {
-        if (canRegenStamina) {
-            stamina += 25;
-            if (stamina >= 50) {
-                stamina = 50;
-                canRegenStamina = false;
-            }
-            System.out.println("Stamina: " + stamina);
-        }
+        stamina += 25;
+        if (stamina >= 50)
+            stamina = 50;
+        System.out.println("Stamina: " + stamina);
     }
 
     public void attack() {
@@ -392,13 +375,7 @@ class Knight extends JLabel {
             public void actionPerformed(ActionEvent e) {
                 roll = false;
                 rollLabel.setVisible(false);
-                if (turnLeft) {
-                    curX -= rollLabel.getWidth();
-                } else {
-                    curX += rollLabel.getWidth();
-                }
-                stamina -= 10;
-                canRegenStamina = true;
+                stamina -= 25;
                 setIdle();
                 ((Timer)e.getSource()).stop();
             }
@@ -406,24 +383,13 @@ class Knight extends JLabel {
     }
 
     public void updateLocation() {
-        if (roll) {
-            if (turnLeft) {
-                curX -= rollSpeed;
-                rollLabel.setBounds(curX - ((rollWidth - width) / 2), curY - (rollHeight - height), rollWidth, rollHeight);
-            } else {
-                curX += rollSpeed;
-                rollLabel.setBounds(curX, curY - (rollHeight - height), rollWidth, rollHeight);
-            }
-            setLocation(curX, curY); 
-            return; 
-        }
-        if (attack || roll || isHit || isDead) return;
+        if (attack || isHit || isDead) return;
         if (hp <= 0) {
             setDead();
             isDead = true;
             return;
         }
-        
+
         vy += gravity;
         
         int nextY = curY + vy;
@@ -513,6 +479,19 @@ class Knight extends JLabel {
         
         if (curX < 0) curX = 0;
         if (curX > 960 - width) curX = 960 - width;
+
+        if (roll) {
+            curY += vy;
+            if (turnLeft) {
+                curX -= rollSpeed;
+                rollLabel.setBounds(curX - ((rollWidth - width) / 2), curY - (rollHeight - height), rollWidth, rollHeight);
+            } else {
+                curX += rollSpeed;
+                rollLabel.setBounds(curX, curY - (rollHeight - height), rollWidth, rollHeight);
+            }
+            setLocation(curX, curY);
+            return;
+        }
 
         if (onGround) {
             if (vx == 0) {

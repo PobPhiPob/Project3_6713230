@@ -23,7 +23,8 @@ public class MainApplication extends JFrame {
     private JProgressBar hpBar, staminaBar;
     private GameSoundEffect themeSound;
     private Timer timer;
-    private int counter = 0;
+    private int hpCounter = 0;
+    private int staminaCounter = 0;
 
     private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
     private ArrayList<Monsters> monsters = new ArrayList<>();
@@ -189,16 +190,17 @@ public class MainApplication extends JFrame {
                 
                 drawpane.revalidate();
                 repaint();
+
+                hpCounter++;
+                staminaCounter++;
                 
-                if (counter == 188 && mc.getHp() < 100) {
+                if (hpCounter >= 312 && mc.getHp() < 100) {
                     mc.regenHp();
+                    hpCounter = 0;
                 }
-                if (counter == 188 && mc.getStamina() < 50) {
+                if (staminaCounter >= 188 && mc.getStamina() < 50) {
                     mc.regenStamina();
-                }
-                counter++;
-                if (counter > 188) {
-                    counter = 0;
+                    staminaCounter = 0;
                 }
             }
         });
@@ -280,13 +282,9 @@ public class MainApplication extends JFrame {
         drawpane.add(mc.getRollLabel());
         drawpane.add(mc);
 
-        try {
-            themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
-            themeSound.playLoop();
-            themeSound.setVolume(0.2f);
-        } catch (Exception ex) {
-            System.out.println("Could not load theme sound");
-        }
+        themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
+        themeSound.playLoop();
+        themeSound.setVolume(0.2f);
 
         contentpane.add(drawpane);
         validate();
@@ -515,7 +513,8 @@ public class MainApplication extends JFrame {
 
     private void restartGame() {
         isPaused = false;
-        counter = 0;
+        hpCounter = 0;
+        staminaCounter = 0;
         currentBgIndex = 0;
 
         for (Monsters m : monsters) {
