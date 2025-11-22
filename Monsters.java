@@ -70,8 +70,6 @@ public abstract class Monsters extends JLabel{
         attack = new JLabel();
         attack.setVisible(false);
         attack.setBorder(BorderFactory.createLineBorder(Color.PINK, 2));
-        
-        hitSFX = new GameSoundEffect(GameConstants.FILE_MONSTER_HIT_SFX);
 
         setBounds(curX, curY, width, height);
         setBorder(BorderFactory.createLineBorder(Color.RED, 2));
@@ -101,6 +99,16 @@ public abstract class Monsters extends JLabel{
             vy = 0;
             setLocation(curX, curY);
             return;
+        }
+        
+        final int OUT_OF_BOUNDS_Y = GameConstants.FRAME_HEIGHT;
+        final int OUT_OF_BOUNDS_X = GameConstants.FRAME_WIDTH; 
+
+        if (curY > OUT_OF_BOUNDS_Y || curX < -OUT_OF_BOUNDS_X || curX > 960 + OUT_OF_BOUNDS_X) {
+            if (!isDead()) {
+                hp = 0;
+                setDead();
+            }
         }
         
         vy += gravity;
@@ -189,9 +197,6 @@ public abstract class Monsters extends JLabel{
         }else {
             hitTime = System.currentTimeMillis() + GameConstants.DURATION_MS;
             isHit = true;
-            if (hitSFX != null) {
-                hitSFX.playOnce();
-            }
             setHit();
             
             int kb = GameConstants.KNOCKBACK;
@@ -349,10 +354,12 @@ public abstract class Monsters extends JLabel{
     }
     
     public void setHit() {
+        playHitSound();
         if (turnLeft) {
             setIcon(hitFlip);
         } else {
             setIcon(hitGif);
         }
     }
+    
 }

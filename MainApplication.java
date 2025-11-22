@@ -139,13 +139,11 @@ public class MainApplication extends JFrame {
 
                         if (monsterAttackBox.intersects(mcHitBox)) {
                             mc.damage(m.getAttackPoint());
-                            System.out.println("MC hit by Monster! HP left: " + mc.getHp());
                         }
                     }
                     
                     if (!m.isDead() && mc.getHitBox().intersects(m.getHitBox())) {
                         mc.damage(m.getAttackPoint());
-                        System.out.println("MC body-collided! HP left: " + mc.getHp());
                     }
 
                     if (mc.isAttacking() && mc.getAttackHitBox().intersects(m.getHitBox())) {

@@ -14,7 +14,7 @@ public class Bat extends Monsters {
     private static final int BAT_HEIGHT = GameConstants.BAT_HEIGHT;
     private static final int BAT_ATK_WIDTH = GameConstants.BAT_ATK_WIDTH;
     private static final int BAT_ATK_HEIGHT = GameConstants.BAT_ATK_HEIGHT;
-    private static final int INITIAL_HP = 30;
+    private static final int INITIAL_HP = 100;
     private static final int ATTACK_POINT = 30;
     private static final int SPEED = 3;
     
@@ -49,6 +49,16 @@ public class Bat extends Monsters {
             vy = 0;
             setLocation(curX, curY);
             return;
+        }
+        
+        final int OUT_OF_BOUNDS_Y = GameConstants.FRAME_HEIGHT;
+        final int OUT_OF_BOUNDS_X = GameConstants.FRAME_WIDTH; 
+
+        if (curY > OUT_OF_BOUNDS_Y || curX < -OUT_OF_BOUNDS_X || curX > 960 + OUT_OF_BOUNDS_X) {
+            if (!isDead()) {
+                hp = 0;
+                setDead();
+            }
         }
 
         int nextX = curX + vx;
@@ -218,21 +228,6 @@ public class Bat extends Monsters {
     }
     
     @Override
-    public void setAttack() {
-        this.setVisible(false);
-        attack.setVisible(true);
-        
-        if (turnLeft) {
-              attack.setIcon(idleFlip);
-              attack.setBounds(curX -(atk_width - width),curY - (atk_height - height),atk_width, atk_height);
-
-        } else {
-              attack.setIcon(idleGif);
-              attack.setBounds(curX,curY - (atk_height - height),atk_width, atk_height);
-        }
-    }
-    
-    @Override
     protected void playIdleSound() {
         if (idleSFX != null) {
             idleSFX.playLoop();
@@ -240,18 +235,10 @@ public class Bat extends Monsters {
     }
     
     @Override
-    protected void playAttackSound() {
-//        if (attackSFX != null) {
-//            attackSFX.playLoop();
-//        }
-    }
+    protected void playAttackSound() {}
     
     @Override
-    protected void playWalkSound() {
-//        if (walkSFX != null) {
-//            walkSFX.playLoop();
-//        }
-    }
+    protected void playWalkSound() {}
     
     @Override
     protected void playHitSound() {
@@ -261,9 +248,5 @@ public class Bat extends Monsters {
     }
     
     @Override
-    protected void playDeadSound() {
-//        if (deadSFX != null) {
-//            deadSFX.playLoop();
-//        }
-    }
+    protected void playDeadSound() {}
 }

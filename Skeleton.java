@@ -14,7 +14,7 @@ public class Skeleton extends Monsters {
     private static final int SKELETON_HEIGHT = GameConstants.SKELETON_HEIGHT;
     private static final int SKELETON_ATK_WIDTH = GameConstants.SKELETON_ATK_WIDTH;
     private static final int SKELETON_ATK_HEIGHT = GameConstants.SKELETON_ATK_HEIGHT;
-    private static final int INITIAL_HP = 50;
+    private static final int INITIAL_HP = 200;
     private static final int ATTACK_POINT = 20;
     private static final int SPEED = 2;
     

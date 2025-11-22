@@ -8,10 +8,8 @@
  */
 package Project3_6713230;
 
-import java.awt.Graphics2D;
 import java.awt.Image;
 import javax.swing.ImageIcon;
-import java.awt.image.BufferedImage;
 import javax.sound.sampled.*;
 
 interface GameConstants
@@ -126,9 +124,8 @@ class GameIcon extends ImageIcon
 
 class GameSoundEffect
 {
-    private Clip         clip;
+    private Clip clip;
     private FloatControl gainControl;         
-
     public GameSoundEffect(String filename)
     {
         try
@@ -164,7 +161,7 @@ class GameSoundEffect
             clip.stop();
         }
     }
-    
+            
     public void setVolume(float gain)
     {
         if (gainControl != null) {
