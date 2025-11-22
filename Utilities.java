@@ -27,6 +27,11 @@ interface GameConstants
     static final String FILE_BG_MAP6     = PATH + "tilebase6.jpg";
     
     static final String FILE_THEME                  = PATH + "CardCastle.wav";
+    static final String FILE_MC_ATTACK_SFX          = PATH + "Sound/Knight/sword-swing.wav";
+    static final String FILE_MC_RUN_SFX             = PATH + "Sound/Knight/running.wav";
+    static final String FILE_MC_ROLL_SFX            = PATH + "Sound/Knight/roll.wav";
+    static final String FILE_MC_HIT_SFX             = PATH + "Sound/Knight/hit.wav";
+    static final String FILE_MC_DEAD_SFX            = PATH + "Sound/Knight/dead.wav";
     static final String FILE_MONSTER_HIT_SFX        = PATH + "Sound/Monsters/BasicHit.wav";
     static final String FILE_SKELETON_ATTACK_SFX    = PATH + "Sound/Monsters/Skeleton/Attack.wav";
     static final String FILE_SKELETON_WALK_SFX      = PATH + "Sound/Monsters/Skeleton/Walk.wav";

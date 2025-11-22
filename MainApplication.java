@@ -127,7 +127,7 @@ public class MainApplication extends JFrame {
                     if (mc.isAttacking() && mc.getAttackHitBox().intersects(m.getHitBox())) {
                         m.damage(mc.getAttackPoint());
                     }
-                    }
+               }
 
                 monsters.removeIf(m -> {
                     if (m.isDead() && m.isDeathAnimationFinished()) {
@@ -159,11 +159,14 @@ public class MainApplication extends JFrame {
                }
                drawpane.revalidate();
                repaint();
-               if (counter == 150) {
+               if (counter == 188 && mc.getHp() < 100) {
                    mc.regenHp();
+               }
+               if (counter == 188 && mc.getStamina() < 50) {
                    mc.regenStamina();
-                   counter = 0;
-               } else counter++;
+               }
+               counter++;
+               if (counter > 188) counter = 0;
                //System.out.println("Counter: " + counter);
            }
         });

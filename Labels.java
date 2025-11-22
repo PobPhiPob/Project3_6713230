@@ -20,6 +20,8 @@ class Knight extends JLabel {
 
     private JLabel rollLabel;
 
+    private GameSoundEffect attackSFX, runSFX, rollSFX, hitSFX, deadSFX;
+
     //For attack animation
     private JLabel attackLabel;
     private GameIcon attack1Gif, attack2Gif, attack3Gif;
@@ -52,6 +54,8 @@ class Knight extends JLabel {
     private int attackPoint = 25;
     private int currentAttack;
     private int stamina = 50;
+    private boolean canRegenHp;
+    private boolean canRegenStamina;
     private boolean attack;
     private boolean isHit;
     private boolean canInput = true;
@@ -94,6 +98,12 @@ class Knight extends JLabel {
 
         rollLabel = new JLabel();
         rollLabel.setVisible(false);
+
+        attackSFX = new GameSoundEffect(GameConstants.FILE_MC_ATTACK_SFX);
+        runSFX = new GameSoundEffect(GameConstants.FILE_MC_RUN_SFX);
+        rollSFX = new GameSoundEffect(GameConstants.FILE_MC_ROLL_SFX);
+        hitSFX = new GameSoundEffect(GameConstants.FILE_MC_HIT_SFX);
+        deadSFX = new GameSoundEffect(GameConstants.FILE_MC_DEAD_SFX);
         
         setBounds(curX, curY, width, height);
     }
@@ -106,6 +116,17 @@ class Knight extends JLabel {
     public int getCurY()    { return curY; }
     public int getHp()      { return hp; }
     public int getStamina() { return stamina; }
+
+    public void playSound(GameSoundEffect sfx) {
+        sfx.playOnce();
+    }
+
+    public void playRunSound() {
+        if (vx != 0 && onGround)
+            runSFX.playLoop();
+        else runSFX.stop();
+        runSFX.setVolume(0.5f);
+    }
     
     public void setIdle() {
         if (turnLeft) {
@@ -154,6 +175,7 @@ class Knight extends JLabel {
     public void setDead() {
         attackLabel.setVisible(false);
         rollLabel.setVisible(false);
+        playSound(deadSFX);
 
         if (turnLeft) {
             setIcon(deadFlip);
@@ -234,8 +256,10 @@ class Knight extends JLabel {
         if (roll) return;
         isHit = true;
         setHit();
+        playSound(hitSFX);
         hp -= d;
         if (hp < 0) hp = 0;
+        canRegenHp = true;
         invincible = true;
         invincibleEndTime = now + (2*GameConstants.DURATION_MS);
         flashEffect();
@@ -270,27 +294,25 @@ class Knight extends JLabel {
     }
 
     public void regenHp() {
-        new Timer(2000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                hp += 25;
-                if (hp >= 100) hp = 100;
-                System.out.println("HP: " + hp);
-                ((Timer)e.getSource()).stop();
+        if (canRegenHp) {
+            hp += 25;
+            if (hp >= 100) {
+                hp = 100;
+                canRegenHp = false;
             }
-        }).start();
+            System.out.println("HP: " + hp);
+        }
     }
 
     public void regenStamina() {
-        new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                stamina += 25;
-                if (stamina >= 50) stamina = 50;
-                System.out.println("Stamina: " + stamina);
-                ((Timer)e.getSource()).stop();
+        if (canRegenStamina) {
+            stamina += 25;
+            if (stamina >= 50) {
+                stamina = 50;
+                canRegenStamina = false;
             }
-        }).start();
+            System.out.println("Stamina: " + stamina);
+        }
     }
 
     public void attack() {
@@ -308,6 +330,7 @@ class Knight extends JLabel {
                 setAttack3();
                 break;
         }
+        playSound(attackSFX);
 
         new Timer(450, new ActionListener() {
             @Override
@@ -353,6 +376,7 @@ class Knight extends JLabel {
         canInput = false;
         roll = true;
         setRoll();
+        playSound(rollSFX);
 
         new Timer(850, new ActionListener() {
             @Override
@@ -370,6 +394,7 @@ class Knight extends JLabel {
                 if (turnLeft) curX -= rollLabel.getWidth();
                 else curX += rollLabel.getWidth();
                 stamina -= 25;
+                canRegenStamina = true;
                 setIdle();
                 ((Timer)e.getSource()).stop();
             }
@@ -493,6 +518,7 @@ class Knight extends JLabel {
         else {
             setJump();
         }
+        playRunSound();
         setLocation(curX, curY);
     }
     
