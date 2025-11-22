@@ -40,6 +40,7 @@ interface GameConstants
     static final String FILE_MC_ATTACK3FLIP     = PATH + "/Sprite/Knight/mc_AttackCombo2hitFlip.gif";
     static final String FILE_MC_HIT             = PATH + "/Sprite/Knight/mc_Hit.gif";
     static final String FILE_MC_HITFLIP         = PATH + "/Sprite/Knight/mc_HitFlip.gif";
+    
     static final String FILE_SKELETON_ATTACK       = PATH + "/Sprite/Monsters/Skeleton/Attack.gif";
     static final String FILE_SKELETON_IDLE         = PATH + "/Sprite/Monsters/Skeleton/Idle.gif";
     static final String FILE_SKELETON_WALK         = PATH + "/Sprite/Monsters/Skeleton/Walk.gif";
@@ -50,6 +51,22 @@ interface GameConstants
     static final String FILE_SKELETON_WALKFLIP     = PATH + "/Sprite/Monsters/Skeleton/Walkflip.gif";
     static final String FILE_SKELETON_HITFLIP      = PATH + "/Sprite/Monsters/Skeleton/Onehitflip.gif";
     static final String FILE_SKELETON_DEADFLIP     = PATH + "/Sprite/Monsters/Skeleton/Deadflip.gif";
+    
+    static final String FILE_GOLEM_IDLE       = PATH + "/Sprite/Boss/Idle.gif";
+    static final String FILE_GOLEM_ATTACK1       = PATH + "/Sprite/Boss/Attack1.gif";
+    static final String FILE_GOLEM_ATTACK1FLIP       = PATH + "/Sprite/Boss/Attack1flip.gif";
+    static final String FILE_GOLEM_PREJUMP       = PATH + "/Sprite/Boss/prejump.gif";
+    static final String FILE_GOLEM_ONAIR         = PATH + "/Sprite/Boss/onair.png";
+    static final String FILE_GOLEM_FALL          = PATH + "/Sprite/Boss/fall.png";
+    static final String FILE_GOLEM_GROUNDHIT     = PATH + "/Sprite/Boss/groundHit.png";
+    static final String FILE_GOLEM_PARTICLE      = PATH + "/Sprite/Boss/particle.gif";
+    static final String FILE_GOLEM_ROCK        = PATH + "/Sprite/Boss/rock.png";
+    static final String FILE_GOLEM_SLIDE         = PATH + "/Sprite/Boss/slide.png";
+    static final String FILE_GOLEM_SLIDEPARTICLE = PATH + "/Sprite/Boss/slideParticle.gif";
+    static final String FILE_GOLEM_SLIDEPARTICLEFLIP = PATH + "/Sprite/Boss/slideParticleflip.gif";
+    static final String FILE_GOLEM_HIT_SPRITE    = PATH + "/Sprite/Boss/Hit.png";
+    static final String FILE_GOLEM_DEAD    = PATH + "/Sprite/Boss/dead.png";
+    
 
     static final String FILE_DUMMY       = PATH + "dummy.png";
 
@@ -67,6 +84,21 @@ interface GameConstants
     
     static final int SKELETON_ATK_WIDTH  = 80;
     static final int SKELETON_ATK_HEIGHT = 110;
+    
+    static final int ROCK_WIDTH          = 100;
+    static final int ROCK_HEIGHT         = 100;
+    
+    final int GOLEM_WIDTH         = 230;
+    static final int GOLEM_HEIGHT        = 170;
+    static final int GOLEM_ATK_WIDTH     = 270;
+    static final int GOLEM_ATK_HEIGHT    = 170;
+    static final int GOLEM_JUMP_WIDTH     = 290;
+    static final int GOLEM_JUMP_HEIGHT    = 240;
+    static final int GOLEM_MAX_HP        = 400;
+    static final int GOLEM_MELEE_DMG     = 10;
+    static final int GOLEM_JUMP_SLIDE_DMG= 50;
+    static final int GOLEM_ROCK_DMG      = 25;
+    static final int GOLEM_RECHARGE_TIME = 2500;
     
     static final int GRAVITY = 1;
     static final int DURATION_MS = 500; //Dalay

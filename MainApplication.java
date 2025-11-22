@@ -22,6 +22,10 @@ public class MainApplication extends JFrame {
     
     private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
     private ArrayList<Monsters> monsters = new ArrayList<>();
+    // ใช้ Golem แทน Boss
+    private Golem golemBoss;
+    private ArrayList<Rock> rocks = new ArrayList<>();
+    
     private int currentBgIndex = 0;
     
     private Knight mc;
@@ -112,6 +116,62 @@ public class MainApplication extends JFrame {
                         m.damage(mc.getAttackPoint());
                     }
                 }
+               
+               if (golemBoss != null) {
+                    golemBoss.updateBehavior(mc);
+                    golemBoss.updateLocation();
+
+                    // Boss Damage to Player
+                    if (!golemBoss.isDead()) {
+                        
+                        // Damage 1: Collision/Slide/Jump Damage (Move 2/3)
+                        if (golemBoss.isCollisionDamageActive() && mc.getHitBox().intersects(golemBoss.getHitBox())) {
+                            mc.damage(GameConstants.GOLEM_JUMP_SLIDE_DMG);
+                        }
+                        
+                        // Damage 2: Attack 1 Melee Hit
+                        if (golemBoss.isAttack1Active() && mc.getHitBox().intersects(golemBoss.getAttack1HitBox())) {
+                            mc.damage(GameConstants.GOLEM_MELEE_DMG);
+                        }
+                        
+                        // Damage 3: GroundHit Particle Damage
+                        if (golemBoss.isParticleDamageActive() && mc.getHitBox().intersects(golemBoss.getParticleHitBox())) {
+                            mc.damage(GameConstants.GOLEM_MELEE_DMG); // ใช้ดาเมจเบาสำหรับ particle
+                        }
+                        
+                        // Player Damage to Boss
+                        if (mc.isAttacking() && mc.getAttackHitBox().intersects(golemBoss.getHitBox())) {
+                            golemBoss.damage(mc.getAttackPoint());
+                        }
+                    }
+                }
+               
+               for (Rock r : rocks) {
+                    r.updateLocation();
+                    
+                    if (!r.isDestroyed() && mc.getHitBox().intersects(r.getHitBox())) {
+                        mc.damage(GameConstants.GOLEM_ROCK_DMG);
+                        r.destroy(); // ทำลายก้อนหินเมื่อชนผู้เล่น
+                    }
+                }
+               
+               // Cleanup Golem
+                if (golemBoss != null && golemBoss.isDeathAnimationFinished()) {
+                    drawpane.remove(golemBoss);
+                    drawpane.remove(golemBoss.getAttackLabel());
+                    drawpane.remove(golemBoss.getParticleLabel());
+                    golemBoss = null;
+                }
+                
+                // Cleanup Rocks
+                rocks.removeIf(r -> {
+                    if (r.isDestroyed()) {
+                        drawpane.remove(r);
+                        return true;
+                    }
+                    return false;
+                });
+               
 
                 monsters.removeIf(m -> {
                     if (m.isDead() && m.isDeathAnimationFinished()) {
@@ -190,6 +250,10 @@ public class MainApplication extends JFrame {
         if (gameMap.getCurrentLevel() == 0) {
              monsters.add(new Monsters(this, gameMap, 300, 400));
              monsters.add(new Monsters(this, gameMap, 600, 400));
+             golemBoss = new Golem(this, gameMap, 300, 350); // ตำแหน่ง Boss
+             drawpane.add(golemBoss.getAttackLabel());
+             drawpane.add(golemBoss.getParticleLabel());
+             drawpane.add(golemBoss);
         } else if (gameMap.getCurrentLevel() == 1) {
              monsters.add(new Monsters(this, gameMap, 500, 300));
         }
@@ -200,5 +264,13 @@ public class MainApplication extends JFrame {
         }
         drawpane.revalidate(); 
         drawpane.repaint();
+    }
+    
+    // Function สำหรับ Golem เรียกใช้เพื่อ Spawn ก้อนหิน
+    public void spawnRock(int x, int y) {
+        Rock newRock = new Rock(this, gameMap, x, y);
+        rocks.add(newRock);
+        drawpane.add(newRock);
+        // ต้อง revalidate/repaint หรืออาศัย timer ในการ repaint รอบถัดไป
     }
 }
