@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class MainApplication extends JFrame {
+
     private JPanel contentpane;
     private JLabel drawpane;
     private JLabel hpLabel, staminaLabel;
@@ -23,97 +24,125 @@ public class MainApplication extends JFrame {
     private GameSoundEffect themeSound;
     private Timer timer;
     private int counter = 0;
-    
+
     private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
     private ArrayList<Monsters> monsters = new ArrayList<>();
     private int currentBgIndex = 0;
-    
+
     private Knight mc;
     private MainApplication currentFrame;
-    
-    private boolean movingLeft = false; // fix character movement bug when release key
+
+    private boolean movingLeft = false;
     private boolean movingRight = false;
-    
+
     private GameMap gameMap = new GameMap();
-    
-    private int framewidth  = GameConstants.FRAME_WIDTH;
+
+    private int framewidth = GameConstants.FRAME_WIDTH;
     private int frameheight = GameConstants.FRAME_HEIGHT;
-    
+
+    private boolean isPaused = false;
+    private JDialog pauseDialog;
+    private JDialog gameOverDialog;
+
     public static void main(String[] args) {
-        new MainApplication();
+        MenuSystem menu = new MenuSystem();
+        menu.setVisible(true);
     }
 
     public Knight getMc() {
         return mc;
     }
-    
+
     public MainApplication() {
-        setTitle("Game Game");
+        setTitle("Rock & Slash Game");
         setResizable(false);
-	setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         currentFrame = this;
-        contentpane = (JPanel)getContentPane();
-	contentpane.setLayout( new BorderLayout() );
+        contentpane = (JPanel) getContentPane();
+        contentpane.setLayout(new BorderLayout());
         contentpane.setPreferredSize(new Dimension(framewidth, frameheight));
         pack();
         setLocationRelativeTo(null);
-	setVisible(true);
-        
+        setVisible(true);
+
         addComponent();
         spawnMonsters();
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_A)
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    togglePause();
+                    return;
+                }
+                if (isPaused) {
+                    return;
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_A) {
                     movingLeft = true;
-                if (e.getKeyCode() == KeyEvent.VK_D)
+                }
+                if (e.getKeyCode() == KeyEvent.VK_D) {
                     movingRight = true;
-                if (e.getKeyCode() == KeyEvent.VK_W)
+                }
+                if (e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == KeyEvent.VK_W) {
                     mc.jump();
-                if (e.getKeyCode() == KeyEvent.VK_J)
+                }
+                if (e.getKeyCode() == KeyEvent.VK_J) {
                     mc.attack();
-                if (e.getKeyCode() == KeyEvent.VK_K)
+                }
+                if (e.getKeyCode() == KeyEvent.VK_K) {
                     mc.roll();
-                if (e.getKeyCode() == KeyEvent.VK_L)
+                }
+                if (e.getKeyCode() == KeyEvent.VK_L) {
                     mc.regenHp();
+                }
             }
-            
+
             @Override
             public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_A)
+                if (isPaused) {
+                    return;
+                }
+
+                if (e.getKeyCode() == KeyEvent.VK_A) {
                     movingLeft = false;
-                if (e.getKeyCode() == KeyEvent.VK_D)
+                }
+                if (e.getKeyCode() == KeyEvent.VK_D) {
                     movingRight = false;
+                }
             }
         });
-        
+
         timer = new Timer(GameConstants.FRAME_RATE_MS, new ActionListener() {
-           @Override
-           public void actionPerformed(ActionEvent e) {
-               if (movingLeft && !movingRight) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (isPaused) {
+                    return;
+                }
+
+                if (movingLeft && !movingRight) {
                     mc.moveLeft();
                 } else if (movingRight && !movingLeft) {
                     mc.moveRight();
                 } else {
                     mc.stopMoving();
                 }
-               mc.updateLocation();
-               
-               for (Monsters m : monsters) {
+                mc.updateLocation();
+
+                for (Monsters m : monsters) {
                     m.updateBehavior(mc);
                     m.updateLocation();
-                    
+
                     if (m.isAttacking() && m.isHitboxActive()) {
-                            Rectangle monsterAttackBox = m.getAttackLabel().getBounds();
-                            Rectangle mcHitBox = mc.getHitBox();
-                            
-                            if (monsterAttackBox.intersects(mcHitBox)) {
-                                mc.damage(m.getAttackPoint());
+                        Rectangle monsterAttackBox = m.getAttackLabel().getBounds();
+                        Rectangle mcHitBox = mc.getHitBox();
 
-                                System.out.println("MC hit by Monster! HP left: " + mc.getHp());
-                            }
-
+                        if (monsterAttackBox.intersects(mcHitBox)) {
+                            mc.damage(m.getAttackPoint());
+                            System.out.println("MC hit by Monster! HP left: " + mc.getHp());
+                        }
                     }
+                    
                     if (!m.isDead() && mc.getHitBox().intersects(m.getHitBox())) {
                         mc.damage(m.getAttackPoint());
                         System.out.println("MC body-collided! HP left: " + mc.getHp());
@@ -122,7 +151,7 @@ public class MainApplication extends JFrame {
                     if (mc.isAttacking() && mc.getAttackHitBox().intersects(m.getHitBox())) {
                         m.damage(mc.getAttackPoint(), mc.getTurn());
                     }
-               }
+                }
 
                 monsters.removeIf(m -> {
                     if (m.isDead() && m.isDeathAnimationFinished()) {
@@ -132,13 +161,20 @@ public class MainApplication extends JFrame {
                     }
                     return false;
                 });
-                
+
                 hpLabel.setText("HP: " + mc.getHp());
                 hpBar.setValue(mc.getHp());
                 staminaLabel.setText("Stamina: " + mc.getStamina());
                 staminaBar.setValue(mc.getStamina());
-                
-               if (mc.getX() > 910) { 
+
+                // Check if player died
+                if (mc.getHp() <= 0) {
+                    if (gameOverDialog == null && mc.isDeathAnimetionFinished()) {
+                        showGameOver();
+                    }
+                }
+
+                if (mc.getX() > 910) {
                     gameMap.nextLevel();
                     gameMap.clearMapVisuals(drawpane);
                     mc.setStartPosition();
@@ -147,61 +183,74 @@ public class MainApplication extends JFrame {
                         currentBgIndex = 0;
                     }
                     drawpane.setIcon(backgroundImages.get(currentBgIndex));
-                    gameMap.drawMap(drawpane);//usefordebug
-                    drawpane.remove(mc);//usefordebug
-                    drawpane.add(mc);//usefordebug
+                    gameMap.drawMap(drawpane);
+                    drawpane.remove(mc);
+                    drawpane.add(mc);
                     spawnMonsters();
-               }
-               drawpane.revalidate();
-               repaint();
-               if (counter == 188 && mc.getHp() < 100) {
-                   mc.regenHp();
-               }
-               if (counter == 188 && mc.getStamina() < 50) {
-                   mc.regenStamina();
-               }
-               counter++;
-               if (counter > 188) counter = 0;
-               //System.out.println("Counter: " + counter);
-           }
+                }
+                
+                drawpane.revalidate();
+                repaint();
+                
+                if (counter == 188 && mc.getHp() < 100) {
+                    mc.regenHp();
+                }
+                if (counter == 188 && mc.getStamina() < 50) {
+                    mc.regenStamina();
+                }
+                counter++;
+                if (counter > 188) {
+                    counter = 0;
+                }
+            }
         });
         timer.start();
     }
-    
+
     public void addComponent() {
-        //backgroundImg  = new GameIcon(GameConstants.FILE_BG).resize(framewidth, frameheight);
-	drawpane = new JLabel();
-        
+        drawpane = new JLabel();
+
         Image bg1 = new ImageIcon(GameConstants.FILE_BG).getImage();
         bg1 = bg1.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
         backgroundImages.add(new GameIcon(bg1));
+        
         Image bg2 = new ImageIcon(GameConstants.FILE_BG_MAP2).getImage();
         bg2 = bg2.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
         backgroundImages.add(new GameIcon(bg2));
+        
         Image bg3 = new ImageIcon(GameConstants.FILE_BG_MAP3).getImage();
         bg3 = bg3.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
         backgroundImages.add(new GameIcon(bg3));
-        Image bg4 = new ImageIcon(GameConstants.FILE_BG_MAP4).getImage();
-        bg4 = bg4.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-        backgroundImages.add(new GameIcon(bg4));
-        Image bg5 = new ImageIcon(GameConstants.FILE_BG_MAP5).getImage();
-        bg5 = bg5.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-        backgroundImages.add(new GameIcon(bg5));
-        Image bg6 = new ImageIcon(GameConstants.FILE_BG_MAP6).getImage();
-        bg6 = bg6.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-        backgroundImages.add(new GameIcon(bg6));
-        gameMap.drawMap(drawpane);//usefordebug
-        drawpane.revalidate();//usefordebug
-        drawpane.repaint();//usefordebug
+        
+        // Add bg4, bg5, bg6 if they exist
+        try {
+            Image bg4 = new ImageIcon(GameConstants.FILE_BG_MAP4).getImage();
+            bg4 = bg4.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+            backgroundImages.add(new GameIcon(bg4));
+            
+            Image bg5 = new ImageIcon(GameConstants.FILE_BG_MAP5).getImage();
+            bg5 = bg5.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+            backgroundImages.add(new GameIcon(bg5));
+            
+            Image bg6 = new ImageIcon(GameConstants.FILE_BG_MAP6).getImage();
+            bg6 = bg6.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+            backgroundImages.add(new GameIcon(bg6));
+        } catch (Exception ex) {
+            // If additional backgrounds don't exist, continue with 3 maps
+        }
+        
+        gameMap.drawMap(drawpane);
+        drawpane.revalidate();
+        drawpane.repaint();
 
         drawpane.setIcon(backgroundImages.get(currentBgIndex));
         drawpane.setLayout(null);
 
-        mc = new Knight(currentFrame ,gameMap);
+        mc = new Knight(currentFrame, gameMap);
 
         Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
         mc.setBorder(hitbox);
-        
+
         hpLabel = new JLabel("HP: " + mc.getHp());
         hpLabel.setBounds(10, 40, 150, 30);
         hpLabel.setForeground(Color.WHITE);
@@ -233,8 +282,13 @@ public class MainApplication extends JFrame {
         drawpane.add(mc.getRollLabel());
         drawpane.add(mc);
 
-	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
-      themeSound.playLoop(); themeSound.setVolume(0.2f);
+        try {
+            themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
+            themeSound.playLoop();
+            themeSound.setVolume(0.2f);
+        } catch (Exception ex) {
+            System.out.println("Could not load theme sound");
+        }
 
         contentpane.add(drawpane);
         validate();
@@ -253,52 +307,52 @@ public class MainApplication extends JFrame {
         final int MIN_X = 50;
         final int MAX_X = 900;
         final int MIN_Y = 50;
-        final int MAX_Y = 550; 
-        final int AIR_MAX_Y = 300; 
+        final int MAX_Y = 550;
+        final int AIR_MAX_Y = 300;
 
-        if (gameMap.getCurrentLevel() == 0 || gameMap.getCurrentLevel() == 6) {
-            return;
+        if (gameMap.getCurrentLevel() == 0) {
+            monsters.add(new Skeleton(this, gameMap, 300, 400));
+            monsters.add(new Skeleton(this, gameMap, 600, 400));
+        } else if (gameMap.getCurrentLevel() == 1) {
+            monsters.add(new Skeleton(this, gameMap, 500, 300));
         } else {
-
+            // Random spawning for other levels
             int minMonsters = 3;
             int maxMonsters = 6;
             int numToSpawn = rand.nextInt(maxMonsters - minMonsters + 1) + minMonsters;
 
             for (int i = 0; i < numToSpawn; i++) {
-
                 int monsterType = rand.nextInt(2);
                 int startX = 0;
                 int startY = 0;
 
                 if (monsterType == 0) {
+                    // Spawn Skeleton
                     int skeletonHeight = GameConstants.SKELETON_HEIGHT;
                     int skeletonWidth = GameConstants.SKELETON_WIDTH;
 
                     boolean validSpawnFound = false;
                     for (int attempt = 0; attempt < 100; attempt++) {
-
                         startX = rand.nextInt(MAX_X - MIN_X + 1) + MIN_X;
 
-                        int minRow = MIN_Y / TILE_SIZE; 
-                        int maxRow = MAX_Y / TILE_SIZE; 
+                        int minRow = MIN_Y / TILE_SIZE;
+                        int maxRow = MAX_Y / TILE_SIZE;
                         int randomStandingRow = rand.nextInt(maxRow - minRow) + minRow;
-
                         int groundLevelY = randomStandingRow * TILE_SIZE;
-
                         startY = groundLevelY - skeletonHeight;
 
                         int checkY_below_ground = groundLevelY + 1;
-                        boolean hasSupport = gameMap.isSolid(startX + 10, checkY_below_ground) && 
-                                             gameMap.isSolid(startX + skeletonWidth - 10, checkY_below_ground);
+                        boolean hasSupport = gameMap.isSolid(startX + 10, checkY_below_ground)
+                                && gameMap.isSolid(startX + skeletonWidth - 10, checkY_below_ground);
 
-                        boolean notCeiling = !gameMap.isSolid(startX + 10, startY + 1) && 
-                                             !gameMap.isSolid(startX + skeletonWidth - 10, startY + 1);
-                        
-                        boolean notInMap = !gameMap.isSolid(startX/2 + 10, startY/2 + 1) && 
-                                           !gameMap.isSolid((startX + skeletonWidth)/2 - 10, startY/2 + 1);
+                        boolean notCeiling = !gameMap.isSolid(startX + 10, startY + 1)
+                                && !gameMap.isSolid(startX + skeletonWidth - 10, startY + 1);
 
-                        boolean isLethalArea = gameMap.isLethal(startX + 10, groundLevelY) || 
-                                               gameMap.isLethal(startX + skeletonWidth - 10, groundLevelY);
+                        boolean notInMap = !gameMap.isSolid(startX / 2 + 10, startY / 2 + 1)
+                                && !gameMap.isSolid((startX + skeletonWidth) / 2 - 10, startY / 2 + 1);
+
+                        boolean isLethalArea = gameMap.isLethal(startX + 10, groundLevelY)
+                                || gameMap.isLethal(startX + skeletonWidth - 10, groundLevelY);
 
                         if (hasSupport && !isLethalArea && notCeiling && notInMap) {
                             validSpawnFound = true;
@@ -309,30 +363,33 @@ public class MainApplication extends JFrame {
                     if (validSpawnFound) {
                         monsters.add(new Skeleton(this, gameMap, startX, startY));
                     }
-
                 } else {
+                    // Spawn Bat (if Bat class exists)
+                    try {
+                        while (true) {
+                            startX = rand.nextInt(MAX_X - MIN_X + 1) + MIN_X;
 
-                    while (true){
-                        startX = rand.nextInt(MAX_X - MIN_X + 1) + MIN_X;
+                            if (rand.nextBoolean()) {
+                                startY = rand.nextInt(AIR_MAX_Y - MIN_Y + 1) + MIN_Y;
+                            } else {
+                                startY = rand.nextInt(MAX_Y - AIR_MAX_Y + 1) + AIR_MAX_Y;
+                            }
 
-                        if (rand.nextBoolean()) {
-                            startY = rand.nextInt(AIR_MAX_Y - MIN_Y + 1) + MIN_Y;
-                        } else {
-                            startY = rand.nextInt(MAX_Y - AIR_MAX_Y + 1) + AIR_MAX_Y;
+                            int checkX_center = startX + GameConstants.BAT_WIDTH / 2;
+                            int checkY_center = startY + GameConstants.BAT_HEIGHT / 2;
+
+                            boolean isColliding = gameMap.isSolid(checkX_center, checkY_center)
+                                    || gameMap.isLethal(checkX_center, checkY_center);
+
+                            if (!isColliding) {
+                                break;
+                            }
                         }
-
-                        int checkX_center = startX + GameConstants.BAT_WIDTH / 2;
-                        int checkY_center = startY + GameConstants.BAT_HEIGHT / 2;
-
-                        boolean isColliding = gameMap.isSolid(checkX_center, checkY_center) ||
-                                              gameMap.isLethal(checkX_center, checkY_center);
-
-                        if (!isColliding) {
-                            break;
-                        }
-                    } 
-
-                    monsters.add(new Bat(this, gameMap, startX, startY));
+                        monsters.add(new Bat(this, gameMap, startX, startY));
+                    } catch (Exception ex) {
+                        // If Bat class doesn't exist, spawn Skeleton instead
+                        monsters.add(new Skeleton(this, gameMap, startX, startY));
+                    }
                 }
             }
         }
@@ -341,8 +398,194 @@ public class MainApplication extends JFrame {
             drawpane.add(m);
             drawpane.add(m.getAttackLabel());
         }
-
-        drawpane.revalidate(); 
+        drawpane.revalidate();
         drawpane.repaint();
+    }
+
+    private void togglePause() {
+        if (gameOverDialog != null && gameOverDialog.isVisible()) {
+            return;
+        }
+
+        isPaused = !isPaused;
+
+        if (isPaused) {
+            showPauseMenu();
+        }
+    }
+
+    private void showPauseMenu() {
+        pauseDialog = new JDialog(this, "PAUSED", true);
+        pauseDialog.setSize(400, 300);
+        pauseDialog.setLocationRelativeTo(this);
+        pauseDialog.setLayout(null);
+        pauseDialog.setUndecorated(true);
+        pauseDialog.getContentPane().setBackground(new Color(20, 20, 30, 250));
+
+        JLabel titleLabel = new JLabel("GAME PAUSED");
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 32));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setBounds(80, 30, 300, 50);
+        pauseDialog.add(titleLabel);
+
+        JButton resumeButton = createDialogButton("RESUME");
+        resumeButton.setBounds(100, 100, 200, 50);
+        resumeButton.addActionListener(e -> {
+            isPaused = false;
+            pauseDialog.dispose();
+            pauseDialog = null;
+        });
+        pauseDialog.add(resumeButton);
+
+        JButton mainMenuButton = createDialogButton("MAIN MENU");
+        mainMenuButton.setBounds(100, 170, 200, 50);
+        mainMenuButton.addActionListener(e -> {
+            pauseDialog.dispose();
+            pauseDialog = null;
+            timer.stop();
+            dispose();
+            themeSound.stop();
+            MenuSystem menu = new MenuSystem();
+            menu.setVisible(true);
+        });
+        pauseDialog.add(mainMenuButton);
+
+        pauseDialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                isPaused = false;
+                pauseDialog = null;
+            }
+        });
+
+        pauseDialog.setVisible(true);
+    }
+
+    private void showGameOver() {
+        isPaused = true;
+        gameOverDialog = new JDialog(this, "GAME OVER", true);
+        gameOverDialog.setSize(400, 350);
+        gameOverDialog.setLocationRelativeTo(this);
+        gameOverDialog.setLayout(null);
+        gameOverDialog.setUndecorated(true);
+        gameOverDialog.getContentPane().setBackground(new Color(30, 10, 10, 250));
+
+        JLabel titleLabel = new JLabel("YOU DIED");
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 40));
+        titleLabel.setForeground(new Color(200, 50, 50));
+        titleLabel.setBounds(100, 40, 300, 60);
+        gameOverDialog.add(titleLabel);
+
+        JLabel messageLabel = new JLabel("YYYYY Mai dai keng...");
+        messageLabel.setFont(new Font("Serif", Font.ITALIC, 18));
+        messageLabel.setForeground(Color.LIGHT_GRAY);
+        messageLabel.setBounds(100, 110, 300, 30);
+        gameOverDialog.add(messageLabel);
+
+        JButton restartButton = createDialogButton("RESTART");
+        restartButton.setBounds(100, 160, 200, 50);
+        restartButton.addActionListener(e -> {
+            gameOverDialog.dispose();
+            gameOverDialog = null;
+            restartGame();
+        });
+        gameOverDialog.add(restartButton);
+
+        JButton exitButton = createDialogButton("MAIN MENU");
+        exitButton.setBounds(100, 230, 200, 50);
+        exitButton.addActionListener(e -> {
+            gameOverDialog.dispose();
+            gameOverDialog = null;
+            timer.stop();
+            dispose();
+            themeSound.stop();
+            MenuSystem menu = new MenuSystem();
+            menu.setVisible(true);
+        });
+        gameOverDialog.add(exitButton);
+
+        gameOverDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+
+        new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gameOverDialog.setVisible(true);
+                ((Timer) e.getSource()).stop();
+            }
+        }).start();
+    }
+
+    private void restartGame() {
+        isPaused = false;
+        counter = 0;
+        currentBgIndex = 0;
+
+        for (Monsters m : monsters) {
+            drawpane.remove(m.getAttackLabel());
+            drawpane.remove(m);
+        }
+        monsters.clear();
+
+        gameMap = new GameMap();
+        gameMap.clearMapVisuals(drawpane);
+
+        drawpane.remove(mc.getAttackLabel());
+        drawpane.remove(mc.getRollLabel());
+        drawpane.remove(mc);
+        mc = new Knight(currentFrame, gameMap);
+        Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
+        mc.setBorder(hitbox);
+
+        hpLabel.setText("HP: " + mc.getHp());
+        hpBar.setValue(mc.getHp());
+        staminaLabel.setText("Stamina: " + mc.getStamina());
+        staminaBar.setValue(mc.getStamina());
+
+        drawpane.setIcon(backgroundImages.get(currentBgIndex));
+        gameMap.drawMap(drawpane);
+
+        drawpane.add(mc.getAttackLabel());
+        drawpane.add(mc.getRollLabel());
+        drawpane.add(mc);
+
+        spawnMonsters();
+
+        drawpane.revalidate();
+        drawpane.repaint();
+    }
+
+    private JButton createDialogButton(String text) {
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth(), getHeight());
+                super.paintComponent(g);
+            }
+        };
+
+        button.setFont(new Font("Serif", Font.BOLD, 20));
+        button.setForeground(Color.WHITE);
+        button.setBackground(new Color(50, 50, 60, 200));
+        button.setFocusPainted(false);
+        button.setContentAreaFilled(false);
+        button.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150), 2));
+
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(new Color(80, 80, 100, 230));
+                button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3));
+                button.repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(new Color(50, 50, 60, 200));
+                button.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150), 2));
+                button.repaint();
+            }
+        });
+        return button;
     }
 }

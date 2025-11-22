@@ -38,7 +38,7 @@ interface GameConstants
     static final String FILE_SKELETON_HIT_SFX       = PATH + "Sound/Monsters/Skeleton/Hit.wav";
     static final String FILE_SKELETON_DEAD_SFX      = PATH + "Sound/Monsters/Skeleton/Dead.wav";
     static final String FILE_BAT_IDLE_SFX           = PATH + "Sound/Monsters/Bat/Idle.wav";
-    static final String FILE_BAT_HIT_SFX           = PATH + "Sound/Monsters/Bat/Hit.wav";
+    static final String FILE_BAT_HIT_SFX            = PATH + "Sound/Monsters/Bat/Hit.wav";
     
     static final String FILE_MC_IDLE     = PATH + "Sprite/Knight/mc_Idle.gif";
     static final String FILE_MC_IDLEFLIP = PATH + "Sprite/Knight/mc_IdleFlip.gif";
@@ -57,7 +57,8 @@ interface GameConstants
     static final String FILE_MC_HIT             = PATH + "Sprite/Knight/mc_Hit.gif";
     static final String FILE_MC_HITFLIP         = PATH + "Sprite/Knight/mc_HitFlip.gif";
     static final String FILE_MC_DEAD            = PATH + "Sprite/Knight/mc_Dead.gif";
-    static final String FILE_MC_DEADFLIP           = PATH + "Sprite/Knight/mc_DeadFlip.gif";
+    static final String FILE_MC_DEADFLIP        = PATH + "Sprite/Knight/mc_DeadFlip.gif";
+    
     static final String FILE_SKELETON_ATTACK       = PATH + "Sprite/Monsters/Skeleton/Attack.gif";
     static final String FILE_SKELETON_IDLE         = PATH + "Sprite/Monsters/Skeleton/Idle.gif";
     static final String FILE_SKELETON_WALK         = PATH + "Sprite/Monsters/Skeleton/Walk.gif";
@@ -68,11 +69,18 @@ interface GameConstants
     static final String FILE_SKELETON_WALKFLIP     = PATH + "Sprite/Monsters/Skeleton/Walkflip.gif";
     static final String FILE_SKELETON_HITFLIP      = PATH + "Sprite/Monsters/Skeleton/Onehitflip.gif";
     static final String FILE_SKELETON_DEADFLIP     = PATH + "Sprite/Monsters/Skeleton/Deadflip.gif";
+    
     static final String FILE_BAT_IDLE              = PATH + "Sprite/Monsters/Bat/Idle.gif";
     static final String FILE_BAT_DEAD              = PATH + "Sprite/Monsters/Bat/Dead.gif";
     static final String FILE_BAT_IDLEFLIP          = PATH + "Sprite/Monsters/Bat/Idleflip.gif";
     static final String FILE_BAT_DEADFLIP          = PATH + "Sprite/Monsters/Bat/Deadflip.gif";
 
+    static final String FILE_TITLE     = PATH + "UI/Title.gif";
+    static final String FILE_CASTLE_BG     = PATH + "BG/Castle.gif";
+    static final String FILE_HOLLOW_BG     = PATH + "BG/Church.gif";    
+    static final String FILE_FOREST_BG     = PATH + "BG/Forest.gif";
+    static final String FILE_RAIN_BG     = PATH + "BG/Rain.gif";
+    
     static final String FILE_DUMMY       = PATH + "dummy.png";
 
     static final int FRAME_WIDTH  = 960;
@@ -100,7 +108,7 @@ interface GameConstants
     static final int KNOCKBACK = 3;
     static final int FRAME_RATE_MS = 16; //Timer
     static final int GRAVITY = 1;
-    static final int DURATION_MS = 500; //Dalay
+    static final int DURATION_MS = 500; //Delay
 }
 
 class GameIcon extends ImageIcon
@@ -110,8 +118,8 @@ class GameIcon extends ImageIcon
 
     public GameIcon resize(int width, int height)
     {
-	Image oldimg = this.getImage();
-	Image newimg = oldimg.getScaledInstance(width, height, java.awt.Image.SCALE_DEFAULT);
+        Image oldimg = this.getImage();
+        Image newimg = oldimg.getScaledInstance(width, height, java.awt.Image.SCALE_DEFAULT);
         return new GameIcon(newimg);
     }
 }
@@ -123,24 +131,47 @@ class GameSoundEffect
 
     public GameSoundEffect(String filename)
     {
-	try
-	{
+        try
+        {
             java.io.File file = new java.io.File(filename);
             AudioInputStream audioStream = AudioSystem.getAudioInputStream(file);
             clip = AudioSystem.getClip();
             clip.open(audioStream);        
             gainControl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
-	}
-	catch (Exception e) { e.printStackTrace(); }
+        }
+        catch (Exception e) { e.printStackTrace(); }
     }
-    public void playOnce()             { if (clip.isRunning())clip.stop(); clip.setMicrosecondPosition(0); clip.start(); }
-    public void playLoop()             { clip.loop(Clip.LOOP_CONTINUOUSLY); }
-    public void stop()                 { clip.stop(); }
+    
+    public void playOnce()
+    { 
+        if (clip != null) {
+            if (clip.isRunning()) clip.stop();
+            clip.setMicrosecondPosition(0);
+            clip.start();
+        }
+    }
+    
+    public void playLoop()
+    { 
+        if (clip != null) {
+            clip.loop(Clip.LOOP_CONTINUOUSLY);
+        }
+    }
+    
+    public void stop()
+    { 
+        if (clip != null) {
+            clip.stop();
+        }
+    }
+    
     public void setVolume(float gain)
     {
-        if (gain < 0.0f)  gain = 0.0f;
-        if (gain > 1.0f)  gain = 1.0f;
-        float dB = (float)(Math.log(gain) / Math.log(10.0) * 20.0);
-        gainControl.setValue(dB);
+        if (gainControl != null) {
+            if (gain < 0.0f)  gain = 0.0f;
+            if (gain > 1.0f)  gain = 1.0f;
+            float dB = (float)(Math.log(gain) / Math.log(10.0) * 20.0);
+            gainControl.setValue(dB);
+        }
     }
 }
