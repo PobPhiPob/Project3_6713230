@@ -534,4 +534,8 @@ class Knight extends JLabel {
     public int getAttackPoint() {
         return attackPoint;
     }
+    
+    public boolean getTurn() {
+        return turnLeft;
+    }
 }

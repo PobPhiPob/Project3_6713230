@@ -128,7 +128,7 @@ class GameSoundEffect
 	}
 	catch (Exception e) { e.printStackTrace(); }
     }
-    public void playOnce()             { clip.setMicrosecondPosition(0); clip.start(); }
+    public void playOnce()             { if (clip.isRunning())clip.stop(); clip.setMicrosecondPosition(0); clip.start(); }
     public void playLoop()             { clip.loop(Clip.LOOP_CONTINUOUSLY); }
     public void stop()                 { clip.stop(); }
     public void setVolume(float gain)

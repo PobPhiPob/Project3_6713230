@@ -125,7 +125,7 @@ public class MainApplication extends JFrame {
                     }
 
                     if (mc.isAttacking() && mc.getAttackHitBox().intersects(m.getHitBox())) {
-                        m.damage(mc.getAttackPoint());
+                        m.damage(mc.getAttackPoint(), mc.getTurn());
                     }
                     }
 

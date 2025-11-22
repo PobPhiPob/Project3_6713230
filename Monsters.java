@@ -174,7 +174,7 @@ public abstract class Monsters extends JLabel{
     }
     
     // --- Combat Logic
-    public void damage(int d) {
+    public void damage(int d, boolean isAttackerFacingLeft) {
         if (isDead()) return;
         if (System.currentTimeMillis() < hitTime){
             setHit();
@@ -195,20 +195,22 @@ public abstract class Monsters extends JLabel{
             setHit();
             
             int kb = GameConstants.KNOCKBACK;
-            vx = (turnLeft ? kb : -kb);
+            vx = (isAttackerFacingLeft ? -kb : kb);
             vy = -kb;
         }
     }
     
     // --- Behavior Logic
     public void updateBehavior(Knight player) {
+        long now = System.currentTimeMillis();
+        
         if (isDead()) {
             setDead();
             return;
         }   
         
         if (isHit) {
-            if (System.currentTimeMillis() < hitTime) {
+            if (now < hitTime) {
                 return;
             }
             isHit = false;
@@ -219,19 +221,22 @@ public abstract class Monsters extends JLabel{
         int distanceX = playerCenterX - monsterCenterX;
         int absDistanceX = Math.abs(distanceX);
         int distanceY = Math.abs(player.getCurY() - curY);
+        
+        int nextX = turnLeft ? curX - speed : curX + width + speed;
+        int nextY = curY + height;
+        
+        boolean groundAhead = map.isSolid(nextX, nextY + 1);
+
+        boolean hazardAhead = map.isHazard(nextX, nextY) || map.isLethal(nextX, nextY);
                 
         if (onGround) {
-
-            int nextX = turnLeft ? curX - speed : curX + width + speed;
-            int nextY = curY + height;
-
-            boolean groundAhead = map.isSolid(nextX, nextY + 1);
-
-            boolean hazardAhead = map.isHazard(nextX, nextY) || map.isLethal(nextX, nextY);
-
             if (!groundAhead || hazardAhead) {                
-                vx = 0;
-                setIdle();
+                turnLeft = !turnLeft;
+                if (turnLeft) {
+                    vx = -speed;
+                } else {
+                    vx = speed;
+                }
                 return;
             }
         }
@@ -239,12 +244,12 @@ public abstract class Monsters extends JLabel{
         if (absDistanceX < ATTACK_RANGE && distanceY < height) {
             if (!isAttacking) {
                 isAttacking = true;
-                attackTimeStart = System.currentTimeMillis() + (2*GameConstants.DURATION_MS);
-                attackTimeEnd = System.currentTimeMillis() + (4*GameConstants.DURATION_MS);
+                attackTimeStart = now + (2*GameConstants.DURATION_MS);
+                attackTimeEnd = now + (4*GameConstants.DURATION_MS);
             }
             vx = 0;
 
-        } else if (absDistanceX < CHASE_RANGE && distanceY < height) {
+        } else if (absDistanceX < CHASE_RANGE && distanceY < height && groundAhead && !hazardAhead) {
             if (distanceX < 0) {
                 turnLeft = true;
                 vx = -speed;
@@ -252,20 +257,24 @@ public abstract class Monsters extends JLabel{
                 turnLeft = false;
                 vx = speed;
             }
-        } else {
+        } else if(!groundAhead || hazardAhead){
+            if (turnLeft) {
+                vx = -speed;
+            } else {
+                vx = speed;
+            }
+        }else{
             vx = 0;
         }
         
         if (isAttacking) {
-        
-            long now = System.currentTimeMillis();
+            if (now >= attackTimeStart && now <= attackTimeEnd) {
+                hitboxActive = true;
+            } else {
+                hitboxActive = false;
+            }
             
-                if (now >= attackTimeStart && now <= attackTimeEnd) {
-                    hitboxActive = true;
-                } else {
-                    hitboxActive = false;
-                }
-            if (System.currentTimeMillis() > attackTimeEnd) {
+            if (now > attackTimeEnd) {
                 isAttacking = false;
                 attack.setVisible(false);
                 hitboxActive = false;

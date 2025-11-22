@@ -122,6 +122,8 @@ public class Bat extends Monsters {
 
     @Override
     public void updateBehavior(Knight player) {
+        long now = System.currentTimeMillis();
+        
         if (isDead()) {
             setDead();
             idleSFX.stop();
@@ -129,7 +131,7 @@ public class Bat extends Monsters {
         }   
         
         if (isHit) {
-            if (System.currentTimeMillis() < hitTime) {
+            if (now < hitTime) {
                 return;
             }
             isHit = false;
@@ -148,8 +150,8 @@ public class Bat extends Monsters {
         if (absDistanceX < ATTACK_RANGE && absDistanceY < height) {
             if (!isAttacking) {
                 isAttacking = true;
-                attackTimeStart = System.currentTimeMillis() + (2*GameConstants.DURATION_MS);
-                attackTimeEnd = System.currentTimeMillis() + (4*GameConstants.DURATION_MS);
+                attackTimeStart = now + (2*GameConstants.DURATION_MS);
+                attackTimeEnd = now + (4*GameConstants.DURATION_MS);
             }
             vx = 0;
             vy = 0;
@@ -176,15 +178,13 @@ public class Bat extends Monsters {
         }
         
         if (isAttacking) {
-        
-            long now = System.currentTimeMillis();
+            if (now >= attackTimeStart && now <= attackTimeEnd) {
+                hitboxActive = true;
+            } else {
+                hitboxActive = false;
+            }
             
-                if (now >= attackTimeStart && now <= attackTimeEnd) {
-                    hitboxActive = true;
-                } else {
-                    hitboxActive = false;
-                }
-            if (System.currentTimeMillis() > attackTimeEnd) {
+            if (now > attackTimeEnd) {
                 isAttacking = false;
                 attack.setVisible(false);
                 hitboxActive = false;
@@ -235,7 +235,7 @@ public class Bat extends Monsters {
     @Override
     protected void playIdleSound() {
         if (idleSFX != null) {
-            idleSFX.playOnce();
+            idleSFX.playLoop();
         }
     }
     
