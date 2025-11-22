@@ -362,12 +362,6 @@ class Knight extends JLabel {
                 }
             }).start();
         }
-
-        Dummy dm = parentFrame.getDm();
-        if (attackLabel.getBounds().intersects(dm.getBounds())) {
-            dm.damage(attackPoint);
-        }
-
         currentAttack++;
     }
 
