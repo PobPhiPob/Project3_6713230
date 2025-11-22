@@ -18,7 +18,7 @@ public class Bat extends Monsters {
     private static final int ATTACK_POINT = 30;
     private static final int SPEED = 3;
     
-    protected GameSoundEffect idleSFX, hitSFX;
+    protected GameSoundEffect idleSFX, hitSFX, deadSFX;
     
     public Bat(MainApplication pf, GameMap m, int startX, int startY) {
         
@@ -36,7 +36,8 @@ public class Bat extends Monsters {
         deadFlip   = new GameIcon(GameConstants.FILE_BAT_DEADFLIP).resize(width, height);
         
         idleSFX    = new GameSoundEffect(GameConstants.FILE_BAT_IDLE_SFX);
-        hitSFX    = new GameSoundEffect(GameConstants.FILE_BAT_HIT_SFX);
+        hitSFX     = new GameSoundEffect(GameConstants.FILE_BAT_HIT_SFX);
+        deadSFX    = new GameSoundEffect(GameConstants.FILE_BAT_DEAD_SFX);
         
         setIcon(idleGif);
     }
@@ -136,7 +137,7 @@ public class Bat extends Monsters {
         
         if (isDead()) {
             setDead();
-            idleSFX.stop();
+            stopAllSounds();
             return;
         }   
         
@@ -228,6 +229,11 @@ public class Bat extends Monsters {
     }
     
     @Override
+    public void stopAllSounds(){
+        idleSFX.stop();
+    }
+    
+    @Override
     protected void playIdleSound() {
         if (idleSFX != null) {
             idleSFX.playLoop();
@@ -242,11 +248,17 @@ public class Bat extends Monsters {
     
     @Override
     protected void playHitSound() {
+        stopAllSounds();
         if (hitSFX != null) {
             hitSFX.playOnce();
         }
     }
     
     @Override
-    protected void playDeadSound() {}
+    protected void playDeadSound() {
+        stopAllSounds();
+        if (idleSFX != null) {
+            deadSFX.playOnce();
+        }
+    }
 }

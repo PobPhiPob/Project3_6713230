@@ -310,7 +310,7 @@ public class MainApplication extends JFrame {
             monsters.add(new Skeleton(this, gameMap, 300, 400));
             monsters.add(new Skeleton(this, gameMap, 600, 400));
         } else if (gameMap.getCurrentLevel() == 1) {
-            monsters.add(new Skeleton(this, gameMap, 500, 300));
+            monsters.add(new Skeleton(this, gameMap, 600, 300));
         } else {
             // Random spawning for other levels
             int minMonsters = 3;
@@ -499,7 +499,6 @@ public class MainApplication extends JFrame {
             menu.setVisible(true);
         });
         gameOverDialog.add(exitButton);
-
         gameOverDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
         new Timer(1000, new ActionListener() {
@@ -522,9 +521,9 @@ public class MainApplication extends JFrame {
             drawpane.remove(m);
         }
         monsters.clear();
-
-        gameMap = new GameMap();
+        
         gameMap.clearMapVisuals(drawpane);
+        gameMap = new GameMap();
 
         drawpane.remove(mc.getAttackLabel());
         drawpane.remove(mc.getRollLabel());

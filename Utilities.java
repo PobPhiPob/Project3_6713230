@@ -37,6 +37,7 @@ interface GameConstants
     static final String FILE_SKELETON_DEAD_SFX      = PATH + "Sound/Monsters/Skeleton/Dead.wav";
     static final String FILE_BAT_IDLE_SFX           = PATH + "Sound/Monsters/Bat/Idle.wav";
     static final String FILE_BAT_HIT_SFX            = PATH + "Sound/Monsters/Bat/Hit.wav";
+    static final String FILE_BAT_DEAD_SFX           = PATH + "Sound/Monsters/Bat/Dead.wav";
     
     static final String FILE_MC_IDLE     = PATH + "Sprite/Knight/mc_Idle.gif";
     static final String FILE_MC_IDLEFLIP = PATH + "Sprite/Knight/mc_IdleFlip.gif";
@@ -140,19 +141,23 @@ class GameSoundEffect
     }
     
     public void playOnce()
-    { 
-        if (clip != null) {
-            if (clip.isRunning()) clip.stop();
-            clip.setMicrosecondPosition(0);
-            clip.start();
-        }
+    {
+
+                    if (clip != null) {
+                        if (clip.isRunning()) clip.stop();
+                        clip.setMicrosecondPosition(0);
+                        clip.start();
+                    }
+
     }
     
     public void playLoop()
     { 
-        if (clip != null) {
-            clip.loop(Clip.LOOP_CONTINUOUSLY);
-        }
+
+                    if (clip != null) {
+                        clip.loop(Clip.LOOP_CONTINUOUSLY);
+                    }
+
     }
     
     public void stop()

@@ -47,10 +47,16 @@ public class Skeleton extends Monsters {
         setIcon(idleGif);
     }
     
+    @Override
+    public void stopAllSounds(){
+        walkSFX.stop();
+    }
+    
+    @Override
     protected void setIdle() {
         this.setVisible(true);
         attack.setVisible(false);
-        walkSFX.stop();
+        stopAllSounds();
         if (turnLeft) {
             setIcon(idleFlip);
         } else {
@@ -70,7 +76,7 @@ public class Skeleton extends Monsters {
     
     @Override
     protected void playAttackSound() {
-        walkSFX.stop();
+        stopAllSounds();
         if (attackSFX != null) {
             attackSFX.playOnce();
         }
@@ -85,7 +91,7 @@ public class Skeleton extends Monsters {
     
     @Override
     protected void playHitSound() {
-        walkSFX.stop();
+        stopAllSounds();
         if (hitSFX != null) {
             hitSFX.playOnce();
         }
@@ -93,7 +99,7 @@ public class Skeleton extends Monsters {
     
     @Override
     protected void playDeadSound() {
-        walkSFX.stop();
+        stopAllSounds();
         if (deadSFX != null) {
             deadSFX.playOnce();
         }

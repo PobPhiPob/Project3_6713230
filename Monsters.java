@@ -45,8 +45,6 @@ public abstract class Monsters extends JLabel{
     
     protected GameIcon idleGif, walkGif, deadGif, attackGif, hitGif;
     protected GameIcon idleFlip, walkFlip, deadFlip, attackFlip, hitFlip;
-    
-    protected GameSoundEffect hitSFX;
 
     public Monsters(MainApplication pf, GameMap m, int startX, int startY, 
                    int monsterWidth, int monsterHeight, int atkWidth, int atkHeight, 
@@ -90,6 +88,7 @@ public abstract class Monsters extends JLabel{
     protected abstract void playWalkSound();
     protected abstract void playHitSound();
     protected abstract void playDeadSound();
+    public abstract void stopAllSounds();
     
     // --- Movement and Physics
     public void updateLocation() {
@@ -185,10 +184,12 @@ public abstract class Monsters extends JLabel{
     public void damage(int d, boolean isAttackerFacingLeft) {
         if (isDead()) return;
         if (System.currentTimeMillis() < hitTime){
+            stopAllSounds();
             setHit();
             return;
         }
         hp -= d;
+        isAttacking = false;
         if (isDead()) {
             hp = 0;
             vx = 0;
@@ -197,6 +198,7 @@ public abstract class Monsters extends JLabel{
         }else {
             hitTime = System.currentTimeMillis() + GameConstants.DURATION_MS;
             isHit = true;
+            stopAllSounds();
             setHit();
             
             int kb = GameConstants.KNOCKBACK;
@@ -328,6 +330,7 @@ public abstract class Monsters extends JLabel{
     public void setDead() {
         this.setVisible(true);
         attack.setVisible(false);
+        stopAllSounds();
         playDeadSound();
         if (turnLeft) {
             setIcon(deadFlip);
@@ -342,6 +345,7 @@ public abstract class Monsters extends JLabel{
     public void setAttack() {
         this.setVisible(false);
         attack.setVisible(true);
+        stopAllSounds();
         playAttackSound();
         if (turnLeft) {
               attack.setIcon(attackFlip);
@@ -354,6 +358,7 @@ public abstract class Monsters extends JLabel{
     }
     
     public void setHit() {
+        stopAllSounds();
         playHitSound();
         if (turnLeft) {
             setIcon(hitFlip);
