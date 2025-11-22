@@ -115,7 +115,6 @@ class Knight extends JLabel {
     public int getCurY() { return curY; }
     public int getHp() { return hp; }
     public int getStamina() { return stamina; }
-    public boolean isDead() { return isDead; }
     public boolean isDeathAnimetionFinished() { return deathAnimetionFinished; }
     public boolean isAttacking() { return attack; }
     public int getAttackPoint() { return attackPoint; }
