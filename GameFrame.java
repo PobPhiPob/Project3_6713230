@@ -602,7 +602,10 @@ public class GameFrame extends JFrame {
 
         gameMap.clearMapVisuals(drawpane);
         gameMap = new GameMap();
-
+        
+        movingLeft = false;
+        movingRight = false;
+        mc.isJumping = false;
         drawpane.remove(mc.getAttackLabel());
         drawpane.remove(mc.getRollLabel());
         drawpane.remove(mc);
