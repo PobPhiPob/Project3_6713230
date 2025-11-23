@@ -13,12 +13,16 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MainApplication extends JFrame {
     private JPanel contentpane;
     private JLabel drawpane;
+    private JLabel hpLabel, staminaLabel;
+    private JProgressBar hpBar, staminaBar;
     private GameSoundEffect themeSound;
     private Timer timer;
+    private int counter = 0;
     
     private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
     private ArrayList<Monsters> monsters = new ArrayList<>();
@@ -29,7 +33,6 @@ public class MainApplication extends JFrame {
     private int currentBgIndex = 0;
     
     private Knight mc;
-    private Dummy dm;
     private MainApplication currentFrame;
     
     private boolean movingLeft = false; // fix character movement bug when release key
@@ -43,13 +46,13 @@ public class MainApplication extends JFrame {
     public static void main(String[] args) {
         new MainApplication();
     }
+    
+    public JLabel getDrawPane() {
+        return drawpane;
+    }
 
     public Knight getMc() {
         return mc;
-    }
-
-    public Dummy getDm() {
-        return dm;
     }
     
     public MainApplication() {
@@ -73,7 +76,7 @@ public class MainApplication extends JFrame {
                     movingLeft = true;
                 if (e.getKeyCode() == KeyEvent.VK_D)
                     movingRight = true;
-                if (e.getKeyCode() == KeyEvent.VK_SPACE)
+                if (e.getKeyCode() == KeyEvent.VK_W)
                     mc.jump();
                 if (e.getKeyCode() == KeyEvent.VK_J)
                     mc.attack();
@@ -92,7 +95,7 @@ public class MainApplication extends JFrame {
             }
         });
         
-        timer = new Timer(16, new ActionListener() {
+        timer = new Timer(GameConstants.FRAME_RATE_MS, new ActionListener() {
            @Override
            public void actionPerformed(ActionEvent e) {
                if (movingLeft && !movingRight) {
@@ -107,9 +110,21 @@ public class MainApplication extends JFrame {
                for (Monsters m : monsters) {
                     m.updateBehavior(mc);
                     m.updateLocation();
+                    
+                    if (m.isAttacking() && m.isHitboxActive()) {
+                            Rectangle monsterAttackBox = m.getAttackLabel().getBounds();
+                            Rectangle mcHitBox = mc.getHitBox();
+                            
+                            if (monsterAttackBox.intersects(mcHitBox)) {
+                                mc.damage(m.getAttackPoint());
 
+                                System.out.println("MC hit by Monster! HP left: " + mc.getHp());
+                            }
+
+                    }
                     if (!m.isDead() && mc.getHitBox().intersects(m.getHitBox())) {
                         mc.damage(m.getAttackPoint());
+                        System.out.println("MC body-collided! HP left: " + mc.getHp());
                     }
 
                     if (mc.isAttacking() && mc.getAttackHitBox().intersects(m.getHitBox())) {
@@ -171,8 +186,8 @@ public class MainApplication extends JFrame {
                     }
                     return false;
                 });
-               
-
+                
+                // Cleanup Monster
                 monsters.removeIf(m -> {
                     if (m.isDead() && m.isDeathAnimationFinished()) {
                         drawpane.remove(m);
@@ -181,6 +196,12 @@ public class MainApplication extends JFrame {
                     }
                     return false;
                 });
+                
+                hpLabel.setText("HP: " + mc.getHp());
+                hpBar.setValue(mc.getHp());
+                staminaLabel.setText("Stamina: " + mc.getStamina());
+                staminaBar.setValue(mc.getStamina());
+                
                if (mc.getX() > 910) { 
                     gameMap.nextLevel();
                     gameMap.clearMapVisuals(drawpane);
@@ -197,6 +218,15 @@ public class MainApplication extends JFrame {
                }
                drawpane.revalidate();
                repaint();
+               if (counter == 188 && mc.getHp() < 100) {
+                   mc.regenHp();
+               }
+               if (counter == 188 && mc.getStamina() < 50) {
+                   mc.regenStamina();
+               }
+               counter++;
+               if (counter > 188) counter = 0;
+               //System.out.println("Counter: " + counter);
            }
         });
         timer.start();
@@ -212,6 +242,18 @@ public class MainApplication extends JFrame {
         Image bg2 = new ImageIcon(GameConstants.FILE_BG_MAP2).getImage();
         bg2 = bg2.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
         backgroundImages.add(new GameIcon(bg2));
+        Image bg3 = new ImageIcon(GameConstants.FILE_BG_MAP3).getImage();
+        bg3 = bg3.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        backgroundImages.add(new GameIcon(bg3));
+        Image bg4 = new ImageIcon(GameConstants.FILE_BG_MAP4).getImage();
+        bg4 = bg4.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        backgroundImages.add(new GameIcon(bg4));
+        Image bg5 = new ImageIcon(GameConstants.FILE_BG_MAP5).getImage();
+        bg5 = bg5.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        backgroundImages.add(new GameIcon(bg5));
+        Image bg6 = new ImageIcon(GameConstants.FILE_BG_MAP6).getImage();
+        bg6 = bg6.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        backgroundImages.add(new GameIcon(bg6));
         gameMap.drawMap(drawpane);//usefordebug
         drawpane.revalidate();//usefordebug
         drawpane.repaint();//usefordebug
@@ -223,21 +265,44 @@ public class MainApplication extends JFrame {
 
         Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
         mc.setBorder(hitbox);
-        dm = new Dummy(currentFrame);
         
-        drawpane.add(mc.getAttackLabel());
-        drawpane.add(mc);
-        drawpane.add(dm);
+        hpLabel = new JLabel("HP: " + mc.getHp());
+        hpLabel.setBounds(10, 40, 150, 30);
+        hpLabel.setForeground(Color.WHITE);
+        hpLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
 
-//	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
-//      themeSound.playLoop(); themeSound.setVolume(0.2f);
+        hpBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, mc.getHp());
+        hpBar.setBounds(10, 10, 200, 30);
+        hpBar.setValue(mc.getHp());
+        hpBar.setForeground(Color.RED);
+        hpBar.setBackground(Color.DARK_GRAY);
+
+        staminaLabel = new JLabel("Stamina: " + mc.getStamina());
+        staminaLabel.setBounds(10, 110, 150, 30);
+        staminaLabel.setForeground(Color.WHITE);
+        staminaLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
+
+        staminaBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, mc.getStamina());
+        staminaBar.setBounds(10, 80, 200, 30);
+        staminaBar.setValue(mc.getStamina());
+        staminaBar.setForeground(Color.ORANGE);
+        staminaBar.setBackground(Color.DARK_GRAY);
+
+        drawpane.add(hpLabel);
+        drawpane.add(hpBar);
+        drawpane.add(staminaLabel);
+        drawpane.add(staminaBar);
+
+        drawpane.add(mc.getAttackLabel());
+        drawpane.add(mc.getRollLabel());
+        drawpane.add(mc);
+
+	themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
+      themeSound.playLoop(); themeSound.setVolume(0.2f);
 
         contentpane.add(drawpane);
         validate();
         repaint();
-    }
-    public JLabel getDrawPane() {
-        return drawpane;
     }
 
     private void spawnMonsters() {
@@ -246,22 +311,108 @@ public class MainApplication extends JFrame {
             drawpane.remove(m);
         }
         monsters.clear();
-
-        if (gameMap.getCurrentLevel() == 0) {
-             monsters.add(new Monsters(this, gameMap, 300, 400));
-             monsters.add(new Monsters(this, gameMap, 600, 400));
+        
+        Random rand = new Random();
+        final int TILE_SIZE = GameConstants.TILE_SIZE;
+        final int MIN_X = 50;
+        final int MAX_X = 900;
+        final int MIN_Y = 50;
+        final int MAX_Y = 550; 
+        final int AIR_MAX_Y = 300; 
+        
+         if (gameMap.getCurrentLevel() == 0) {
              golemBoss = new Golem(this, gameMap, 300, 350); // ตำแหน่ง Boss
              drawpane.add(golemBoss.getAttackLabel());
              drawpane.add(golemBoss.getParticleLabel());
              drawpane.add(golemBoss);
-        } else if (gameMap.getCurrentLevel() == 1) {
-             monsters.add(new Monsters(this, gameMap, 500, 300));
+        }
+
+        if (gameMap.getCurrentLevel() == 0 || gameMap.getCurrentLevel() == 6) {
+            return;
+        } else {
+
+            int minMonsters = 3;
+            int maxMonsters = 6;
+            int numToSpawn = rand.nextInt(maxMonsters - minMonsters + 1) + minMonsters;
+
+            for (int i = 0; i < numToSpawn; i++) {
+
+                int monsterType = rand.nextInt(2);
+                int startX = 0;
+                int startY = 0;
+
+                if (monsterType == 0) {
+                    int skeletonHeight = GameConstants.SKELETON_HEIGHT;
+                    int skeletonWidth = GameConstants.SKELETON_WIDTH;
+
+                    boolean validSpawnFound = false;
+                    for (int attempt = 0; attempt < 100; attempt++) {
+
+                        startX = rand.nextInt(MAX_X - MIN_X + 1) + MIN_X;
+
+                        int minRow = MIN_Y / TILE_SIZE; 
+                        int maxRow = MAX_Y / TILE_SIZE; 
+                        int randomStandingRow = rand.nextInt(maxRow - minRow) + minRow;
+
+                        int groundLevelY = randomStandingRow * TILE_SIZE;
+
+                        startY = groundLevelY - skeletonHeight;
+
+                        int checkY_below_ground = groundLevelY + 1;
+                        boolean hasSupport = gameMap.isSolid(startX + 10, checkY_below_ground) && 
+                                             gameMap.isSolid(startX + skeletonWidth - 10, checkY_below_ground);
+
+                        boolean notCeiling = !gameMap.isSolid(startX + 10, startY + 1) && 
+                                             !gameMap.isSolid(startX + skeletonWidth - 10, startY + 1);
+                        
+                        boolean notInMap = !gameMap.isSolid(startX/2 + 10, startY/2 + 1) && 
+                                           !gameMap.isSolid((startX + skeletonWidth)/2 - 10, startY/2 + 1);
+
+                        boolean isLethalArea = gameMap.isLethal(startX + 10, groundLevelY) || 
+                                               gameMap.isLethal(startX + skeletonWidth - 10, groundLevelY);
+
+                        if (hasSupport && !isLethalArea && notCeiling && notInMap) {
+                            validSpawnFound = true;
+                            break;
+                        }
+                    }
+
+                    if (validSpawnFound) {
+                        monsters.add(new Skeleton(this, gameMap, startX, startY));
+                    }
+
+                } else {
+
+                    while (true){
+                        startX = rand.nextInt(MAX_X - MIN_X + 1) + MIN_X;
+
+                        if (rand.nextBoolean()) {
+                            startY = rand.nextInt(AIR_MAX_Y - MIN_Y + 1) + MIN_Y;
+                        } else {
+                            startY = rand.nextInt(MAX_Y - AIR_MAX_Y + 1) + AIR_MAX_Y;
+                        }
+
+                        int checkX_center = startX + GameConstants.BAT_WIDTH / 2;
+                        int checkY_center = startY + GameConstants.BAT_HEIGHT / 2;
+
+                        boolean isColliding = gameMap.isSolid(checkX_center, checkY_center) ||
+                                              gameMap.isLethal(checkX_center, checkY_center);
+
+                        if (!isColliding) {
+                            break;
+                        }
+                    } 
+
+                    monsters.add(new Bat(this, gameMap, startX, startY));
+                }
+            }
         }
 
         for (Monsters m : monsters) {
-            drawpane.add(m.getAttackLabel());
             drawpane.add(m);
+            drawpane.add(m.getAttackLabel());
         }
+
         drawpane.revalidate(); 
         drawpane.repaint();
     }

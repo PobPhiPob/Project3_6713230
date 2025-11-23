@@ -35,11 +35,14 @@ public class Golem extends JLabel {
     private boolean lockedDirection = true;
     private boolean isDead = false;
     private long deathTimeEnd = 0;
+    protected long hitTime = 0;
+    private long flashTime = 0;
+    private final long FLASH_DURATION = 100;
 
     //----- Attack Constants and State
     private final int MELEE_RANGE = 70;      // ระยะตีธรรมดา
     private final int JUMP_RANGE = 350;      // ระยะกระโดด
-    private final int SLIDE_SPEED = 10;
+    private final int SLIDE_SPEED = 15;
     private final int JUMP_STRENGTH = -24;
     private final long PRESLIDE_CHARGE_TIME = 500;
     
@@ -159,14 +162,19 @@ public class Golem extends JLabel {
     // Logic การรับดาเมจ
     public void damage(int d) {
         if (isDead) return;
+         if (System.currentTimeMillis() < hitTime){
+            return;
+        }
         hp -= d;
+        System.out.printf("Golem HP : %d\n", hp);
         if (hp <= 0) {
             hp = 0;
             isDead = true;
             currentState = GolemState.DEAD;
+            System.out.printf("Golem Dead\n");
         } else {
-            // ตั้งสถานะ Hit และ Knockback ชั่วคราว (ถ้าต้องการ)
-            // เช่น currentState = GolemState.HIT;
+            hitTime = System.currentTimeMillis() + GameConstants.DURATION_MS;
+            flashTime = System.currentTimeMillis() + FLASH_DURATION;
         }
     }
     
@@ -202,6 +210,8 @@ public class Golem extends JLabel {
         // Collision Down (Foot hit)
         boolean leftFoot  = map.isSolid(curX + 10, nextY + height);  
         boolean rightFoot = map.isSolid(curX + width - 10, nextY + height);
+        
+        boolean isKnockedBack = System.currentTimeMillis() < hitTime;
 
         if (vy >= 0 && (leftFoot || rightFoot)) {   // ถ้ามีความเร็วลง และ เท้าแตะพื้น
             if (!onGround) {
@@ -268,7 +278,7 @@ public class Golem extends JLabel {
                     } else if (absDistanceX < JUMP_RANGE && onGround) {
                         currentState = GolemState.PREJUMP; // Move 2: Jump Slam
                     } else {
-                        currentState = GolemState.SLIDE; // Move 3: Slide (ใช้เมื่อผู้เล่นอยู่ไกล)
+                        currentState = GolemState.PRESLIDE; // Move 3: Slide (ใช้เมื่อผู้เล่นอยู่ไกล)
                     }
                     lastActionTime = System.currentTimeMillis(); // Reset timer for new action
                 }
@@ -365,14 +375,22 @@ public class Golem extends JLabel {
         particleLabel2.setVisible(false);
         jumpLabel.setVisible(false);
         this.setVisible(true);
+        
+        if (System.currentTimeMillis() < flashTime) {
+            this.setVisible(true);
+            setIcon(hitGif);
+            return;
+        } else if (System.currentTimeMillis() >= flashTime) {
+        }
 
         switch (currentState) {
             case IDLE:
                 this.setVisible(true);
                 setIcon(idleGif);
+                break;
             case RECHARGE:
                 this.setVisible(true);
-                setIcon(idleGif);
+                 setIcon(idleGif); 
                 break;
             case ATTACK1:
                 setAttackVisual(turnLeft ? attack1Flip : attack1Gif);
@@ -406,7 +424,7 @@ public class Golem extends JLabel {
                 break;
             case PRESLIDE:
                 this.setVisible(true);
-                setIcon(idleGif); // ใช้ภาพ IDLE เพื่อแสดงว่ากำลังชาร์จ
+                setIcon(slideGif); // ใช้ภาพ IDLE เพื่อแสดงว่ากำลังชาร์จ
                 break;
             case SLIDE:
                 this.setVisible(true);

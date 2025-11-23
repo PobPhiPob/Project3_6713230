@@ -15,10 +15,12 @@ import java.awt.event.*;
 class Knight extends JLabel {
     private MainApplication parentFrame;
 
-    private GameIcon idleGif, runGif, jumpGif, hitGif, rollGif;
-    private GameIcon idleFlip, runFlip, jumpFlip, hitFlip, rollFlip;
+    private GameIcon idleGif, runGif, jumpGif, hitGif, rollGif, deadGif;
+    private GameIcon idleFlip, runFlip, jumpFlip, hitFlip, rollFlip, deadFlip;
 
     private JLabel rollLabel;
+
+    private GameSoundEffect attackSFX, runSFX, rollSFX, hitSFX, deadSFX;
 
     //For attack animation
     private JLabel attackLabel;
@@ -27,7 +29,10 @@ class Knight extends JLabel {
     
     private int width = GameConstants.MC_WIDTH;
     private int height = GameConstants.MC_HEIGHT;
-    
+
+    private int rollWidth = GameConstants.MC_ROLL_WIDTH;
+    private int rollHeight = GameConstants.MC_ROLL_HEIGHT;
+
     //Get MC_ATTACK Sprite scale
     private int attackImageWidth = GameConstants.MC_ATK_WIDTH;
     private int attackImageHeight = GameConstants.MC_ATK_HEIGHT;
@@ -44,15 +49,20 @@ class Knight extends JLabel {
     private int gravity = GameConstants.GRAVITY;
     private boolean onGround = true;
     private boolean turnLeft = false;
-    private boolean turnRight = true;
     
     private int hp = 100;
-    private int attackPoint = 5;
+    private int attackPoint = 25;
     private int currentAttack;
     private int stamina = 50;
+    private boolean canRegenHp;
+    private boolean canRegenStamina;
     private boolean attack;
+    private boolean isHit;
     private boolean canInput = true;
     private boolean roll;
+    private long invincibleEndTime = 0;
+    private boolean invincible = false;
+    private boolean isDead;
     
     private GameMap map;
     
@@ -64,14 +74,16 @@ class Knight extends JLabel {
         runGif = new GameIcon(GameConstants.FILE_MC_RUN).resize(width, height);
         jumpGif = new GameIcon(GameConstants.FILE_MC_JUMP).resize(width, height);
         hitGif = new GameIcon(GameConstants.FILE_MC_HIT).resize(width, height);
-        rollGif = new GameIcon(GameConstants.FILE_MC_ROLL).resize(120, 110);
+        rollGif = new GameIcon(GameConstants.FILE_MC_ROLL).resize(130, 120);
+        deadGif = new GameIcon(GameConstants.FILE_MC_DEAD).resize(100, 80);
         
         idleFlip = new GameIcon(GameConstants.FILE_MC_IDLEFLIP).resize(width, height);
         runFlip = new GameIcon(GameConstants.FILE_MC_RUNFLIP).resize(width, height);
         jumpFlip = new GameIcon(GameConstants.FILE_MC_JUMPFLIP).resize(width, height);
         hitFlip = new GameIcon(GameConstants.FILE_MC_HITFLIP).resize(width, height);
-        rollFlip = new GameIcon(GameConstants.FILE_MC_ROLLFLIP).resize(120, 110);
-        
+        rollFlip = new GameIcon(GameConstants.FILE_MC_ROLLFLIP).resize(130, 120);
+        deadFlip = new GameIcon(GameConstants.FILE_MC_DEADFLIP).resize(100, 80);
+
         attack1Gif = new GameIcon(GameConstants.FILE_MC_ATTACK1).resize(attackImageWidth, attackImageHeight);
         attack2Gif = new GameIcon(GameConstants.FILE_MC_ATTACK2).resize(attackImageWidth, attackImageHeight);
         attack3Gif = new GameIcon(GameConstants.FILE_MC_ATTACK3).resize(attackImageWidth, attackImageHeight);
@@ -86,15 +98,35 @@ class Knight extends JLabel {
 
         rollLabel = new JLabel();
         rollLabel.setVisible(false);
+
+        attackSFX = new GameSoundEffect(GameConstants.FILE_MC_ATTACK_SFX);
+        runSFX = new GameSoundEffect(GameConstants.FILE_MC_RUN_SFX);
+        rollSFX = new GameSoundEffect(GameConstants.FILE_MC_ROLL_SFX);
+        hitSFX = new GameSoundEffect(GameConstants.FILE_MC_HIT_SFX);
+        deadSFX = new GameSoundEffect(GameConstants.FILE_MC_DEAD_SFX);
         
         setBounds(curX, curY, width, height);
     }
     
     public JLabel getAttackLabel() {return attackLabel;}
+    public JLabel getRollLabel() {return rollLabel;}
     public Rectangle getAttackHitBox() {return new Rectangle(curX, curY, attackImageWidth, attackImageHeight);}
     public Rectangle getHitBox() {return new Rectangle(curX, curY, hitboxWidth, hitboxHeight);}
-    public int getCurX()   {return curX;}
-    public int getCurY()   {return curY;}
+    public int getCurX()    { return curX; }
+    public int getCurY()    { return curY; }
+    public int getHp()      { return hp; }
+    public int getStamina() { return stamina; }
+
+    public void playSound(GameSoundEffect sfx) {
+        sfx.playOnce();
+    }
+
+    public void playRunSound() {
+        if (vx != 0 && onGround)
+            runSFX.playLoop();
+        else runSFX.stop();
+        runSFX.setVolume(0.5f);
+    }
     
     public void setIdle() {
         if (turnLeft) {
@@ -124,7 +156,7 @@ class Knight extends JLabel {
         if (turnLeft) {
             setIcon(hitFlip);
         } else {
-            setIcon(jumpGif);
+            setIcon(hitGif);
         }
     }
 
@@ -133,11 +165,33 @@ class Knight extends JLabel {
         rollLabel.setVisible(true);
         if (turnLeft) {
             rollLabel.setIcon(rollFlip);
-            rollLabel.setBounds(curX -(attackImageWidth - width),curY - (attackImageHeight - height),attackImageWidth, attackImageHeight);
+            rollLabel.setBounds(curX - ((rollWidth - width) / 2),curY - (rollHeight - height),rollWidth, rollHeight);
         } else {
             rollLabel.setIcon(rollGif);
-            rollLabel.setBounds(curX,curY - (attackImageHeight - height),attackImageWidth, attackImageHeight);
+            rollLabel.setBounds(curX,curY - (rollHeight - height),rollWidth, rollHeight);
         }
+    }
+
+    public void setDead() {
+        attackLabel.setVisible(false);
+        rollLabel.setVisible(false);
+        playSound(deadSFX);
+
+        if (turnLeft) {
+            setIcon(deadFlip);
+            setBounds(curX, curY, 100, 80);
+        } else {
+            setIcon(deadGif);
+            setBounds(curX - width, curY, 100, 80);
+        }
+
+        new Timer(600, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setVisible(false);
+                ((Timer)e.getSource()).stop();
+            }
+        }).start();
     }
     
     public void setAttack1() {
@@ -149,7 +203,6 @@ class Knight extends JLabel {
 //            setSize(attack1Flip.getIconWidth(), attack1Flip.getIconHeight() - 80);
               attackLabel.setIcon(attack1Flip);
               attackLabel.setBounds(curX -(attackImageWidth - width),curY - (attackImageHeight - height),attackImageWidth, attackImageHeight);
-
         } else {
 //            setIcon(attack1Gif);
 //            setSize(attack1Gif.getIconWidth() + 15, attack1Gif.getIconHeight() - 80);
@@ -167,7 +220,6 @@ class Knight extends JLabel {
 //            setSize(attack2Flip.getIconWidth(), attack2Flip.getIconHeight() - 80);
               attackLabel.setIcon(attack2Flip);
               attackLabel.setBounds(curX -(attackImageWidth - width),curY - (attackImageHeight - height),attackImageWidth, attackImageHeight);
-              
         } else {
 //            setIcon(attack2Gif);
 //            setSize(attack2Gif.getIconWidth() + 15, attack2Gif.getIconHeight() - 80);
@@ -177,6 +229,9 @@ class Knight extends JLabel {
     }
     
     public void setAttack3() {
+        setIcon(null);
+        attackLabel.setVisible(true);
+
         if (turnLeft) {
 //            setIcon(attack3Flip);
 //            setSize(attack3Flip.getIconWidth(), attack3Flip.getIconHeight() - 80);
@@ -191,72 +246,133 @@ class Knight extends JLabel {
     }
 
     public void damage(int d) {
+        long now = System.currentTimeMillis();
+        if (invincible) {
+            if (now < invincibleEndTime) return;
+            invincible = false;
+        }
+        if (isDead) return;
+        System.out.println("Dodge: " + roll);
         if (roll) return;
+        isHit = true;
+        setHit();
+        playSound(hitSFX);
         hp -= d;
+        if (hp < 0) hp = 0;
+        canRegenHp = true;
+        invincible = true;
+        invincibleEndTime = now + (2*GameConstants.DURATION_MS);
+        flashEffect();
     }
+    
+    private void flashEffect() {
+        Timer flashTimer = new Timer(60, null);
+        flashTimer.addActionListener(new ActionListener() {
+            private int count = 0;
 
-    public void regenHp() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (count >= 6 || !invincible) {
+                    setVisible(true);
+                    flashTimer.stop();
+                    return;
+                }
+
+                setVisible(!isVisible());
+                count++;
+            }
+        });
+        flashTimer.start();
+
         new Timer(500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (hp >= 100) hp = 100;
-                else hp += 25;
+                isHit = false;
                 ((Timer)e.getSource()).stop();
             }
         }).start();
-        System.out.println("HP: " + hp);
+    }
+
+    public void regenHp() {
+        if (canRegenHp) {
+            hp += 25;
+            if (hp >= 100) {
+                hp = 100;
+                canRegenHp = false;
+            }
+            System.out.println("HP: " + hp);
+        }
+    }
+
+    public void regenStamina() {
+        if (canRegenStamina) {
+            stamina += 25;
+            if (stamina >= 50) {
+                stamina = 50;
+                canRegenStamina = false;
+            }
+            System.out.println("Stamina: " + stamina);
+        }
     }
 
     public void attack() {
-        if (!canInput) return;
+        if (!canInput || roll || isDead) return;
         canInput = false;
         attack = true;
         switch(currentAttack) {
             case 0:
                 setAttack1();
-                currentAttack = 1;
                 break;
             case 1:
-                setAttack2(); 
-                currentAttack = 2;
+                setAttack2();
                 break;
             case 2:
-                setAttack3(); 
-                currentAttack = 0;
+                setAttack3();
                 break;
         }
+        playSound(attackSFX);
 
-        new Timer(150, new ActionListener() {
+        new Timer(450, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 canInput = true;
                 ((Timer)e.getSource()).stop();
             }
         }).start();
-        
-        new Timer(300, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                attack = false;
-                attackLabel.setVisible(false); //Hide attack Label
-                setIdle();   //Show the normal Idle
-                ((Timer)e.getSource()).stop();
-            }
-        }).start();
 
-        Dummy dm = parentFrame.getDm();
-        if (attackLabel.getBounds().intersects(dm.getBounds())) {
-            dm.damage(attackPoint);
+        if (currentAttack == 2) {
+            new Timer(650, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    attack = false;
+                    attackLabel.setVisible(false); //Hide attack Label
+                    currentAttack = 0;
+                    setIdle();   //Show the normal Idle
+                    ((Timer)e.getSource()).stop();
+                }
+            }).start();
+        } else {
+            new Timer(300, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    attack = false;
+                    attackLabel.setVisible(false); //Hide attack Label
+                    setIdle();   //Show the normal Idle
+                    ((Timer)e.getSource()).stop();
+                }
+            }).start();
         }
+        currentAttack++;
     }
 
     public void roll() {
-        if (!canInput || stamina < 10) return;
+        if (!canInput || attack || !onGround || stamina < 25 || isDead) return;
         canInput = false;
         roll = true;
         setRoll();
+        playSound(rollSFX);
 
-        new Timer(150, new ActionListener() {
+        new Timer(850, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 canInput = true;
@@ -264,14 +380,15 @@ class Knight extends JLabel {
             }
         }).start();
 
-        new Timer(350, new ActionListener() {
+        new Timer(650, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 roll = false;
-                if (turnLeft) curX -= 35;
-                else curX += 35;
-                stamina -= 10;
                 rollLabel.setVisible(false);
+                if (turnLeft) curX -= rollLabel.getWidth();
+                else curX += rollLabel.getWidth();
+                stamina -= 25;
+                canRegenStamina = true;
                 setIdle();
                 ((Timer)e.getSource()).stop();
             }
@@ -279,13 +396,17 @@ class Knight extends JLabel {
     }
 
     public void updateLocation() {
-        if (attack) return;
-        if (hp <= 0) this.removeAll();
+        if (attack || roll || isHit || isDead) return;
+        if (hp <= 0) {
+            setDead();
+            isDead = true;
+            return;
+        }
         vy += gravity;
         
         int nextY = curY + vy;
         
-        boolean leftFoot  = map.isSolid(curX + 10,         nextY + height); 
+        boolean leftFoot  = map.isSolid(curX + 10,         nextY + height);
         boolean rightFoot = map.isSolid(curX + width - 10, nextY + height);
         
         if (vy >= 0 && (leftFoot || rightFoot)) { 
@@ -307,22 +428,22 @@ class Knight extends JLabel {
         int checkY_bottom = curY + height - 5; 
 
         if (vx > 0) { 
-            boolean headHit = map.isSolid(nextX + width, checkY_top);
+            //boolean headHit = map.isSolid(nextX + width, checkY_top);
             boolean feetHit = map.isSolid(nextX + width, checkY_bottom);
             
-            if (headHit || feetHit) {
+            if /*(headHit || feetHit)*/ (feetHit) {
                 vx = 0; 
                 int tileCol = (nextX + width) / map.TILE_SIZE;
                 curX = (tileCol * map.TILE_SIZE) - width;
             } else {
                 curX = nextX; 
-            }
-            
-        } else if (vx < 0) { 
-            boolean headHit = map.isSolid(nextX, checkY_top);
+            }            
+        } 
+        else if (vx < 0) { 
+            //boolean headHit = map.isSolid(nextX, checkY_top);
             boolean feetHit = map.isSolid(nextX, checkY_bottom);
             
-            if (headHit || feetHit) {
+            if /*(headHit || feetHit)*/ (feetHit)  {
                 vx = 0; 
                 int tileCol = nextX / map.TILE_SIZE;
                 curX = (tileCol + 1) * map.TILE_SIZE;
@@ -331,12 +452,54 @@ class Knight extends JLabel {
             }
         }
         
+        boolean hitHazard = false;
+        
+        if (map.isHazard(curX + 15, curY + height) || map.isHazard(curX + width - 15, curY + height)) {
+            hitHazard = true;
+        }
+        else if (map.isHazard(curX + 15, curY) || map.isHazard(curX + width - 15, curY)) {
+            hitHazard = true;
+        }
+        else if (map.isHazard(curX - 1, curY + height - 10) || map.isHazard(curX + width + 1, curY + height - 10)) {
+            hitHazard = true;
+        }
+        if (hitHazard) {
+            damage(25);
+            vy = -10; 
+                onGround = false;
+                if (turnLeft) {
+                    vx = 8; 
+                } 
+                else {
+                    vx = -8;
+                }
+        }
+        
+        boolean hitLethal = false;
+        
+        if (map.isLethal(curX + 15, curY + height) || map.isLethal(curX + width - 15, curY + height)) {
+            hitLethal = true;
+        }
+        else if (map.isLethal(curX + 15, curY) || map.isLethal(curX + width - 15, curY)) {
+            hitLethal = true;
+        }
+        else if (map.isLethal(curX - 1, curY + height - 10) || map.isLethal(curX + width + 1, curY + height - 10)) {
+            hitLethal = true;
+        }
+        if (hitLethal) {
+            damage(99);
+            vy = -10; 
+                onGround = false;
+                if (turnLeft) {
+                    vx = 8; 
+                } 
+                else {
+                    vx = -8;
+                }
+        }
+        
         if (curX < 0) curX = 0;
         if (curX > 960 - width) curX = 960 - width;
-
-        if (roll) {
-            setRoll();
-        }
 
         if (onGround) {
             if (vx == 0) {
@@ -349,19 +512,20 @@ class Knight extends JLabel {
         else {
             setJump();
         }
+        playRunSound();
         setLocation(curX, curY);
     }
     
     public void moveLeft() {
+        if (roll) return;
         vx = -speed;
         turnLeft = true;
-        turnRight = false;
     }
     
     public void moveRight() {
+        if (roll) return;
         vx = speed;
         turnLeft = false;
-        turnRight = true;
     }
     
     public void stopMoving() {
@@ -377,7 +541,7 @@ class Knight extends JLabel {
     
     public void setStartPosition() {
         curX = 10; 
-        curY = 200;
+        curY = 350;
         vx = 0;    
         vy = 0;     
         setLocation(curX, curY);
