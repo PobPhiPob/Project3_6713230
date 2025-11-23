@@ -575,6 +575,14 @@ public class Knight extends JLabel {
         curY = 350;
         vx = 0;
         vy = 0;
+        
+        int currentLevel = map.getCurrentLevel();
+
+        if (currentLevel == 4) { 
+            curX = 50;
+            curY = 50;
+        }
+        
         setLocation(curX, curY);
     }
 }
