@@ -14,8 +14,11 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.util.ArrayList;
 import java.util.Random;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class GameFrame extends JFrame {
+
     private JPanel contentpane;
     private JLabel drawpane;
     private JLabel hpLabel, staminaLabel;
@@ -45,15 +48,19 @@ public class GameFrame extends JFrame {
     private JDialog pauseDialog;
     private JDialog gameOverDialog;
 
+    private float currentVolume = 0.2f;
+
     public static void main(String[] args) {
         new GameFrame();
     }
-    
+
     public JLabel getDrawPane() {
         return drawpane;
     }
 
-    public int getStaminaCounter() { return staminaCounter; }
+    public int getStaminaCounter() {
+        return staminaCounter;
+    }
 
     public GameFrame() {
         setTitle("Rock & Slash Game");
@@ -156,7 +163,7 @@ public class GameFrame extends JFrame {
                         m.damage(mc.getAttackPoint(), mc.getTurn());
                     }
                 }
-                
+
                 if (golemBoss != null) {
                     golemBoss.updateBehavior(mc);
                     golemBoss.updateLocation();
@@ -180,27 +187,27 @@ public class GameFrame extends JFrame {
                         }
                     }
                 }
-               ArrayList<Rock> rocksToRemove = new ArrayList<>();
-               for (Rock r : rocks) {
-                   r.updateLocation();
-                   if (mc.isAttacking() && mc.getAttackHitBox().intersects(r.getHitBox())) {
+                ArrayList<Rock> rocksToRemove = new ArrayList<>();
+                for (Rock r : rocks) {
+                    r.updateLocation();
+                    if (mc.isAttacking() && mc.getAttackHitBox().intersects(r.getHitBox())) {
                         if (!r.isDestroyed() && !r.isParticle()) {
                             r.destroyAndParticle();
                             System.out.println("Rock hit by Knight's attack!");
                         }
                     }
-                   if (r.getHitBox().intersects(mc.getHitBox())) {
-                       // Rock ชนผู้เล่น
-                       if (!r.isDestroyed() && !r.isParticle()) {
-                           mc.damage(GameConstants.GOLEM_ROCK_DMG); // สมมติว่ามี GOLEM_ROCK_DAMAGE
-                           r.destroyAndParticle(); // เปลี่ยนเป็น Particle
-                       }
-                   }
-                   if (r.isDestroyed()) {
-                       rocksToRemove.add(r);
-                   }
-               }
-               // Cleanup Golem
+                    if (r.getHitBox().intersects(mc.getHitBox())) {
+                        // Rock ชนผู้เล่น
+                        if (!r.isDestroyed() && !r.isParticle()) {
+                            mc.damage(GameConstants.GOLEM_ROCK_DMG); // สมมติว่ามี GOLEM_ROCK_DAMAGE
+                            r.destroyAndParticle(); // เปลี่ยนเป็น Particle
+                        }
+                    }
+                    if (r.isDestroyed()) {
+                        rocksToRemove.add(r);
+                    }
+                }
+                // Cleanup Golem
                 if (golemBoss != null && golemBoss.isDeathAnimationFinished()) {
                     drawpane.remove(golemBoss);
                     drawpane.remove(golemBoss.getAttackLabel());
@@ -208,7 +215,7 @@ public class GameFrame extends JFrame {
                     drawpane.remove(golemBoss.getJumpLabel());
                     golemBoss = null;
                 }
-                
+
                 // Cleanup Rocks
                 for (Rock r : rocksToRemove) {
                     rocks.remove(r);
@@ -355,21 +362,21 @@ public class GameFrame extends JFrame {
             drawpane.remove(m);
         }
         monsters.clear();
-        
-         if(gameMap.getCurrentLevel() != 6 && golemBoss != null) {
-         drawpane.remove(golemBoss);
-         drawpane.remove(golemBoss.getAttackLabel());
-        drawpane.remove(golemBoss.getParticleLabel());
-        drawpane.remove(golemBoss.getParticleLabel2());
-        drawpane.remove(golemBoss.getJumpLabel());
-        golemBoss = null;
-        
-       for (Rock m : rocks) {
-            drawpane.remove(m);
+
+        if (gameMap.getCurrentLevel() != 6 && golemBoss != null) {
+            drawpane.remove(golemBoss);
+            drawpane.remove(golemBoss.getAttackLabel());
+            drawpane.remove(golemBoss.getParticleLabel());
+            drawpane.remove(golemBoss.getParticleLabel2());
+            drawpane.remove(golemBoss.getJumpLabel());
+            golemBoss = null;
+
+            for (Rock m : rocks) {
+                drawpane.remove(m);
+            }
+            rocks.clear();
         }
-        rocks.clear();
-         }
-         
+
         Random rand = new Random();
         final int TILE_SIZE = GameConstants.TILE_SIZE;
         final int MIN_X = 50;
@@ -377,8 +384,8 @@ public class GameFrame extends JFrame {
         final int MIN_Y = 50;
         final int MAX_Y = 550;
         final int AIR_MAX_Y = 300;
-        
-        if(gameMap.getCurrentLevel() == 6) {
+
+        if (gameMap.getCurrentLevel() == 6) {
             golemBoss = new Golem(this, gameMap, 300, 350);
         }
         if (gameMap.getCurrentLevel() == 0) {
@@ -472,12 +479,12 @@ public class GameFrame extends JFrame {
         drawpane.revalidate();
         drawpane.repaint();
     }
-    
+
     public void spawnRock(int x, int y, int vx, int vy) {
-    Rock newRock = new Rock(this, gameMap, x, y, vx, vy);
-    rocks.add(newRock);
-    drawpane.add(newRock);
-}
+        Rock newRock = new Rock(this, gameMap, x, y, vx, vy);
+        rocks.add(newRock);
+        drawpane.add(newRock);
+    }
 
     private void togglePause() {
         if (gameOverDialog != null && gameOverDialog.isVisible()) {
@@ -495,9 +502,9 @@ public class GameFrame extends JFrame {
         movingLeft = false;
         movingRight = false;
         mc.stopAllSounds();
-         for (Monsters m : monsters) {
+        for (Monsters m : monsters) {
             m.stopAllSounds();
-         }
+        }
         pauseDialog = new JDialog(this, "PAUSED", true);
         pauseDialog.setSize(400, 300);
         pauseDialog.setLocationRelativeTo(this);
@@ -520,8 +527,20 @@ public class GameFrame extends JFrame {
         });
         pauseDialog.add(resumeButton);
 
+        JButton optionsButton = createDialogButton("OPTIONS");
+        optionsButton.setBounds(100, 170, 200, 50);
+        optionsButton.addActionListener(e -> {
+            pauseDialog.setVisible(false);
+            openOptions();
+            // Show pause menu again after closing options
+            if (isPaused && pauseDialog != null) {
+                pauseDialog.setVisible(true);
+            }
+        });
+        pauseDialog.add(optionsButton);
+
         JButton mainMenuButton = createDialogButton("MAIN MENU");
-        mainMenuButton.setBounds(100, 170, 200, 50);
+        mainMenuButton.setBounds(100, 240, 200, 50);
         mainMenuButton.addActionListener(e -> {
             pauseDialog.dispose();
             pauseDialog = null;
@@ -543,6 +562,12 @@ public class GameFrame extends JFrame {
         });
 
         pauseDialog.setVisible(true);
+    }
+
+    private void openOptions() {
+        OptionsDialog dialog = new OptionsDialog(this, currentVolume, themeSound);
+        dialog.setVisible(true);
+        currentVolume = dialog.getCurrentVolume();
     }
 
     private void showGameOver() {
@@ -609,7 +634,7 @@ public class GameFrame extends JFrame {
             drawpane.remove(m);
         }
         monsters.clear();
-        
+
         if (golemBoss != null) {
             drawpane.remove(golemBoss);
             drawpane.remove(golemBoss.getAttackLabel());
@@ -623,10 +648,10 @@ public class GameFrame extends JFrame {
             }
             rocks.clear();
         }
-        
+
         gameMap.clearMapVisuals(drawpane);
         gameMap = new GameMap();
-        
+
         movingLeft = false;
         movingRight = false;
         mc.isJumping = false;
