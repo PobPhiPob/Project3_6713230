@@ -507,7 +507,7 @@ public class Knight extends JLabel {
         }
         
         if (hitLethal) {
-            damage(99);
+            damage(999);
             vy = -10;
             onGround = false;
             if (turnLeft) {
@@ -579,7 +579,7 @@ public class Knight extends JLabel {
         int currentLevel = map.getCurrentLevel();
 
         if (currentLevel == 4) { 
-            curX = 50;
+            curX = 10;
             curY = 50;
         }
         
