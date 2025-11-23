@@ -152,6 +152,10 @@ public class Knight extends JLabel {
         }
     }
     
+    public void stopAllSounds(){
+       runSFX.stop();
+    }
+    
     public void setIdle() {
         if (turnLeft) {
             setIcon(idleFlip);

@@ -355,7 +355,21 @@ public class GameFrame extends JFrame {
             drawpane.remove(m);
         }
         monsters.clear();
-
+        
+         if(gameMap.getCurrentLevel() != 6 && golemBoss != null) {
+         drawpane.remove(golemBoss);
+         drawpane.remove(golemBoss.getAttackLabel());
+        drawpane.remove(golemBoss.getParticleLabel());
+        drawpane.remove(golemBoss.getParticleLabel2());
+        drawpane.remove(golemBoss.getJumpLabel());
+        golemBoss = null;
+        
+       for (Rock m : rocks) {
+            drawpane.remove(m);
+        }
+        rocks.clear();
+         }
+         
         Random rand = new Random();
         final int TILE_SIZE = GameConstants.TILE_SIZE;
         final int MIN_X = 50;
@@ -364,7 +378,7 @@ public class GameFrame extends JFrame {
         final int MAX_Y = 550;
         final int AIR_MAX_Y = 300;
         
-        if(gameMap.getCurrentLevel() == 0) {
+        if(gameMap.getCurrentLevel() == 6) {
             golemBoss = new Golem(this, gameMap, 300, 350);
         }
         if (gameMap.getCurrentLevel() == 0) {
@@ -478,6 +492,12 @@ public class GameFrame extends JFrame {
     }
 
     private void showPauseMenu() {
+        movingLeft = false;
+        movingRight = false;
+        mc.stopAllSounds();
+         for (Monsters m : monsters) {
+            m.stopAllSounds();
+         }
         pauseDialog = new JDialog(this, "PAUSED", true);
         pauseDialog.setSize(400, 300);
         pauseDialog.setLocationRelativeTo(this);
@@ -508,6 +528,7 @@ public class GameFrame extends JFrame {
             timer.stop();
             dispose();
             themeSound.stop();
+            restartGame();
             MenuSystem menu = new MenuSystem();
             menu.setVisible(true);
         });
@@ -583,23 +604,26 @@ public class GameFrame extends JFrame {
         currentBgIndex = 0;
 
         for (Monsters m : monsters) {
+            m.stopAllSounds();
             drawpane.remove(m.getAttackLabel());
             drawpane.remove(m);
         }
         monsters.clear();
         
-        drawpane.remove(golemBoss);
-         drawpane.remove(golemBoss.getAttackLabel());
-        drawpane.remove(golemBoss.getParticleLabel());
-        drawpane.remove(golemBoss.getParticleLabel2());
-        drawpane.remove(golemBoss.getJumpLabel());
-        golemBoss = null;
-        
-        for (Rock m : rocks) {
-            drawpane.remove(m);
-        }
-        rocks.clear();
+        if (golemBoss != null) {
+            drawpane.remove(golemBoss);
+            drawpane.remove(golemBoss.getAttackLabel());
+            drawpane.remove(golemBoss.getParticleLabel());
+            drawpane.remove(golemBoss.getParticleLabel2());
+            drawpane.remove(golemBoss.getJumpLabel());
+            golemBoss = null;
 
+            for (Rock m : rocks) {
+                drawpane.remove(m);
+            }
+            rocks.clear();
+        }
+        
         gameMap.clearMapVisuals(drawpane);
         gameMap = new GameMap();
         
