@@ -26,6 +26,8 @@ public class GameFrame extends JFrame {
 
     private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
     private ArrayList<Monsters> monsters = new ArrayList<>();
+    private Golem golemBoss;
+    private ArrayList<Rock> rocks = new ArrayList<>();
     private int currentBgIndex = 0;
 
     private Knight mc;
@@ -45,6 +47,10 @@ public class GameFrame extends JFrame {
 
     public static void main(String[] args) {
         new GameFrame();
+    }
+    
+    public JLabel getDrawPane() {
+        return drawpane;
     }
 
     public int getStaminaCounter() { return staminaCounter; }
@@ -145,6 +151,63 @@ public class GameFrame extends JFrame {
                     if (mc.isAttacking() && mc.getAttackHitBox().intersects(m.getHitBox())) {
                         m.damage(mc.getAttackPoint(), mc.getTurn());
                     }
+                }
+                
+                if (golemBoss != null) {
+                    golemBoss.updateBehavior(mc);
+                    golemBoss.updateLocation();
+                    // Boss Damage to Player
+                    if (!golemBoss.isDead()) {
+                        // Damage 1: Collision/Slide/Jump Damage (Move 2/3)
+                        if (golemBoss.isCollisionDamageActive() && mc.getHitBox().intersects(golemBoss.getHitBox())) {
+                            mc.damage(GameConstants.GOLEM_JUMP_SLIDE_DMG);
+                        }
+                        // Damage 2: Attack 1 Melee Hit
+                        if (golemBoss.isAttack1Active() && mc.getHitBox().intersects(golemBoss.getAttack1HitBox())) {
+                            mc.damage(GameConstants.GOLEM_MELEE_DMG);
+                        }
+                        // Damage 3: GroundHit Particle Damage
+                        if (golemBoss.isParticleDamageActive() && mc.getHitBox().intersects(golemBoss.getParticleHitBox())) {
+                            mc.damage(GameConstants.GOLEM_MELEE_DMG); // ใช้ดาเมจเบาสำหรับ particle
+                        }
+                        // Player Damage to Boss
+                        if (mc.isAttacking() && mc.getAttackHitBox().intersects(golemBoss.getHitBox())) {
+                            golemBoss.damage(mc.getAttackPoint());
+                        }
+                    }
+                }
+               ArrayList<Rock> rocksToRemove = new ArrayList<>();
+               for (Rock r : rocks) {
+                   r.updateLocation();
+                   if (mc.isAttacking() && mc.getAttackHitBox().intersects(r.getHitBox())) {
+                        if (!r.isDestroyed() && !r.isParticle()) {
+                            r.destroyAndParticle();
+                            System.out.println("Rock hit by Knight's attack!");
+                        }
+                    }
+                   if (r.getHitBox().intersects(mc.getHitBox())) {
+                       // Rock ชนผู้เล่น
+                       if (!r.isDestroyed() && !r.isParticle()) {
+                           mc.damage(GameConstants.GOLEM_ROCK_DMG); // สมมติว่ามี GOLEM_ROCK_DAMAGE
+                           r.destroyAndParticle(); // เปลี่ยนเป็น Particle
+                       }
+                   }
+                   if (r.isDestroyed()) {
+                       rocksToRemove.add(r);
+                   }
+               }
+               // Cleanup Golem
+                if (golemBoss != null && golemBoss.isDeathAnimationFinished()) {
+                    drawpane.remove(golemBoss);
+                    drawpane.remove(golemBoss.getAttackLabel());
+                    drawpane.remove(golemBoss.getParticleLabel());
+                    golemBoss = null;
+                }
+                
+                // Cleanup Rocks
+                for (Rock r : rocksToRemove) {
+                    rocks.remove(r);
+                    drawpane.remove(r);
                 }
 
                 monsters.removeIf(m -> {
@@ -295,7 +358,10 @@ public class GameFrame extends JFrame {
         final int MIN_Y = 50;
         final int MAX_Y = 550;
         final int AIR_MAX_Y = 300;
-
+        
+        if(gameMap.getCurrentLevel() == 0) {
+            golemBoss = new Golem(this, gameMap, 300, 350);
+        }
         if (gameMap.getCurrentLevel() == 0) {
             monsters.add(new Skeleton(this, gameMap, 300, 400));
             monsters.add(new Skeleton(this, gameMap, 600, 400));
@@ -387,6 +453,12 @@ public class GameFrame extends JFrame {
         drawpane.revalidate();
         drawpane.repaint();
     }
+    
+    public void spawnRock(int x, int y, int vx, int vy) {
+    Rock newRock = new Rock(this, gameMap, x, y, vx, vy);
+    rocks.add(newRock);
+    drawpane.add(newRock);
+}
 
     private void togglePause() {
         if (gameOverDialog != null && gameOverDialog.isVisible()) {
