@@ -88,11 +88,12 @@ public class GameFrame extends JFrame {
                 }
                 if (e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == KeyEvent.VK_W) {
                     mc.jump();
+                    mc.isJumping = true;
                 }
                 if (e.getKeyCode() == KeyEvent.VK_J) {
                     mc.attack();
                 }
-                if (e.getKeyCode() == KeyEvent.VK_K) {
+                if (e.getKeyCode() == KeyEvent.VK_K || e.getKeyCode() == KeyEvent.VK_SHIFT) {
                     mc.roll();
                 }
                 if (e.getKeyCode() == KeyEvent.VK_L) {
@@ -111,6 +112,9 @@ public class GameFrame extends JFrame {
                 }
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     movingRight = false;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == KeyEvent.VK_W) {
+                    mc.isJumping = false;
                 }
             }
         });
@@ -201,6 +205,7 @@ public class GameFrame extends JFrame {
                     drawpane.remove(golemBoss);
                     drawpane.remove(golemBoss.getAttackLabel());
                     drawpane.remove(golemBoss.getParticleLabel());
+                    drawpane.remove(golemBoss.getJumpLabel());
                     golemBoss = null;
                 }
                 
@@ -582,6 +587,18 @@ public class GameFrame extends JFrame {
             drawpane.remove(m);
         }
         monsters.clear();
+        
+        drawpane.remove(golemBoss);
+         drawpane.remove(golemBoss.getAttackLabel());
+        drawpane.remove(golemBoss.getParticleLabel());
+        drawpane.remove(golemBoss.getParticleLabel2());
+        drawpane.remove(golemBoss.getJumpLabel());
+        golemBoss = null;
+        
+        for (Rock m : rocks) {
+            drawpane.remove(m);
+        }
+        rocks.clear();
 
         gameMap.clearMapVisuals(drawpane);
         gameMap = new GameMap();

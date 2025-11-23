@@ -161,6 +161,7 @@ public class Golem extends JLabel {
     
     public JLabel getAttackLabel() { return attackLabel; }
     public JLabel getParticleLabel() { return particleLabel; }
+    public JLabel getParticleLabel2() { return particleLabel2; }
     public JLabel getJumpLabel() { return jumpLabel; }
     public int getHp() { return hp; }
     public boolean isDead() { return isDead; }

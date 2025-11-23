@@ -45,10 +45,11 @@ public class Knight extends JLabel {
     private int rollSpeed = 6;
     private int vx = 0;
     private int vy = 0;
-    private int jumpStrength = -12;
+    private int jumpStrength = -14;
     private int gravity = GameConstants.GRAVITY;
     private boolean onGround = true;
     private boolean turnLeft = false;
+    public boolean isJumping = false;
     
     private int hp = 100;
     private int attackPoint = 25;
@@ -423,11 +424,14 @@ public class Knight extends JLabel {
     }
 
     public void updateLocation() {
-        if (attack || isHit || heal || isDead) return;
+        if (isHit || heal || isDead) return;
         if (hp <= 0) {
             setDead();
             isDead = true;
             return;
+        }
+        if (!isJumping && vy < 0) {
+            vy = 0;
         }
 
         vy += gravity;
@@ -567,6 +571,7 @@ public class Knight extends JLabel {
         if (onGround) {
             vy = jumpStrength;
             onGround = false;
+            isJumping = true;
         }
     }
     
