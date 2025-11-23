@@ -424,7 +424,7 @@ public class Knight extends JLabel {
     }
 
     public void updateLocation() {
-        if (isHit || heal || isDead) return;
+        if (attack || isHit || heal || isDead) return;
         if (hp <= 0) {
             setDead();
             isDead = true;
