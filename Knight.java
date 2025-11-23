@@ -12,14 +12,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-class Knight extends JLabel {
-    private MainApplication parentFrame;
+public class Knight extends JLabel {
+    private GameFrame parentFrame;
 
     private GameIcon idleGif, runGif, jumpGif, hitGif, rollGif, deadGif;
     private GameIcon idleFlip, runFlip, jumpFlip, hitFlip, rollFlip, deadFlip;
 
     private JLabel rollLabel;
-    private GameSoundEffect attackSFX, runSFX, rollSFX, hitSFX, deadSFX;
+    private GameSoundEffect attackSFX, attack3SFX, runSFX, rollSFX, healSFX, hitSFX, deadSFX;
 
     //For attack animation
     private JLabel attackLabel;
@@ -58,6 +58,7 @@ class Knight extends JLabel {
     private boolean isHit;
     private boolean canInput = true;
     private boolean roll;
+    private boolean heal;
     private long invincibleEndTime = 0;
     private boolean invincible = false;
     private boolean isDead;
@@ -65,7 +66,7 @@ class Knight extends JLabel {
     
     private GameMap map;
     
-    public Knight(MainApplication pf, GameMap m) {
+    public Knight(GameFrame pf, GameMap m) {
         parentFrame = pf;
         this.map = m;
         
@@ -99,9 +100,11 @@ class Knight extends JLabel {
         rollLabel.setVisible(false);
 
         attackSFX = new GameSoundEffect(GameConstants.FILE_MC_ATTACK_SFX);
+        attack3SFX = new GameSoundEffect(GameConstants.FILE_MC_ATTACK3_SFX);
         runSFX = new GameSoundEffect(GameConstants.FILE_MC_RUN_SFX);
         rollSFX = new GameSoundEffect(GameConstants.FILE_MC_ROLL_SFX);
         hitSFX = new GameSoundEffect(GameConstants.FILE_MC_HIT_SFX);
+        healSFX = new GameSoundEffect(GameConstants.FILE_MC_HEAL_SFX);
         deadSFX = new GameSoundEffect(GameConstants.FILE_MC_DEAD_SFX);
         
         setBounds(curX, curY, width, height);
@@ -303,10 +306,32 @@ class Knight extends JLabel {
     }
 
     public void regenHp() {
-        hp += 25;
-        if (hp >= 100)
-            hp = 100;
-        System.out.println("HP: " + hp);
+        if (!canInput || attack || roll || !onGround || isDead) return;
+        canInput = false;
+        heal = true;
+        setIdle();
+        long now = System.currentTimeMillis();
+
+        new Timer(450, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                canInput = true;
+                ((Timer)e.getSource()).stop();
+            }
+        }).start();
+
+        new Timer(650, e -> {
+            heal = false;
+            hp += 25;
+            if (hp >= 100)
+                hp = 100;
+            playSound(healSFX);
+            invincible = true;
+            invincibleEndTime = now + (2 * GameConstants.DURATION_MS);
+            flashEffect();
+            System.out.println("HP: " + hp);
+            ((Timer) e.getSource()).stop();
+        }).start();
     }
 
     public void regenStamina() {
@@ -317,7 +342,7 @@ class Knight extends JLabel {
     }
 
     public void attack() {
-        if (!canInput || roll || isDead) return;
+        if (!canInput || roll || heal || isDead) return;
         canInput = false;
         attack = true;
         
@@ -332,7 +357,8 @@ class Knight extends JLabel {
                 setAttack3();
                 break;
         }
-        playSound(attackSFX);
+        if (currentAttack == 2) playSound(attack3SFX);
+        else playSound(attackSFX);
 
         new Timer(450, new ActionListener() {
             @Override
@@ -368,7 +394,7 @@ class Knight extends JLabel {
     }
 
     public void roll() {
-        if (!canInput || attack || !onGround || stamina < 25 || isDead) return;
+        if (!canInput || attack || !onGround || stamina < 25 || heal || isDead) return;
         canInput = false;
         roll = true;
         setRoll();
@@ -387,7 +413,9 @@ class Knight extends JLabel {
             public void actionPerformed(ActionEvent e) {
                 roll = false;
                 rollLabel.setVisible(false);
-                stamina -= 25;
+                if (parentFrame.getStaminaCounter() >= 188)
+                    stamina -= 50;
+                else stamina -= 25;
                 setIdle();
                 ((Timer)e.getSource()).stop();
             }
@@ -395,7 +423,7 @@ class Knight extends JLabel {
     }
 
     public void updateLocation() {
-        if (attack || isHit || isDead) return;
+        if (attack || isHit || heal || isDead) return;
         if (hp <= 0) {
             setDead();
             isDead = true;

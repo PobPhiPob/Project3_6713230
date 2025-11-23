@@ -20,7 +20,7 @@ public class Bat extends Monsters {
     
     protected GameSoundEffect idleSFX, hitSFX, deadSFX;
     
-    public Bat(MainApplication pf, GameMap m, int startX, int startY) {
+    public Bat(GameFrame pf, GameMap m, int startX, int startY) {
         
         super(pf, m, startX, startY, 
               BAT_WIDTH, BAT_HEIGHT, 

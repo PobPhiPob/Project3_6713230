@@ -13,7 +13,7 @@ import java.awt.*;
 
 public abstract class Monsters extends JLabel{
     
-    protected MainApplication parentFrame;
+    protected GameFrame parentFrame;
     protected GameMap map;
     
     protected int width;
@@ -46,7 +46,7 @@ public abstract class Monsters extends JLabel{
     protected GameIcon idleGif, walkGif, deadGif, attackGif, hitGif;
     protected GameIcon idleFlip, walkFlip, deadFlip, attackFlip, hitFlip;
 
-    public Monsters(MainApplication pf, GameMap m, int startX, int startY, 
+    public Monsters(GameFrame pf, GameMap m, int startX, int startY,
                    int monsterWidth, int monsterHeight, int atkWidth, int atkHeight, 
                    int initialHP, int initialAttack, int initialSpeed) {
         

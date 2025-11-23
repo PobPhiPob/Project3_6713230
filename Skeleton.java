@@ -20,7 +20,7 @@ public class Skeleton extends Monsters {
     
     protected GameSoundEffect attackSFX, walkSFX, hitSFX, deadSFX;
     
-    public Skeleton(MainApplication pf, GameMap m, int startX, int startY) {
+    public Skeleton(GameFrame pf, GameMap m, int startX, int startY) {
         
         super(pf, m, startX, startY, 
               SKELETON_WIDTH, SKELETON_HEIGHT, 

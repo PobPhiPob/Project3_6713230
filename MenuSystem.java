@@ -137,7 +137,7 @@ class MenuSystem extends JFrame {
     private void startGame() {
         bgTimer.stop();
         dispose();
-        new MainApplication();
+        new GameFrame();
     }
 
     private void openOptions() {
