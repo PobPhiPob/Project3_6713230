@@ -26,7 +26,6 @@ public class MainApplication extends JFrame {
     
     private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
     private ArrayList<Monsters> monsters = new ArrayList<>();
-    // ใช้ Golem แทน Boss
     private Golem golemBoss;
     private ArrayList<Rock> rocks = new ArrayList<>();
     
@@ -161,14 +160,29 @@ public class MainApplication extends JFrame {
                     }
                 }
                
+               ArrayList<Rock> rocksToRemove = new ArrayList<>();
                for (Rock r : rocks) {
-                    r.updateLocation();
-                    
-                    if (!r.isDestroyed() && mc.getHitBox().intersects(r.getHitBox())) {
-                        mc.damage(GameConstants.GOLEM_ROCK_DMG);
-                        r.destroy(); // ทำลายก้อนหินเมื่อชนผู้เล่น
+                   r.updateLocation();
+                   
+                   if (mc.isAttacking() && mc.getAttackHitBox().intersects(r.getHitBox())) {
+                        if (!r.isDestroyed() && !r.isParticle()) {
+                            r.destroyAndParticle();
+                            System.out.println("Rock hit by Knight's attack!");
+                        }
                     }
-                }
+
+                   if (r.getHitBox().intersects(mc.getHitBox())) {
+                       // Rock ชนผู้เล่น
+                       if (!r.isDestroyed() && !r.isParticle()) {
+                           mc.damage(GameConstants.GOLEM_ROCK_DMG); // สมมติว่ามี GOLEM_ROCK_DAMAGE
+                           r.destroyAndParticle(); // เปลี่ยนเป็น Particle
+                       }
+                   }
+                   
+                   if (r.isDestroyed()) {
+                       rocksToRemove.add(r);
+                   }
+               }
                
                // Cleanup Golem
                 if (golemBoss != null && golemBoss.isDeathAnimationFinished()) {
@@ -179,13 +193,10 @@ public class MainApplication extends JFrame {
                 }
                 
                 // Cleanup Rocks
-                rocks.removeIf(r -> {
-                    if (r.isDestroyed()) {
-                        drawpane.remove(r);
-                        return true;
-                    }
-                    return false;
-                });
+                for (Rock r : rocksToRemove) {
+                    rocks.remove(r);
+                    drawpane.remove(r);
+                }
                 
                 // Cleanup Monster
                 monsters.removeIf(m -> {
@@ -322,9 +333,6 @@ public class MainApplication extends JFrame {
         
          if (gameMap.getCurrentLevel() == 0) {
              golemBoss = new Golem(this, gameMap, 300, 350); // ตำแหน่ง Boss
-             drawpane.add(golemBoss.getAttackLabel());
-             drawpane.add(golemBoss.getParticleLabel());
-             drawpane.add(golemBoss);
         }
 
         if (gameMap.getCurrentLevel() == 0 || gameMap.getCurrentLevel() == 6) {
@@ -417,11 +425,9 @@ public class MainApplication extends JFrame {
         drawpane.repaint();
     }
     
-    // Function สำหรับ Golem เรียกใช้เพื่อ Spawn ก้อนหิน
-    public void spawnRock(int x, int y) {
-        Rock newRock = new Rock(this, gameMap, x, y);
-        rocks.add(newRock);
-        drawpane.add(newRock);
-        // ต้อง revalidate/repaint หรืออาศัย timer ในการ repaint รอบถัดไป
-    }
+    public void spawnRock(int x, int y, int vx, int vy) {
+    Rock newRock = new Rock(this, gameMap, x, y, vx, vy);
+    rocks.add(newRock);
+    drawpane.add(newRock);
+}
 }

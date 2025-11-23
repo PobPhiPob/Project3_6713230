@@ -79,6 +79,7 @@ interface GameConstants
     static final String FILE_GOLEM_GROUNDHIT     = PATH + "/Sprite/Boss/groundHit.png";
     static final String FILE_GOLEM_PARTICLE      = PATH + "/Sprite/Boss/particle.gif";
     static final String FILE_GOLEM_ROCK        = PATH + "/Sprite/Boss/rock.png";
+    static final String FILE_GOLEM_ROCKPARTICLE        = PATH + "/Sprite/Boss/rockParticle.png";
     static final String FILE_GOLEM_SLIDE         = PATH + "/Sprite/Boss/slide.png";
     static final String FILE_GOLEM_SLIDEPARTICLE = PATH + "/Sprite/Boss/slideParticle.gif";
     static final String FILE_GOLEM_SLIDEPARTICLEFLIP = PATH + "/Sprite/Boss/slideParticleflip.gif";
@@ -111,6 +112,9 @@ interface GameConstants
     
     static final int ROCK_WIDTH          = 100;
     static final int ROCK_HEIGHT         = 100;
+    static final int ROCK_FALL_VY = 3;
+    static final int ROCK_PROJECTILE_VX = 10;
+    static final int PARTICLE_DURATION_MS = 1000;
     
     final int GOLEM_WIDTH         = 230;
     static final int GOLEM_HEIGHT        = 170;
@@ -120,7 +124,7 @@ interface GameConstants
     static final int GOLEM_JUMP_HEIGHT    = 240;
     static final int GOLEM_MAX_HP        = 400;
     static final int GOLEM_MELEE_DMG     = 10;
-    static final int GOLEM_JUMP_SLIDE_DMG= 50;
+    static final int GOLEM_JUMP_SLIDE_DMG= 25;
     static final int GOLEM_ROCK_DMG      = 25;
     static final int GOLEM_RECHARGE_TIME = 2500;
     

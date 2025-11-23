@@ -26,7 +26,6 @@ public class Golem extends JLabel {
     private int curX;
     private int curY;
     private int hp = GameConstants.GOLEM_MAX_HP;
-    private int speed = 2; 
     private int vx = 0;
     private int vy = 0;
     private int gravity = GameConstants.GRAVITY;
@@ -38,16 +37,22 @@ public class Golem extends JLabel {
     protected long hitTime = 0;
     private long flashTime = 0;
     private final long FLASH_DURATION = 100;
+    private int currentAnimFrame = 0;
 
     //----- Attack Constants and State
-    private final int MELEE_RANGE = 70;      // ระยะตีธรรมดา
-    private final int JUMP_RANGE = 350;      // ระยะกระโดด
+     private final int MAX_JUMP_SPEED_X = 30;
     private final int SLIDE_SPEED = 15;
-    private final int JUMP_STRENGTH = -24;
+    private final int JUMP_STRENGTH = -25;
     private final long PRESLIDE_CHARGE_TIME = 500;
+    private final int GROUNDHIT_ROCK_VX = 4; // ความเร็วแนวนอนสำหรับ Rock ที่พุ่งเฉียง
+    
+    //----- Phase and Cooldown Constants
+    private final int HP_PHASE_2 = GameConstants.GOLEM_MAX_HP / 2;
+    private final long RECHARGE_DURATION_PHASE1 = GameConstants.GOLEM_RECHARGE_TIME; // 1500 ms (ตัวอย่าง)
+    private final long RECHARGE_DURATION_PHASE2 = GameConstants.GOLEM_RECHARGE_TIME / 2; // 750 ms (เร็วขึ้น 50%)
     
     private enum GolemState {
-        IDLE, ATTACK1, PREJUMP, ONAIR, FALL, GROUNDHIT, PRESLIDE, SLIDE, SLIDE_END, RECHARGE, DEAD
+        IDLE, ATTACK1, PREJUMP, ONAIR, FALL, GROUNDHIT, PRESLIDE, SLIDE, SLIDE_END, RECHARGE
     }
     private GolemState currentState = GolemState.IDLE;
     private long lastActionTime = 0;
@@ -125,6 +130,7 @@ public class Golem extends JLabel {
         setIcon(idleGif);
         setBorder(BorderFactory.createLineBorder(Color.RED, 2)); // debug
         
+        parentFrame.getDrawPane().add(this);
         parentFrame.getDrawPane().add(attackLabel);
         parentFrame.getDrawPane().add(particleLabel);
         parentFrame.getDrawPane().add(particleLabel2);
@@ -170,7 +176,7 @@ public class Golem extends JLabel {
         if (hp <= 0) {
             hp = 0;
             isDead = true;
-            currentState = GolemState.DEAD;
+            setDead();
             System.out.printf("Golem Dead\n");
         } else {
             hitTime = System.currentTimeMillis() + GameConstants.DURATION_MS;
@@ -219,6 +225,7 @@ public class Golem extends JLabel {
                 if (currentState == GolemState.FALL) {
                     currentState = GolemState.GROUNDHIT;
                     lastActionTime = System.currentTimeMillis();
+                    currentAnimFrame = 0;
                 } else if (currentState != GolemState.GROUNDHIT) {
                     currentState = GolemState.IDLE;
                 }
@@ -252,7 +259,7 @@ public class Golem extends JLabel {
     
     public void updateBehavior(Knight player) {  
         if (isDead) {
-            currentState = GolemState.DEAD;
+            setDead();
             return; 
         }
         
@@ -260,6 +267,10 @@ public class Golem extends JLabel {
         int monsterCenterX = curX + width / 2;
         int distanceX = playerCenterX - monsterCenterX;
         int absDistanceX = Math.abs(distanceX);
+        
+        // phase detect
+        boolean isPhase2 = hp <= HP_PHASE_2;
+        long currentRechargeDuration = isPhase2 ? RECHARGE_DURATION_PHASE2 : RECHARGE_DURATION_PHASE1;
         
         // ตั้งค่าทิศทาง
         if (currentState != GolemState.ONAIR && currentState != GolemState.FALL) {
@@ -271,14 +282,26 @@ public class Golem extends JLabel {
             case IDLE:
                 vx = 0;
                 // ตรวจสอบ Cooldown ก่อนเริ่มท่าใหม่
-                if (System.currentTimeMillis() > lastActionTime + RECHARGE_DURATION) {
-                    // Boss Attack Logic (Fair Play)
-                    if (absDistanceX < MELEE_RANGE) {
-                        currentState = GolemState.ATTACK1; // Move 1: Melee
-                    } else if (absDistanceX < JUMP_RANGE && onGround) {
-                        currentState = GolemState.PREJUMP; // Move 2: Jump Slam
+                if (System.currentTimeMillis() > lastActionTime + currentRechargeDuration) {
+                    
+                    // Boss Attack Logic (Fair Play & Phase 2)
+                    int chosenMove; 
+                    if (isPhase2) {
+                        // Phase 2: โอกาสใช้ Jump/Slide สูงขึ้น (0=Slide, 1=Jump, 2=Slide)
+                        chosenMove = rand.nextInt(3); 
+                        if (chosenMove == 0 || chosenMove == 2) chosenMove = 2; // Slide
+                        else chosenMove = 1; // Jump
                     } else {
-                        currentState = GolemState.PRESLIDE; // Move 3: Slide (ใช้เมื่อผู้เล่นอยู่ไกล)
+                        // Phase 1: สุ่ม 3 ท่า (0=Attack1, 1=Jump, 2=Slide)
+                        chosenMove = rand.nextInt(3); 
+                    }
+                    
+                    if (chosenMove == 0 && !isPhase2) { // Attack 1 เฉพาะ Phase 1
+                        currentState = GolemState.ATTACK1;
+                    } else if (chosenMove == 1 && onGround) { // Jump Slam
+                        currentState = GolemState.PREJUMP;
+                    } else { // Slide (หรือเป็นท่า default ของ Phase 2)
+                        currentState = GolemState.PRESLIDE; 
                     }
                     lastActionTime = System.currentTimeMillis(); // Reset timer for new action
                 }
@@ -289,35 +312,90 @@ public class Golem extends JLabel {
                 if (System.currentTimeMillis() > lastActionTime+920) { // ระยะเวลา Animation
                     currentState = GolemState.RECHARGE;
                     lastActionTime = System.currentTimeMillis();
+                } else if (System.currentTimeMillis() > lastActionTime + 300 && currentAnimFrame != 99) { // สมมติว่าเฟรมที่ 300ms เป็นเฟรมที่ "ง้างหมัด"
+                    // *** Rock Projectile Attack Logic ***
+                    // ตรวจสอบว่ายังไม่ได้เสกหินในรอบนี้ (ใช้ currentAnimFrame เป็น flag ชั่วคราว)
+                    if (currentAnimFrame == 0 || currentAnimFrame == 99) {
+                        int rockX, rockY;
+                        int rockVX = (turnLeft ? -GameConstants.ROCK_PROJECTILE_VX : GameConstants.ROCK_PROJECTILE_VX);
+
+                        // ตำแหน่ง Rock ออกจากหมัด (ปรับ offset ให้ดูสมจริง)
+                        rockY = curY + 20; // ตำแหน่งกลางๆ ของตัว Golem
+                        if (turnLeft) {
+                            rockX = curX;
+                        } else {
+                            rockX = curX + width - 50;
+                        }
+
+                        // Spawn Rock พร้อมความเร็วเริ่มต้น vy=0 (ยิงตรง)
+                        parentFrame.spawnRock(rockX, rockY, rockVX, 0);
+
+                        currentAnimFrame = 99; // ตั้ง Flag ว่าได้เสกหินแล้ว
+                    }
+                } else if (System.currentTimeMillis() <= lastActionTime + 300) {
+                    currentAnimFrame = 0; // Reset Flag เมื่อเริ่ม Animation
                 }
                 break;
 
             case PREJUMP: // Move 2: เตรียมกระโดด (Charge up)
                 vx = 0;
                 if (System.currentTimeMillis() > lastActionTime + 900) { // 0.3s Charge
-                    lockedDirection = turnLeft;
-                    vx = turnLeft ? -5 : 5; // กำหนดความเร็วไปทางผู้เล่นเล็กน้อย
+                      // --- Aiming Logic Start: Calculate vx to land near the player ---
+                    
+                    // 1. Calculate time of flight (t = -2 * v_y0 / a) in game ticks
+                    final double flightTime = (double) (-2.0 * JUMP_STRENGTH) / gravity; 
+                    
+                    // 2. Calculate required vx
+                    if (flightTime > 0) {
+                        // dx / t_flight, rounded to nearest integer
+                        vx = (int) Math.round(distanceX / flightTime); 
+                    } else {
+                        vx = 0;
+                    }
+
+                    // 3. Cap speed (prevent unrealistically fast movement)
+                    if (vx > MAX_JUMP_SPEED_X) vx = MAX_JUMP_SPEED_X;
+                    if (vx < -MAX_JUMP_SPEED_X) vx = -MAX_JUMP_SPEED_X;
+                    
+                    // --- Aiming Logic End ---
+
+                    lockedDirection = distanceX < 0; // Lock direction based on final target
                     vy = JUMP_STRENGTH;
                     lastActionTime = System.currentTimeMillis();
-                    // State จะเปลี่ยนไป ONAIR ใน updateLocation เมื่อหลุดจากพื้น
+                    // State จะเปลี่ยนไป ONAIR ใน updateLocation เมื่อหลุดจากพื้นน
                 }
                 break;
 
             case ONAIR: // Move 2: ลอยกลางอากาศ
             case FALL: // Move 2: ตก
-                // ยังคงรักษาทิศทางเดิม
-                vx = (lockedDirection ? -5 : 5); 
                 break;
 
             case GROUNDHIT: // Move 2: กระแทกพื้น (Particle damage, Rock spawn)
                 vx = 0;
-                if (System.currentTimeMillis() > lastActionTime + 100) { // Rock spawn delay
-                    // SPawn Rocks 3-5 ก้อน
-                    for (int i = 0; i < 4; i++) {
-                        int rockX = curX + (i * 100) + rand.nextInt(100) - 150; // สุ่มช่วงการตก
-                        //parentFrame.spawnRock(rockX, 0);
-                    }
+                final int FRAME_WIDTH = GameConstants.FRAME_WIDTH;
+                final int FRAME_HEIGHT = GameConstants.FRAME_HEIGHT;
+                final int ROCK_WIDTH = GameConstants.ROCK_WIDTH;
+       
+                 // Rock 1
+                if (currentAnimFrame == 0 && System.currentTimeMillis() > lastActionTime + 100) { 
+                    int rockX1 = (int)(FRAME_WIDTH * 0.80) - (ROCK_WIDTH / 2);  
+                    int rockY1 = 0 - ROCK_WIDTH; 
+                    parentFrame.spawnRock(rockX1, rockY1, -GROUNDHIT_ROCK_VX * 3, GameConstants.ROCK_FALL_VY * 5);
+                    
+                    currentAnimFrame = 1; // Mark Rock 1 as spawned
                 }
+                
+                // Rock 2
+                if (currentAnimFrame == 1 && System.currentTimeMillis() > lastActionTime + 370) {
+                     int rockX2 = (int)(FRAME_WIDTH); 
+                    int rockY2 = (int)(FRAME_HEIGHT * 0.20); 
+
+                    // Velocity: VX ต่ำ (พุ่งเฉียงซ้ายช้า), VY * 3 (ร่วงเร็ว)
+                    parentFrame.spawnRock(rockX2, rockY2, -GROUNDHIT_ROCK_VX * 3, GameConstants.ROCK_FALL_VY * 5);
+                    
+                    currentAnimFrame = 99; // Mark all rocks as spawned
+                }
+                
                 if (System.currentTimeMillis() > lastActionTime + 500) { // ระยะเวลา Particle
                     currentState = GolemState.RECHARGE;
                     lastActionTime = System.currentTimeMillis();
@@ -331,12 +409,13 @@ public class Golem extends JLabel {
                     lockedDirection = turnLeft;
                     currentState = GolemState.SLIDE;
                     lastActionTime = System.currentTimeMillis();
+                    currentAnimFrame = 0;
                 }
                 break;
                 
             case SLIDE: // Move 3: พุ่ง
                 // พุ่งเร็วไปทางผู้เล่น
-                vx = turnLeft ? -SLIDE_SPEED : SLIDE_SPEED;
+                vx = lockedDirection ? -SLIDE_SPEED : SLIDE_SPEED;
                 if (System.currentTimeMillis() > lastActionTime + 800) { // 0.8s Slide Duration
                     currentState = GolemState.SLIDE_END;
                     lastActionTime = System.currentTimeMillis();
@@ -346,6 +425,21 @@ public class Golem extends JLabel {
             case SLIDE_END: // Move 3: หยุดพุ่ง
                 vx = 0;
                 if (System.currentTimeMillis() > lastActionTime + 100) { // หยุดชั่วครู่
+                     if (currentAnimFrame == 0) {
+                        int rockX1 = (int)(GameConstants.FRAME_WIDTH * 0.25) - (GameConstants.ROCK_WIDTH / 2);
+                        int rockX2 = (int)(GameConstants.FRAME_WIDTH * 0.50) - (GameConstants.ROCK_WIDTH / 2);
+                        int rockX3 = (int)(GameConstants.FRAME_WIDTH * 0.75) - (GameConstants.ROCK_WIDTH / 2);
+                        int rockY = 0 - GameConstants.ROCK_HEIGHT; // Rock จะเริ่มจากขอบบนสุด
+                        
+                        // Rock 1: 25% (ร่วงตรง)
+                        parentFrame.spawnRock(rockX1, rockY, 0, GameConstants.ROCK_FALL_VY);
+                        // Rock 2: 50% (ร่วงตรง)
+                        parentFrame.spawnRock(rockX2, rockY, 0, GameConstants.ROCK_FALL_VY);
+                        // Rock 3: 75% (ร่วงตรง)
+                        parentFrame.spawnRock(rockX3, rockY, 0, GameConstants.ROCK_FALL_VY);
+                        
+                        currentAnimFrame = 99;
+                    }
                     currentState = GolemState.RECHARGE;
                     lastActionTime = System.currentTimeMillis();
                 }
@@ -358,12 +452,6 @@ public class Golem extends JLabel {
                 }
                 break;
                 
-            case DEAD:
-                vx = 0;
-                if (deathTimeEnd == 0) {
-                    deathTimeEnd = System.currentTimeMillis() + (3*GameConstants.DURATION_MS);
-                }
-                break;
         }
     }
     
@@ -453,9 +541,6 @@ public class Golem extends JLabel {
                 this.setVisible(true);
                 setIcon(slideGif); // ค้างภาพ Slide ก่อนพัก
                 break;
-            case DEAD:
-                setDead();
-                break;
         }
     }
     
@@ -477,6 +562,8 @@ public class Golem extends JLabel {
         this.setVisible(true);
         attackLabel.setVisible(false);
         particleLabel.setVisible(false);
+        jumpLabel.setVisible(false);
+        particleLabel2.setVisible(false);
         setIcon(deadGif);
         if (deathTimeEnd == 0) { 
             deathTimeEnd = System.currentTimeMillis() + (3*GameConstants.DURATION_MS);
@@ -489,8 +576,7 @@ public class Golem extends JLabel {
     
     // ตรวจสอบว่า Golem กำลังทำดาเมจจากการชน (Move 2, 3)
     public boolean isCollisionDamageActive() {
-        return currentState == GolemState.ONAIR || currentState == GolemState.FALL || 
-               currentState == GolemState.SLIDE;
+        return true;
     }
     
     // ตรวจสอบว่า Golem กำลังใช้ท่าโจมตีระยะประชิด (Move 1)
