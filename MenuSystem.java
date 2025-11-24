@@ -24,7 +24,7 @@ class MenuSystem extends JFrame {
     private int framewidth = GameConstants.FRAME_WIDTH;
     
     private GameSoundEffect MenuTheme;
-    private float MenuVolume = 0.2f;
+    private float MenuVolume = 0.5f;
 
     public static void main(String[] args) {
         MenuSystem menu = new MenuSystem();

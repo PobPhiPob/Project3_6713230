@@ -95,7 +95,7 @@ public class Knight extends JLabel {
         
         attackLabel = new JLabel();
         attackLabel.setVisible(false);
-        attackLabel.setBorder(BorderFactory.createLineBorder(Color.PINK, 2));
+//        attackLabel.setBorder(BorderFactory.createLineBorder(Color.PINK, 2));
 
         rollLabel = new JLabel();
         rollLabel.setVisible(false);

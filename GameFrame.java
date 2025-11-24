@@ -285,22 +285,17 @@ public class GameFrame extends JFrame {
         bg3 = bg3.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
         backgroundImages.add(new GameIcon(bg3));
 
-        // Add bg4, bg5, bg6 if they exist
-        try {
-            Image bg4 = new ImageIcon(GameConstants.FILE_BG_MAP4).getImage();
-            bg4 = bg4.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-            backgroundImages.add(new GameIcon(bg4));
+         Image bg4 = new ImageIcon(GameConstants.FILE_BG_MAP4).getImage();
+         bg4 = bg4.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+         backgroundImages.add(new GameIcon(bg4));
 
-            Image bg5 = new ImageIcon(GameConstants.FILE_BG_MAP5).getImage();
-            bg5 = bg5.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-            backgroundImages.add(new GameIcon(bg5));
+         Image bg5 = new ImageIcon(GameConstants.FILE_BG_MAP5).getImage();
+         bg5 = bg5.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+         backgroundImages.add(new GameIcon(bg5));
 
-            Image bg6 = new ImageIcon(GameConstants.FILE_BG_MAP6).getImage();
-            bg6 = bg6.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-            backgroundImages.add(new GameIcon(bg6));
-        } catch (Exception ex) {
-            // If additional backgrounds don't exist, continue with 3 maps
-        }
+         Image bg6 = new ImageIcon(GameConstants.FILE_BG_MAP6).getImage();
+         bg6 = bg6.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+         backgroundImages.add(new GameIcon(bg6));
 
         gameMap.drawMap(drawpane);
         drawpane.revalidate();
@@ -311,8 +306,8 @@ public class GameFrame extends JFrame {
 
         mc = new Knight(currentFrame, gameMap);
 
-        Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
-        mc.setBorder(hitbox);
+//        Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
+//        mc.setBorder(hitbox);
 
         hpLabel = new JLabel("HP: " + mc.getHp());
         hpLabel.setBounds(10, 40, 150, 30);
@@ -356,6 +351,7 @@ public class GameFrame extends JFrame {
 
     private void spawnMonsters() {
         for (Monsters m : monsters) {
+            m.stopAllSounds();
             drawpane.remove(m.getAttackLabel());
             drawpane.remove(m);
         }
@@ -383,7 +379,7 @@ public class GameFrame extends JFrame {
         final int MAX_Y = 550;
         final int AIR_MAX_Y = 300;
 
-        if (gameMap.getCurrentLevel() == 6) {
+        if (gameMap.getCurrentLevel() == 5) {
             golemBoss = new Golem(this, gameMap, 300, 350);
         }
         if (gameMap.getCurrentLevel() == 0) {
@@ -503,6 +499,7 @@ public class GameFrame extends JFrame {
         for (Monsters m : monsters) {
             m.stopAllSounds();
         }
+        themeSound.stop();
         pauseDialog = new JDialog(this, "PAUSED", true);
         pauseDialog.setSize(400, 300);
         pauseDialog.setLocationRelativeTo(this);
@@ -522,6 +519,7 @@ public class GameFrame extends JFrame {
             isPaused = false;
             pauseDialog.dispose();
             pauseDialog = null;
+            themeSound.playLoop();
         });
         pauseDialog.add(resumeButton);
 
@@ -576,6 +574,7 @@ public class GameFrame extends JFrame {
         gameOverDialog.setLayout(null);
         gameOverDialog.setUndecorated(true);
         gameOverDialog.getContentPane().setBackground(new Color(30, 10, 10, 250));
+        themeSound.stop();
 
         JLabel titleLabel = new JLabel("YOU DIED");
         titleLabel.setFont(new Font("Serif", Font.BOLD, 40));
@@ -625,6 +624,9 @@ public class GameFrame extends JFrame {
         isPaused = false;
         staminaCounter = 0;
         currentBgIndex = 0;
+        themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
+        themeSound.playLoop();
+        themeSound.setVolume(0.2f);
 
         for (Monsters m : monsters) {
             m.stopAllSounds();
@@ -657,8 +659,8 @@ public class GameFrame extends JFrame {
         drawpane.remove(mc.getRollLabel());
         drawpane.remove(mc);
         mc = new Knight(currentFrame, gameMap);
-        Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
-        mc.setBorder(hitbox);
+//        Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
+//        mc.setBorder(hitbox);
 
         hpLabel.setText("HP: " + mc.getHp());
         hpBar.setValue(mc.getHp());
