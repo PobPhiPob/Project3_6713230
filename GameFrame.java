@@ -22,6 +22,7 @@ public class GameFrame extends JFrame {
     private JLabel hpLabel, staminaLabel;
     private JProgressBar hpBar, staminaBar;
     private GameSoundEffect themeSound;
+    private GameSoundEffect bossTheme;
     private Timer timer;
     private int staminaCounter = 0;
 
@@ -273,7 +274,7 @@ public class GameFrame extends JFrame {
     public void addComponent() {
         drawpane = new JLabel();
 
-        Image bg1 = new ImageIcon(GameConstants.FILE_BG).getImage();
+        Image bg1 = new ImageIcon(GameConstants.FILE_BG_MAP1).getImage();
         bg1 = bg1.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
         backgroundImages.add(new GameIcon(bg1));
 
@@ -342,7 +343,10 @@ public class GameFrame extends JFrame {
 
         themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
         themeSound.playLoop();
-        themeSound.setVolume(0.2f);
+        themeSound.setVolume(currentVolume);
+
+        bossTheme = new GameSoundEffect(GameConstants.FILE_BOSS_THEME);
+        bossTheme.setVolume(currentVolume);
 
         contentpane.add(drawpane);
         validate();
@@ -364,6 +368,7 @@ public class GameFrame extends JFrame {
             drawpane.remove(golemBoss.getParticleLabel2());
             drawpane.remove(golemBoss.getJumpLabel());
             golemBoss = null;
+            bossTheme.stop();
 
             for (Rock m : rocks) {
                 drawpane.remove(m);
@@ -380,6 +385,8 @@ public class GameFrame extends JFrame {
         final int AIR_MAX_Y = 300;
 
         if (gameMap.getCurrentLevel() == 5) {
+            themeSound.stop();
+            bossTheme.playLoop();
             golemBoss = new Golem(this, gameMap, 300, 350);
         }
         if (gameMap.getCurrentLevel() == 0) {
@@ -512,7 +519,8 @@ public class GameFrame extends JFrame {
         for (Monsters m : monsters) {
             m.stopAllSounds();
         }
-        themeSound.stop();
+        if (gameMap.getCurrentLevel() == 5) bossTheme.stop();
+        else themeSound.stop();
         pauseDialog = new JDialog(this, "PAUSED", true);
         pauseDialog.setSize(400, 300);
         pauseDialog.setLocationRelativeTo(this);
@@ -532,7 +540,8 @@ public class GameFrame extends JFrame {
             isPaused = false;
             pauseDialog.dispose();
             pauseDialog = null;
-            themeSound.playLoop();
+            if (gameMap.getCurrentLevel() == 5) bossTheme.playLoop();
+            else themeSound.playLoop();
         });
         pauseDialog.add(resumeButton);
 
@@ -555,6 +564,7 @@ public class GameFrame extends JFrame {
             pauseDialog = null;
             timer.stop();
             dispose();
+            if (gameMap.getCurrentLevel() == 5) bossTheme.stop();
             themeSound.stop();
             restartGame();
             MenuSystem menu = new MenuSystem();
@@ -587,7 +597,8 @@ public class GameFrame extends JFrame {
         gameOverDialog.setLayout(null);
         gameOverDialog.setUndecorated(true);
         gameOverDialog.getContentPane().setBackground(new Color(30, 10, 10, 250));
-        themeSound.stop();
+        if (gameMap.getCurrentLevel() == 5) bossTheme.stop();
+        else themeSound.stop();
 
         JLabel titleLabel = new JLabel("YOU DIED");
         titleLabel.setFont(new Font("Serif", Font.BOLD, 40));
@@ -617,7 +628,6 @@ public class GameFrame extends JFrame {
             gameOverDialog = null;
             timer.stop();
             dispose();
-            themeSound.stop();
             MenuSystem menu = new MenuSystem();
             menu.setVisible(true);
         });
@@ -637,9 +647,11 @@ public class GameFrame extends JFrame {
         isPaused = false;
         staminaCounter = 0;
         currentBgIndex = 0;
+        bossTheme = new GameSoundEffect(GameConstants.FILE_BOSS_THEME);
+        bossTheme.setVolume(currentVolume);
         themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
         themeSound.playLoop();
-        themeSound.setVolume(0.2f);
+        themeSound.setVolume(currentVolume);
 
         for (Monsters m : monsters) {
             m.stopAllSounds();

@@ -237,6 +237,7 @@ public class Bat extends Monsters {
     protected void playIdleSound() {
         if (idleSFX != null) {
             idleSFX.playLoop();
+            idleSFX.setVolume(0.3f);
         }
     }
     
@@ -251,6 +252,7 @@ public class Bat extends Monsters {
         stopAllSounds();
         if (hitSFX != null) {
             hitSFX.playOnce();
+            hitSFX.setVolume(0.3f);
         }
     }
     
@@ -259,6 +261,7 @@ public class Bat extends Monsters {
         stopAllSounds();
         if (idleSFX != null) {
             deadSFX.playOnce();
+            deadSFX.setVolume(0.3f);
         }
     }
 }

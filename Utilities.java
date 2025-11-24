@@ -16,7 +16,6 @@ interface GameConstants
 {
     //----- Resource files
     static final String PATH             = "src/main/java/Project3_6713230/resources/";
-    static final String FILE_BG          = PATH + "tilebase1.jpg";
     static final String FILE_BG_MAP1     = PATH + "tilebase1.jpg";
     static final String FILE_BG_MAP2     = PATH + "tilebase2.jpg";
     static final String FILE_BG_MAP3     = PATH + "tilebase3.jpg";
@@ -25,6 +24,7 @@ interface GameConstants
     static final String FILE_BG_MAP6     = PATH + "tilebase6.jpg";
     
     static final String FILE_THEME                  = PATH + "Sound/CardCastle.wav";
+    static final String FILE_BOSS_THEME             = PATH + "Sound/BossTheme.wav";
     static final String FILE_MENU_THEME             = PATH + "Sound/Menu.wav";
     static final String FILE_MC_ATTACK_SFX          = PATH + "Sound/Knight/sword-swing.wav";
     static final String FILE_MC_ATTACK3_SFX         = PATH + "Sound/Knight/attack3.wav";
@@ -33,7 +33,6 @@ interface GameConstants
     static final String FILE_MC_HIT_SFX             = PATH + "Sound/Knight/hit.wav";
     static final String FILE_MC_HEAL_SFX            = PATH + "Sound/Knight/heal.wav";
     static final String FILE_MC_DEAD_SFX            = PATH + "Sound/Knight/dead.wav";
-    static final String FILE_MONSTER_HIT_SFX        = PATH + "Sound/Monsters/BasicHit.wav";
     static final String FILE_SKELETON_ATTACK_SFX    = PATH + "Sound/Monsters/Skeleton/Attack.wav";
     static final String FILE_SKELETON_WALK_SFX      = PATH + "Sound/Monsters/Skeleton/Walk.wav";
     static final String FILE_SKELETON_HIT_SFX       = PATH + "Sound/Monsters/Skeleton/Hit.wav";
@@ -98,8 +97,6 @@ interface GameConstants
     static final String FILE_HOLLOW_BG     = PATH + "BG/Church.gif";    
     static final String FILE_FOREST_BG     = PATH + "BG/Forest.gif";
     static final String FILE_RAIN_BG     = PATH + "BG/Rain.gif";
-    
-    static final String FILE_DUMMY       = PATH + "dummy.png";
 
     static final int FRAME_WIDTH  = 960;
     static final int FRAME_HEIGHT = 640;

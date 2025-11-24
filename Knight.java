@@ -40,7 +40,7 @@ public class Knight extends JLabel {
     private int hitboxHeight = GameConstants.MC_HEIGHT;
     
     private int curX = 10;
-    private int curY = 420;
+    private int curY = 430;
     private int speed = 5;
     private int rollSpeed = 6;
     private int vx = 0;
@@ -361,15 +361,14 @@ public class Knight extends JLabel {
         if (currentAttack == 2) playSound(attack3SFX);
         else playSound(attackSFX);
 
-        new Timer(450, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                canInput = true;
-                ((Timer)e.getSource()).stop();
-            }
-        }).start();
-
         if (currentAttack == 2) {
+            new Timer(600, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    canInput = true;
+                    ((Timer)e.getSource()).stop();
+                }
+            }).start();
             new Timer(650, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -381,6 +380,13 @@ public class Knight extends JLabel {
                 }
             }).start();
         } else {
+            new Timer(450, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    canInput = true;
+                    ((Timer)e.getSource()).stop();
+                }
+            }).start();
             new Timer(300, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
