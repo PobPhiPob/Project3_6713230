@@ -529,12 +529,29 @@ public class Knight extends JLabel {
         if (curX > 960 - width) curX = 960 - width;
 
         if (roll) {
-            curY += vy;
+            nextX = curX + (turnLeft ? -rollSpeed : rollSpeed);
+
             if (turnLeft) {
-                curX -= rollSpeed;
+                boolean hitWall = map.isSolid(nextX, checkY_bottom);
+                if (hitWall) {
+                    int tileCol = nextX / map.TILE_SIZE;
+                    curX = (tileCol + 1) * map.TILE_SIZE;
+                } else {
+                    curX = nextX;
+                }
+            } else {
+                boolean hitWall = map.isSolid(nextX + width, checkY_bottom);
+                if (hitWall) {
+                    int tileCol = (nextX + width) / map.TILE_SIZE;
+                    curX = (tileCol * map.TILE_SIZE) - width;
+                } else {
+                    curX = nextX;
+                }
+            }
+
+            if (turnLeft) {
                 rollLabel.setBounds(curX - ((rollWidth - width) / 2), curY - (rollHeight - height), rollWidth, rollHeight);
             } else {
-                curX += rollSpeed;
                 rollLabel.setBounds(curX, curY - (rollHeight - height), rollWidth, rollHeight);
             }
             setLocation(curX, curY);

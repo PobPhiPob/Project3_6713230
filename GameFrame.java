@@ -14,8 +14,6 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.util.ArrayList;
 import java.util.Random;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 public class GameFrame extends JFrame {
 

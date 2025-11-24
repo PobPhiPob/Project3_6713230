@@ -23,8 +23,8 @@ class MenuSystem extends JFrame {
     private int frameheight = GameConstants.FRAME_HEIGHT;
     private int framewidth = GameConstants.FRAME_WIDTH;
     
-    private GameSoundEffect menuMusic;
-    private float menuVolume = 0.2f;
+    private GameSoundEffect MenuTheme;
+    private float MenuVolume = 0.2f;
 
     public static void main(String[] args) {
         MenuSystem menu = new MenuSystem();
@@ -42,9 +42,9 @@ class MenuSystem extends JFrame {
         updateBackground();
         backgroundLabel.setLayout(null);
         
-        menuMusic = new GameSoundEffect(GameConstants.FILE_MENUSONG);
-        menuMusic.playLoop();
-        menuMusic.setVolume(menuVolume);
+        MenuTheme = new GameSoundEffect(GameConstants.FILE_MENU_THEME);
+        MenuTheme.playLoop();
+        MenuTheme.setVolume(MenuVolume);
 
         // Animated background timer
         bgTimer = new Timer(3000, new ActionListener() {
@@ -137,17 +137,17 @@ class MenuSystem extends JFrame {
 
     private void startGame() {
         bgTimer.stop();
-        if(menuMusic != null) {
-            menuMusic.stop();
+        if(MenuTheme != null) {
+            MenuTheme.stop();
         }
         dispose();
         new GameFrame();
     }
 
  private void openOptions() {
-     OptionsDialog dialog = new OptionsDialog(this, menuVolume, menuMusic);
+     OptionsDialog dialog = new OptionsDialog(this, MenuVolume, MenuTheme);
      dialog.setVisible(true);
-     menuVolume = dialog.getCurrentVolume();
+     MenuVolume = dialog.getCurrentVolume();
     }
  
  public void changeBackground(int i) {

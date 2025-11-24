@@ -24,8 +24,8 @@ interface GameConstants
     static final String FILE_BG_MAP5     = PATH + "tilebase5.jpg";
     static final String FILE_BG_MAP6     = PATH + "tilebase6.jpg";
     
-    static final String FILE_THEME                  = PATH + "CardCastle.wav";
-    static final String FILE_MENUSONG                  = PATH + "MenuSong.wav";
+    static final String FILE_THEME                  = PATH + "Sound/CardCastle.wav";
+    static final String FILE_MENU_THEME             = PATH + "Sound/Menu.wav";
     static final String FILE_MC_ATTACK_SFX          = PATH + "Sound/Knight/sword-swing.wav";
     static final String FILE_MC_ATTACK3_SFX         = PATH + "Sound/Knight/attack3.wav";
     static final String FILE_MC_RUN_SFX             = PATH + "Sound/Knight/running.wav";
