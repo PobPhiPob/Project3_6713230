@@ -356,12 +356,13 @@ public class GameFrame extends JFrame {
 
     private void spawnMonsters() {
         for (Monsters m : monsters) {
+            m.stopAllSounds();
             drawpane.remove(m.getAttackLabel());
             drawpane.remove(m);
         }
         monsters.clear();
 
-        if (gameMap.getCurrentLevel() != 6 && golemBoss != null) {
+        if (gameMap.getCurrentLevel() != 5 && golemBoss != null) {
             drawpane.remove(golemBoss);
             drawpane.remove(golemBoss.getAttackLabel());
             drawpane.remove(golemBoss.getParticleLabel());
@@ -383,7 +384,7 @@ public class GameFrame extends JFrame {
         final int MAX_Y = 550;
         final int AIR_MAX_Y = 300;
 
-        if (gameMap.getCurrentLevel() == 6) {
+        if (gameMap.getCurrentLevel() == 5) {
             golemBoss = new Golem(this, gameMap, 300, 350);
         }
         if (gameMap.getCurrentLevel() == 0) {
@@ -424,13 +425,25 @@ public class GameFrame extends JFrame {
                         boolean notCeiling = !gameMap.isSolid(startX + 10, startY + 1)
                                 && !gameMap.isSolid(startX + skeletonWidth - 10, startY + 1);
 
-                        boolean notInMap = !gameMap.isSolid(startX / 2 + 10, startY / 2 + 1)
-                                && !gameMap.isSolid((startX + skeletonWidth) / 2 - 10, startY / 2 + 1);
+                        boolean notInMap = !gameMap.isSolid(startX, startY)
+                                && !gameMap.isSolid(startX + skeletonWidth - 1, startY)
+                                && !gameMap.isSolid(startX, startY + skeletonHeight - 1)
+                                && !gameMap.isSolid(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
+                                && !gameMap.isSolid(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
 
-                        boolean isLethalArea = gameMap.isLethal(startX + 10, groundLevelY)
-                                || gameMap.isLethal(startX + skeletonWidth - 10, groundLevelY);
+                        boolean isLethalArea = !gameMap.isLethal(startX, startY)
+                                && !gameMap.isLethal(startX + skeletonWidth - 1, startY)
+                                && !gameMap.isLethal(startX, startY + skeletonHeight - 1)
+                                && !gameMap.isLethal(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
+                                && !gameMap.isLethal(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
+                        
+                        boolean isHazardArea = !gameMap.isHazard(startX, startY)
+                                && !gameMap.isHazard(startX + skeletonWidth - 1, startY)
+                                && !gameMap.isHazard(startX, startY + skeletonHeight - 1)
+                                && !gameMap.isHazard(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
+                                && !gameMap.isHazard(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
 
-                        if (hasSupport && !isLethalArea && notCeiling && notInMap) {
+                        if (hasSupport && !isLethalArea && notCeiling && notInMap && isHazardArea) {
                             validSpawnFound = true;
                             break;
                         }
@@ -455,7 +468,8 @@ public class GameFrame extends JFrame {
                             int checkY_center = startY + GameConstants.BAT_HEIGHT / 2;
 
                             boolean isColliding = gameMap.isSolid(checkX_center, checkY_center)
-                                    || gameMap.isLethal(checkX_center, checkY_center);
+                                    || gameMap.isLethal(checkX_center, checkY_center) 
+                                    || gameMap.isHazard(checkX_center, checkY_center);
 
                             if (!isColliding) {
                                 break;
