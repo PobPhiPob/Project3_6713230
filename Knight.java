@@ -114,17 +114,13 @@ public class Knight extends JLabel {
     public JLabel getAttackLabel() { return attackLabel; }
     public JLabel getRollLabel() { return rollLabel; }
     public Rectangle getAttackHitBox() { 
-    int atkX = curX;
-    int atkY = curY - (attackImageHeight - height); // ชดเชย Y ให้ตรงกับการแสดงผล
+    int atkX = curX + width;
+    int atkY = curY - 10;
 
     if (turnLeft) {
-        // เมื่อหันซ้าย Hitbox ต้องเริ่มก่อนตำแหน่ง curX ของตัวละครหลัก
-        // เพื่อครอบคลุมพื้นที่การโจมตีด้านซ้าย
-        atkX = curX - attackImageWidth; // กำหนดให้ Hitbox เริ่มที่ขอบซ้ายของภาพโจมตี
+        atkX = curX - attackImageWidth + width;
     }
-    
-    // ใช้ขนาดภาพการโจมตีเป็นขนาด Hitbox
-    return new Rectangle(atkX, atkY, attackImageWidth, attackImageHeight); 
+    return new Rectangle(atkX, atkY, attackImageWidth - width, height + 10); 
 }
     public Rectangle getHitBox() { return new Rectangle(curX, curY, hitboxWidth, hitboxHeight); }
     public int getCurX() { return curX; }

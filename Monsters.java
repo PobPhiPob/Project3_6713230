@@ -101,13 +101,21 @@ public abstract class Monsters extends JLabel{
         }
         
         final int OUT_OF_BOUNDS_Y = GameConstants.FRAME_HEIGHT;
-        final int OUT_OF_BOUNDS_X = GameConstants.FRAME_WIDTH; 
+        final int OUT_OF_BOUNDS_X = GameConstants.FRAME_WIDTH - width; 
 
-        if (curY > OUT_OF_BOUNDS_Y || curX < -OUT_OF_BOUNDS_X || curX > 960 + OUT_OF_BOUNDS_X) {
+        if (curY > OUT_OF_BOUNDS_Y) {
             if (!isDead()) {
                 hp = 0;
                 setDead();
             }
+        }
+        
+        if (curX < 0) {
+            curX = 0;
+            vx = 0;
+        } else if (curX > OUT_OF_BOUNDS_X) {
+            curX = OUT_OF_BOUNDS_X;
+            vx = 0;
         }
         
         vy += gravity;
