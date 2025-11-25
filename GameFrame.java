@@ -23,6 +23,9 @@ public class GameFrame extends JFrame {
     private JProgressBar hpBar, staminaBar;
     private JLabel potionLabel, potion;
     private GameIcon potionIcon;
+    private JLabel timerLabel;
+    private long lastTime;
+    private double elaspedSecond;
     private GameSoundEffect themeSound;
     private GameSoundEffect bossTheme;
     private Timer timer;
@@ -250,6 +253,7 @@ public class GameFrame extends JFrame {
                 staminaLabel.setText("Stamina: " + mc.getStamina());
                 staminaBar.setValue(mc.getStamina());
                 potionLabel.setText("Potion: " + mc.getPotion());
+                timerLabel.setText("Time: " + String.format("%.1f", elaspedSecond));
 
                 // Check if player died
                 if (mc.getHp() <= 0) {
@@ -258,7 +262,7 @@ public class GameFrame extends JFrame {
                     }
                 }
 
-                if (mc.getX() > 910) {
+                if (mc.getX() > 910 && !gameMap.FinalLevel()) {
                     if (currentBgIndex == backgroundFilePaths.length - 1) {
                         movingRight = false;
                         mc.updateLocation();
@@ -456,12 +460,18 @@ public class GameFrame extends JFrame {
         potion.setBounds(430, 10, 40, 40);
         potion.setIcon(potionIcon);
 
+        timerLabel = new JLabel("Time: " + String.format("%.1f", elaspedSecond));
+        timerLabel.setBounds(820, 15, 150, 30);
+        timerLabel.setForeground(Color.WHITE);
+        timerLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
+
         drawpane.add(hpLabel);
         drawpane.add(hpBar);
         drawpane.add(staminaLabel);
         drawpane.add(staminaBar);
         drawpane.add(potionLabel);
         drawpane.add(potion);
+        drawpane.add(timerLabel);
 
         drawpane.add(mc.getAttackLabel());
         drawpane.add(mc.getRollLabel());
@@ -475,6 +485,7 @@ public class GameFrame extends JFrame {
         bossTheme.setVolume(currentVolume);
 
         contentpane.add(drawpane);
+        startTimer();
         validate();
         repaint();
     }
@@ -671,11 +682,9 @@ public class GameFrame extends JFrame {
             isPaused = false;
             pauseDialog.dispose();
             pauseDialog = null;
-            if (gameMap.getCurrentLevel() == 5) {
-                bossTheme.playLoop();
-            } else {
-                themeSound.playLoop();
-            }
+            startTimer();
+            if (gameMap.getCurrentLevel() == 5) bossTheme.playLoop();
+            else themeSound.playLoop();
         });
         mainPanel.add(resumeButton);
 
@@ -701,7 +710,6 @@ public class GameFrame extends JFrame {
                 bossTheme.stop();
             }
             themeSound.stop();
-            restartGame();
             MenuSystem menu = new MenuSystem();
             menu.setVisible(true);
         });
@@ -786,6 +794,28 @@ public class GameFrame extends JFrame {
         }).start();
     }
 
+    private void startTimer() {
+        Thread timerThread = new Thread() {
+            public void run() {
+                lastTime = System.nanoTime();
+
+                while(!isPaused) {
+                    long now = System.nanoTime();
+                    double delta = (now - lastTime) / 1_000_000_000.0;
+                    lastTime = now;
+
+                    elaspedSecond += delta;
+                    try {
+                        Thread.sleep(16);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        timerThread.start();
+    }
+
     private void restartGame() {
         isPaused = false;
         staminaCounter = 0;
@@ -834,11 +864,6 @@ public class GameFrame extends JFrame {
 //        Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
 //        mc.setBorder(hitbox);
 
-        hpLabel.setText("HP: " + mc.getHp());
-        hpBar.setValue(mc.getHp());
-        staminaLabel.setText("Stamina: " + mc.getStamina());
-        staminaBar.setValue(mc.getStamina());
-
         drawpane.setIcon(currentBackgroundIcon);
         gameMap.drawMap(drawpane);
 
@@ -847,7 +872,8 @@ public class GameFrame extends JFrame {
         drawpane.add(mc);
 
         spawnMonsters();
-
+        elaspedSecond = 0;
+        startTimer();
         drawpane.revalidate();
         drawpane.repaint();
     }
