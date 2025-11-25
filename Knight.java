@@ -402,6 +402,7 @@ public class Knight extends JLabel {
 
     public void roll() {
         if (!canInput || attack || stamina < 25 || heal || isDead) return;
+        isHit = false;
         canInput = false;
         roll = true;
         setRoll();

@@ -40,6 +40,12 @@ interface GameConstants
     static final String FILE_BAT_IDLE_SFX           = PATH + "Sound/Monsters/Bat/Idle.wav";
     static final String FILE_BAT_HIT_SFX            = PATH + "Sound/Monsters/Bat/Hit.wav";
     static final String FILE_BAT_DEAD_SFX           = PATH + "Sound/Monsters/Bat/Dead.wav";
+    static final String FILE_GOLEM_ATTACK_SFX   = PATH + "Sound/Boss/Attack.wav";
+    static final String FILE_GOLEM_JUMP_SFX     = PATH + "Sound/Boss/Jump.wav";
+    static final String FILE_GOLEM_LAND_SFX     = PATH + "Sound/Boss/Land.wav";
+    static final String FILE_GOLEM_SLIDE_SFX    = PATH + "Sound/Boss/Slide.wav";
+    static final String FILE_GOLEM_HIT_SFX      = PATH + "Sound/Boss/Hit.wav";
+    static final String FILE_GOLEM_DEAD_SFX     = PATH + "Sound/Boss/Dead.wav";
     
     static final String FILE_MC_IDLE     = PATH + "Sprite/Knight/mc_Idle.gif";
     static final String FILE_MC_IDLEFLIP = PATH + "Sprite/Knight/mc_IdleFlip.gif";
@@ -131,7 +137,7 @@ interface GameConstants
     static final int GOLEM_MELEE_DMG     = 25;
     static final int GOLEM_JUMP_SLIDE_DMG= 25;
     static final int GOLEM_ROCK_DMG      = 25;
-    static final int GOLEM_RECHARGE_TIME = 2500;
+    static final int GOLEM_RECHARGE_TIME = 1500;
     
     static final int BAT_WIDTH = 50;
     static final int BAT_HEIGHT = 50;
