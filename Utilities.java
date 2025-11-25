@@ -22,6 +22,7 @@ interface GameConstants
     static final String FILE_BG_MAP4     = PATH + "tilebase4.jpg";
     static final String FILE_BG_MAP5     = PATH + "tilebase5.jpg";
     static final String FILE_BG_MAP6     = PATH + "tilebase6.jpg";
+    static final String FILE_POTION      = PATH + "potion.png";
     
     static final String FILE_THEME                  = PATH + "Sound/CardCastle.wav";
     static final String FILE_BOSS_THEME             = PATH + "Sound/BossTheme.wav";
@@ -33,6 +34,7 @@ interface GameConstants
     static final String FILE_MC_HIT_SFX             = PATH + "Sound/Knight/hit.wav";
     static final String FILE_MC_HEAL_SFX            = PATH + "Sound/Knight/heal.wav";
     static final String FILE_MC_DEAD_SFX            = PATH + "Sound/Knight/dead.wav";
+    static final String FILE_MC_NOPE_SFX            = PATH + "Sound/Knight/nope.wav";
     static final String FILE_SKELETON_ATTACK_SFX    = PATH + "Sound/Monsters/Skeleton/Attack.wav";
     static final String FILE_SKELETON_WALK_SFX      = PATH + "Sound/Monsters/Skeleton/Walk.wav";
     static final String FILE_SKELETON_HIT_SFX       = PATH + "Sound/Monsters/Skeleton/Hit.wav";
@@ -40,7 +42,7 @@ interface GameConstants
     static final String FILE_BAT_IDLE_SFX           = PATH + "Sound/Monsters/Bat/Idle.wav";
     static final String FILE_BAT_HIT_SFX            = PATH + "Sound/Monsters/Bat/Hit.wav";
     static final String FILE_BAT_DEAD_SFX           = PATH + "Sound/Monsters/Bat/Dead.wav";
-    
+
     static final String FILE_MC_IDLE     = PATH + "Sprite/Knight/mc_Idle.gif";
     static final String FILE_MC_IDLEFLIP = PATH + "Sprite/Knight/mc_IdleFlip.gif";
     static final String FILE_MC_RUN      = PATH + "Sprite/Knight/mc_Run.gif";

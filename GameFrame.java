@@ -21,6 +21,8 @@ public class GameFrame extends JFrame {
     private JLabel drawpane;
     private JLabel hpLabel, staminaLabel;
     private JProgressBar hpBar, staminaBar;
+    private JLabel potionLabel, potion;
+    private GameIcon potionIcon;
     private GameSoundEffect themeSound;
     private GameSoundEffect bossTheme;
     private Timer timer;
@@ -236,6 +238,7 @@ public class GameFrame extends JFrame {
                 hpBar.setValue(mc.getHp());
                 staminaLabel.setText("Stamina: " + mc.getStamina());
                 staminaBar.setValue(mc.getStamina());
+                potionLabel.setText("Potion: " + mc.getPotion());
 
                 // Check if player died
                 if (mc.getHp() <= 0) {
@@ -244,6 +247,15 @@ public class GameFrame extends JFrame {
                     }
                 }
 
+<<<<<<< HEAD
+                if (mc.getX() > 910 && !gameMap.FinalLevel()) {
+                    gameMap.nextLevel();
+                    gameMap.clearMapVisuals(drawpane);
+                    mc.setStartPosition();
+                    currentBgIndex++;
+                    if (currentBgIndex >= backgroundImages.size()) {
+                        currentBgIndex = 0;
+=======
                 if (mc.getX() > 910) {
                     if (currentBgIndex == backgroundFilePaths.length - 1) {
                         movingRight = false; 
@@ -264,6 +276,7 @@ public class GameFrame extends JFrame {
                         drawpane.remove(mc);
                         drawpane.add(mc);
                         spawnMonsters();
+>>>>>>> d65eefc9505edb2ea86e27368ce76ebabb2e4c2c
                     }
                 }
 
@@ -331,10 +344,22 @@ public class GameFrame extends JFrame {
         staminaBar.setForeground(Color.ORANGE);
         staminaBar.setBackground(Color.DARK_GRAY);
 
+        potionLabel = new JLabel("Potion: " + mc.getPotion());
+        potionLabel.setBounds(480, 15, 150, 30);
+        potionLabel.setForeground(Color.WHITE);
+        potionLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
+
+        potionIcon = new GameIcon(GameConstants.FILE_POTION).resize(40, 40);
+        potion = new JLabel();
+        potion.setBounds(430, 10, 40, 40);
+        potion.setIcon(potionIcon);
+
         drawpane.add(hpLabel);
         drawpane.add(hpBar);
         drawpane.add(staminaLabel);
         drawpane.add(staminaBar);
+        drawpane.add(potionLabel);
+        drawpane.add(potion);
 
         drawpane.add(mc.getAttackLabel());
         drawpane.add(mc.getRollLabel());

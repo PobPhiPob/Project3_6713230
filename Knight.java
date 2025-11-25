@@ -19,7 +19,7 @@ public class Knight extends JLabel {
     private GameIcon idleFlip, runFlip, jumpFlip, hitFlip, rollFlip, deadFlip;
 
     private JLabel rollLabel;
-    private GameSoundEffect attackSFX, attack3SFX, runSFX, rollSFX, healSFX, hitSFX, deadSFX;
+    private GameSoundEffect attackSFX, attack3SFX, runSFX, rollSFX, healSFX, hitSFX, deadSFX, nopeSFX;
 
     //For attack animation
     private JLabel attackLabel;
@@ -55,6 +55,7 @@ public class Knight extends JLabel {
     private int attackPoint = 25;
     private int currentAttack;
     private int stamina = 50;
+    private int potion = 10;
     private boolean attack;
     private boolean isHit;
     private boolean canInput = true;
@@ -107,6 +108,7 @@ public class Knight extends JLabel {
         hitSFX = new GameSoundEffect(GameConstants.FILE_MC_HIT_SFX);
         healSFX = new GameSoundEffect(GameConstants.FILE_MC_HEAL_SFX);
         deadSFX = new GameSoundEffect(GameConstants.FILE_MC_DEAD_SFX);
+        nopeSFX = new GameSoundEffect(GameConstants.FILE_MC_NOPE_SFX);
         
         setBounds(curX, curY, width, height);
     }
@@ -127,6 +129,7 @@ public class Knight extends JLabel {
     public int getCurY() { return curY; }
     public int getHp() { return hp; }
     public int getStamina() { return stamina; }
+    public int getPotion() { return potion; }
     public boolean isDeathAnimetionFinished() { return deathAnimetionFinished; }
     public boolean isAttacking() { return attack; }
     public int getAttackPoint() { return attackPoint; }
@@ -309,12 +312,16 @@ public class Knight extends JLabel {
 
     public void regenHp() {
         if (!canInput || attack || roll || !onGround || isDead) return;
+        if (potion <= 0 || hp >= 100) {
+            playSound(nopeSFX);
+            return;
+        }
         canInput = false;
         heal = true;
         setIdle();
         long now = System.currentTimeMillis();
 
-        new Timer(1200, new ActionListener() {
+        new Timer(750, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 canInput = true;
@@ -322,12 +329,13 @@ public class Knight extends JLabel {
             }
         }).start();
 
-        new Timer(1500, e -> {
+        new Timer(650, e -> {
             heal = false;
             hp += 25;
             if (hp >= 100)
                 hp = 100;
             playSound(healSFX);
+            potion -= 1;
             invincible = true;
             invincibleEndTime = now + (2 * GameConstants.DURATION_MS);
             flashEffect();
