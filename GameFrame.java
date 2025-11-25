@@ -137,14 +137,12 @@ public class GameFrame extends JFrame {
                 }
                 
                 if (mc.isRolling()) {
-                    if (System.currentTimeMillis() - mc.getRollStartTime() > 250) {
+                    if (System.currentTimeMillis() - mc.getRollStartTime() > 300) {
                         
                         if (!mc.getTurn() && movingLeft) {
-                            System.out.println("cancel roll when you press A");
                             mc.cancelRoll();
                         }
                         else if (mc.getTurn() && movingRight) {
-                            System.out.println("cancel roll when you press D");
                             mc.cancelRoll();
                         }
                     }
