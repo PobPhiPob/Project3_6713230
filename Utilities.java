@@ -121,7 +121,7 @@ interface GameConstants
     static final int ROCK_PROJECTILE_VX = 10;
     static final int PARTICLE_DURATION_MS = 1000;
     
-    final int GOLEM_WIDTH         = 230;
+    final int        GOLEM_WIDTH         = 230;
     static final int GOLEM_HEIGHT        = 170;
     static final int GOLEM_ATK_WIDTH     = 270;
     static final int GOLEM_ATK_HEIGHT    = 170;

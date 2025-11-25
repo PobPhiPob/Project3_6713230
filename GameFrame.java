@@ -26,7 +26,9 @@ public class GameFrame extends JFrame {
     private Timer timer;
     private int staminaCounter = 0;
 
-    private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
+    private String[] backgroundFilePaths;
+    private GameIcon currentBackgroundIcon;
+    
     private ArrayList<Monsters> monsters = new ArrayList<>();
     private Golem golemBoss;
     private ArrayList<Rock> rocks = new ArrayList<>();
@@ -243,18 +245,26 @@ public class GameFrame extends JFrame {
                 }
 
                 if (mc.getX() > 910) {
-                    gameMap.nextLevel();
-                    gameMap.clearMapVisuals(drawpane);
-                    mc.setStartPosition();
-                    currentBgIndex++;
-                    if (currentBgIndex >= backgroundImages.size()) {
-                        currentBgIndex = 0;
+                    if (currentBgIndex == backgroundFilePaths.length - 1) {
+                        movingRight = false; 
+                        mc.updateLocation(); 
+                    } else {
+                        gameMap.nextLevel();
+                        gameMap.clearMapVisuals(drawpane);
+                        mc.setStartPosition();
+
+                        currentBgIndex++;
+                        Image newBg = new ImageIcon(backgroundFilePaths[currentBgIndex]).getImage();
+                        newBg = newBg.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+                        currentBackgroundIcon = new GameIcon(newBg);
+
+                        drawpane.setIcon(currentBackgroundIcon);
+
+                        gameMap.drawMap(drawpane);
+                        drawpane.remove(mc);
+                        drawpane.add(mc);
+                        spawnMonsters();
                     }
-                    drawpane.setIcon(backgroundImages.get(currentBgIndex));
-                    gameMap.drawMap(drawpane);
-                    drawpane.remove(mc);
-                    drawpane.add(mc);
-                    spawnMonsters();
                 }
 
                 drawpane.revalidate();
@@ -274,35 +284,24 @@ public class GameFrame extends JFrame {
     public void addComponent() {
         drawpane = new JLabel();
 
-        Image bg1 = new ImageIcon(GameConstants.FILE_BG_MAP1).getImage();
-        bg1 = bg1.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-        backgroundImages.add(new GameIcon(bg1));
-
-        Image bg2 = new ImageIcon(GameConstants.FILE_BG_MAP2).getImage();
-        bg2 = bg2.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-        backgroundImages.add(new GameIcon(bg2));
-
-        Image bg3 = new ImageIcon(GameConstants.FILE_BG_MAP3).getImage();
-        bg3 = bg3.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-        backgroundImages.add(new GameIcon(bg3));
-
-         Image bg4 = new ImageIcon(GameConstants.FILE_BG_MAP4).getImage();
-         bg4 = bg4.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-         backgroundImages.add(new GameIcon(bg4));
-
-         Image bg5 = new ImageIcon(GameConstants.FILE_BG_MAP5).getImage();
-         bg5 = bg5.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-         backgroundImages.add(new GameIcon(bg5));
-
-         Image bg6 = new ImageIcon(GameConstants.FILE_BG_MAP6).getImage();
-         bg6 = bg6.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-         backgroundImages.add(new GameIcon(bg6));
+        backgroundFilePaths = new String[]{
+            GameConstants.FILE_BG_MAP1,
+            GameConstants.FILE_BG_MAP2,
+            GameConstants.FILE_BG_MAP3,
+            GameConstants.FILE_BG_MAP4,
+            GameConstants.FILE_BG_MAP5,
+            GameConstants.FILE_BG_MAP6
+        };
+        
+        Image initialBg = new ImageIcon(backgroundFilePaths[currentBgIndex]).getImage();
+        initialBg = initialBg.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        currentBackgroundIcon = new GameIcon(initialBg);
 
         gameMap.drawMap(drawpane);
         drawpane.revalidate();
         drawpane.repaint();
 
-        drawpane.setIcon(backgroundImages.get(currentBgIndex));
+        drawpane.setIcon(currentBackgroundIcon);
         drawpane.setLayout(null);
 
         mc = new Knight(currentFrame, gameMap);
@@ -650,6 +649,10 @@ public class GameFrame extends JFrame {
         themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
         themeSound.playLoop();
         themeSound.setVolume(currentVolume);
+        
+        Image initialBg = new ImageIcon(backgroundFilePaths[currentBgIndex]).getImage(); 
+        initialBg = initialBg.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        currentBackgroundIcon = new GameIcon(initialBg);
 
         for (Monsters m : monsters) {
             m.stopAllSounds();
@@ -690,7 +693,7 @@ public class GameFrame extends JFrame {
         staminaLabel.setText("Stamina: " + mc.getStamina());
         staminaBar.setValue(mc.getStamina());
 
-        drawpane.setIcon(backgroundImages.get(currentBgIndex));
+        drawpane.setIcon(currentBackgroundIcon);
         gameMap.drawMap(drawpane);
 
         drawpane.add(mc.getAttackLabel());
