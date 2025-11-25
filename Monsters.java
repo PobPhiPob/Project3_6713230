@@ -67,10 +67,10 @@ public abstract class Monsters extends JLabel{
         
         attack = new JLabel();
         attack.setVisible(false);
-        attack.setBorder(BorderFactory.createLineBorder(Color.PINK, 2));
+        //attack.setBorder(BorderFactory.createLineBorder(Color.PINK, 2));
 
         setBounds(curX, curY, width, height);
-        setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+        //setBorder(BorderFactory.createLineBorder(Color.RED, 2));
     }
 
     public Rectangle getHitBox()                { return new Rectangle(curX, curY, width, height); }

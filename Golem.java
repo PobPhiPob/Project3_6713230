@@ -112,23 +112,23 @@ public class Golem extends JLabel {
         // Setup auxiliary labels
         attackLabel = new JLabel();
         attackLabel.setVisible(false);
-        attackLabel.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 2)); // debug
+        //attackLabel.setBorder(BorderFactory.createLineBorder(Color.YELLOW, 2)); // debug
         
         jumpLabel = new JLabel();
         jumpLabel.setVisible(false);
-        jumpLabel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2)); // debug
+        //jumpLabel.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2)); // debug
         
         particleLabel = new JLabel();
         particleLabel.setVisible(false);
-        particleLabel.setBorder(BorderFactory.createLineBorder(Color.CYAN, 2)); // debug
+        //particleLabel.setBorder(BorderFactory.createLineBorder(Color.CYAN, 2)); // debug
         
         particleLabel2 = new JLabel(); // เพิ่มบรรทัดนี้
         particleLabel2.setVisible(false);
-        particleLabel2.setBorder(BorderFactory.createLineBorder(Color.MAGENTA, 2)); // debug
+        //particleLabel2.setBorder(BorderFactory.createLineBorder(Color.MAGENTA, 2)); // debug
         
         setBounds(curX, curY, width, height);
         setIcon(idleGif);
-        setBorder(BorderFactory.createLineBorder(Color.RED, 2)); // debug
+        //setBorder(BorderFactory.createLineBorder(Color.RED, 2)); // debug
         
         parentFrame.getDrawPane().add(this);
         parentFrame.getDrawPane().add(attackLabel);
