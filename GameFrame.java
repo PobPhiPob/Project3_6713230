@@ -808,6 +808,8 @@ public class GameFrame extends JFrame {
                 lastTime = System.nanoTime();
 
                 while(!isPaused) {
+                    if (golemBoss != null && golemBoss.isDead())
+                        break;
                     long now = System.nanoTime();
                     double delta = (now - lastTime) / 1_000_000_000.0;
                     lastTime = now;
@@ -882,78 +884,6 @@ public class GameFrame extends JFrame {
         spawnMonsters();
         elaspedSecond = 0;
         startTimer();
-        drawpane.revalidate();
-        drawpane.repaint();
-    }
-    private JButton createDialogButton(String text) {
-        JButton button = new JButton(text) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                g.setColor(getBackground());
-                g.fillRect(0, 0, getWidth(), getHeight());
-                super.paintComponent(g);
-            }
-        };
-
-        button.setFont(new Font("Serif", Font.BOLD, 20));
-        button.setForeground(Color.WHITE);
-        button.setBackground(new Color(50, 50, 60, 200));
-        button.setFocusPainted(false);
-        button.setContentAreaFilled(false);
-        button.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150), 2));
-
-        button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setBackground(new Color(80, 80, 100, 230));
-                button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3));
-                button.repaint();
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                button.setBackground(new Color(50, 50, 60, 200));
-                button.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150), 2));
-                button.repaint();
-            }
-        });
-        return button;
-    }
-    
-    public void applyNewDifficulty() {
-        if (mc != null) mc.stopAllSounds();
-        for (Monsters m : monsters) {
-            m.stopAllSounds();
-            drawpane.remove(m.getAttackLabel());
-            drawpane.remove(m);
-        }
-        monsters.clear();
-        if (golemBoss != null) {
-            drawpane.remove(golemBoss.getAttackLabel());
-            drawpane.remove(golemBoss);
-            golemBoss = null;
-        }
-        if (themeSound != null) themeSound.stop();
-        if (bossTheme != null) bossTheme.stop();
-
-        if (mc != null) drawpane.remove(mc);
-
-        mc = new Knight(currentFrame, gameMap, gameDifficulty);
-        mc.setStartPosition(); 
-        drawpane.add(mc);
-
-        hpBar.setMaximum(mc.getHp());
-        hpBar.setValue(mc.getHp());
-        staminaBar.setMaximum(mc.getStamina());
-        staminaBar.setValue(mc.getStamina());
-        hpLabel.setText("HP: " + mc.getHp());
-        staminaLabel.setText("Stamina: " + mc.getStamina());
-
-        spawnMonsters();
-
-        if (gameMap.getCurrentLevel() == 5 && golemBoss != null) bossTheme.playLoop();
-        else if (themeSound != null) themeSound.playLoop();
-
         drawpane.revalidate();
         drawpane.repaint();
     }

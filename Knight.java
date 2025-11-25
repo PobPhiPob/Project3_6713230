@@ -160,7 +160,7 @@ public class Knight extends JLabel {
     public int getAttackPoint() { return attackPoint; }
     public boolean getTurn() { return turnLeft; }
 
-    public void playSound(GameSoundEffect sfx) {
+    private void playSound(GameSoundEffect sfx) {
         if (sfx != null) {
             sfx.playOnce();
         }
