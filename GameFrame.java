@@ -263,11 +263,7 @@ public class GameFrame extends JFrame {
                     }
                 }
 
-<<<<<<< HEAD
                 if (mc.getX() > 910 && !gameMap.FinalLevel()) {
-=======
-                if (mc.getX() > 910) {
->>>>>>> fa23efeba4338e900d2a07573718544b0f232956
                     if (currentBgIndex == backgroundFilePaths.length - 1) {
                         movingRight = false; 
                         mc.updateLocation(); 
@@ -693,7 +689,6 @@ public class GameFrame extends JFrame {
                     lastTime = now;
 
                     elaspedSecond += delta;
-                    System.out.println(elaspedSecond);
                     try {
                         Thread.sleep(16);
                     } catch (InterruptedException e) {
