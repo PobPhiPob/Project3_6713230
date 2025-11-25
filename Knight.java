@@ -125,14 +125,29 @@ public class Knight extends JLabel {
     private void setInitialStats() {
         if ("Easy".equals(difficulty)) {
             attackPoint = 40;
+            potion = 20;
+            hp = 200;
+            stamina = 100;
         } else if ("Normal".equals(difficulty)) {
             attackPoint = 25;
+            potion = 10;
+            hp = 100;
+            stamina = 50;
         } else if ("Hard".equals(difficulty)) {
             attackPoint = 15;
+            potion = 7;
+            hp = 100;
+            stamina = 50;
         } else if ("Expert".equals(difficulty)) {
             attackPoint = 10;
+            potion = 5;
+            hp = 100;
+            stamina = 50;
         } else if ("Nightmare".equals(difficulty)) {
             attackPoint = 5;
+            potion = 3;
+            hp = 100;
+            stamina = 25;
         }
     }
     

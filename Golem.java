@@ -98,6 +98,8 @@ private int consecutiveMoveCount = 0; // นับจำนวนครั้ง
         this.curX = startX;
         this.curY = startY;
         
+        setDifficultyStats(gameDifficulty);
+        
         // Load Golem Sprites (assuming Flip versions exist/can be flipped)
         idleGif = new GameIcon(GameConstants.FILE_GOLEM_IDLE).resize(width, height);
         deadGif = new GameIcon(GameConstants.FILE_GOLEM_DEAD).resize(width, height);
@@ -176,6 +178,22 @@ private int consecutiveMoveCount = 0; // นับจำนวนครั้ง
              return new Rectangle(curX - 50, curY + height - 10, width + 100, atk_height / 2); 
         }
         return new Rectangle(0, 0, 0, 0);
+    }
+    
+    public void setDifficultyStats(String difficulty) {
+        int baseHp = hp;
+
+        if ("Easy".equals(difficulty)) {
+            hp = (int)(baseHp * 0.7);
+        } else if ("Normal".equals(difficulty)) {
+            hp = baseHp;
+        } else if ("Hard".equals(difficulty)) {
+            hp = (int)(baseHp * 1.5);
+        } else if ("Expert".equals(difficulty)) {
+            hp = (int)(baseHp * 2.0);
+        } else if ("Nightmare".equals(difficulty)) {
+            hp = (int)(baseHp * 3.0);
+        }
     }
     
     public JLabel getAttackLabel() { return attackLabel; }
