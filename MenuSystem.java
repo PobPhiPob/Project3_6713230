@@ -25,6 +25,7 @@ class MenuSystem extends JFrame {
     
     private GameSoundEffect MenuTheme;
     private float MenuVolume = 0.5f;
+    private String gameDifficulty = "Normal";
 
     public static void main(String[] args) {
         MenuSystem menu = new MenuSystem();
@@ -141,13 +142,14 @@ class MenuSystem extends JFrame {
             MenuTheme.stop();
         }
         dispose();
-        new GameFrame();
+        new GameFrame(this.gameDifficulty);
     }
 
  private void openOptions() {
-     OptionsDialog dialog = new OptionsDialog(this, MenuVolume, MenuTheme);
+     OptionsDialog dialog = new OptionsDialog(this, MenuVolume, MenuTheme, gameDifficulty, false);
      dialog.setVisible(true);
      MenuVolume = dialog.getCurrentVolume();
+     gameDifficulty = dialog.getSelectedDifficulty();
     }
  
  public void changeBackground(int i) {

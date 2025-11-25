@@ -46,6 +46,7 @@ public class GameFrame extends JFrame {
     private boolean movingRight = false;
 
     private GameMap gameMap = new GameMap();
+    private String gameDifficulty;
 
     private int framewidth = GameConstants.FRAME_WIDTH;
     private int frameheight = GameConstants.FRAME_HEIGHT;
@@ -56,10 +57,6 @@ public class GameFrame extends JFrame {
 
     private float currentVolume = 0.2f;
 
-    public static void main(String[] args) {
-        new GameFrame();
-    }
-
     public JLabel getDrawPane() {
         return drawpane;
     }
@@ -68,7 +65,7 @@ public class GameFrame extends JFrame {
         return staminaCounter;
     }
 
-    public GameFrame() {
+    public GameFrame(String difficulty) {
         setTitle("Rock & Slash Game");
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -79,6 +76,7 @@ public class GameFrame extends JFrame {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+        this.gameDifficulty = difficulty;
 
         addComponent();
         spawnMonsters();
@@ -323,7 +321,7 @@ public class GameFrame extends JFrame {
         drawpane.setIcon(currentBackgroundIcon);
         drawpane.setLayout(null);
 
-        mc = new Knight(currentFrame, gameMap);
+        mc = new Knight(currentFrame, gameMap, gameDifficulty);
 
 //        Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
 //        mc.setBorder(hitbox);
@@ -422,14 +420,14 @@ public class GameFrame extends JFrame {
         final int AIR_MAX_Y = 300;
 
         if (gameMap.getCurrentLevel() == 0) {
-            monsters.add(new Skeleton(this, gameMap, 300, 400));
-            monsters.add(new Skeleton(this, gameMap, 600, 400));
+            monsters.add(new Skeleton(this, gameMap, 300, 400, gameDifficulty));
+            monsters.add(new Skeleton(this, gameMap, 600, 400, gameDifficulty));
         } else if (gameMap.getCurrentLevel() == 1) {
-            monsters.add(new Skeleton(this, gameMap, 600, 300));
+            monsters.add(new Skeleton(this, gameMap, 600, 300, gameDifficulty));
         } else if (gameMap.getCurrentLevel() == 5){
             themeSound.stop();
             bossTheme.playLoop();
-            golemBoss = new Golem(this, gameMap, 300, 350);
+            golemBoss = new Golem(this, gameMap, 300, 350, gameDifficulty);
         } else {
             // Random spawning for other levels
             int minMonsters = 4;
@@ -488,7 +486,7 @@ public class GameFrame extends JFrame {
                     }
 
                     if (validSpawnFound) {
-                        monsters.add(new Skeleton(this, gameMap, startX, startY));
+                        monsters.add(new Skeleton(this, gameMap, startX, startY, gameDifficulty));
                     }
                 } else {
                     // Spawn Bat (if Bat class exists)
@@ -513,9 +511,9 @@ public class GameFrame extends JFrame {
                                 break;
                             }
                         }
-                        monsters.add(new Bat(this, gameMap, startX, startY));
+                        monsters.add(new Bat(this, gameMap, startX, startY, gameDifficulty));
                     } catch (Exception ex) {
-                        monsters.add(new Skeleton(this, gameMap, startX, startY));
+                        monsters.add(new Skeleton(this, gameMap, startX, startY, gameDifficulty));
                     }
                 }
             }
@@ -619,9 +617,19 @@ public class GameFrame extends JFrame {
     }
 
     private void openOptions() {
-        OptionsDialog dialog = new OptionsDialog(this, currentVolume, themeSound);
-        dialog.setVisible(true);
-        currentVolume = dialog.getCurrentVolume();
+        OptionsDialog dialog = new OptionsDialog(currentFrame, currentVolume, themeSound, gameDifficulty, true); 
+        dialog.setVisible(true); 
+
+        float newVolume = dialog.getCurrentVolume();           
+
+        if (currentVolume != newVolume) {
+            currentVolume = newVolume;
+            if (gameMap.getCurrentLevel() == 5 && bossTheme != null) {
+                bossTheme.setVolume(currentVolume);
+            } else if (themeSound != null) {
+                themeSound.setVolume(currentVolume);
+            }
+        }
     }
 
     private void showGameOver() {
@@ -744,7 +752,7 @@ public class GameFrame extends JFrame {
         drawpane.remove(mc.getAttackLabel());
         drawpane.remove(mc.getRollLabel());
         drawpane.remove(mc);
-        mc = new Knight(currentFrame, gameMap);
+        mc = new Knight(currentFrame, gameMap, gameDifficulty);
 //        Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
 //        mc.setBorder(hitbox);
 
@@ -795,5 +803,43 @@ public class GameFrame extends JFrame {
             }
         });
         return button;
+    }
+    
+    public void applyNewDifficulty() {
+        if (mc != null) mc.stopAllSounds();
+        for (Monsters m : monsters) {
+            m.stopAllSounds();
+            drawpane.remove(m.getAttackLabel());
+            drawpane.remove(m);
+        }
+        monsters.clear();
+        if (golemBoss != null) {
+            drawpane.remove(golemBoss.getAttackLabel());
+            drawpane.remove(golemBoss);
+            golemBoss = null;
+        }
+        if (themeSound != null) themeSound.stop();
+        if (bossTheme != null) bossTheme.stop();
+
+        if (mc != null) drawpane.remove(mc);
+
+        mc = new Knight(currentFrame, gameMap, gameDifficulty);
+        mc.setStartPosition(); 
+        drawpane.add(mc);
+
+        hpBar.setMaximum(mc.getHp());
+        hpBar.setValue(mc.getHp());
+        staminaBar.setMaximum(mc.getStamina());
+        staminaBar.setValue(mc.getStamina());
+        hpLabel.setText("HP: " + mc.getHp());
+        staminaLabel.setText("Stamina: " + mc.getStamina());
+
+        spawnMonsters();
+
+        if (gameMap.getCurrentLevel() == 5 && golemBoss != null) bossTheme.playLoop();
+        else if (themeSound != null) themeSound.playLoop();
+
+        drawpane.revalidate();
+        drawpane.repaint();
     }
 }

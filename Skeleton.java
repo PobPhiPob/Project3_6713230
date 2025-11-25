@@ -14,18 +14,20 @@ public class Skeleton extends Monsters {
     private static final int SKELETON_HEIGHT = GameConstants.SKELETON_HEIGHT;
     private static final int SKELETON_ATK_WIDTH = GameConstants.SKELETON_ATK_WIDTH;
     private static final int SKELETON_ATK_HEIGHT = GameConstants.SKELETON_ATK_HEIGHT;
-    private static final int INITIAL_HP = 200;
-    private static final int ATTACK_POINT = 20;
+    private static int INITIAL_HP;
+    private static int ATTACK_POINT;
     private static final int SPEED = 2;
     
     protected GameSoundEffect attackSFX, walkSFX, hitSFX, deadSFX;
     
-    public Skeleton(GameFrame pf, GameMap m, int startX, int startY) {
+    public Skeleton(GameFrame pf, GameMap m, int startX, int startY, String gameDifficulty) {
         
-        super(pf, m, startX, startY, 
+        super(pf, m, startX, startY, gameDifficulty,
               SKELETON_WIDTH, SKELETON_HEIGHT, 
               SKELETON_ATK_WIDTH, SKELETON_ATK_HEIGHT, 
               INITIAL_HP, ATTACK_POINT, SPEED);
+        
+        setInitialStats();
 
         idleGif    = new GameIcon(GameConstants.FILE_SKELETON_IDLE).resize(width, height);
         walkGif    = new GameIcon(GameConstants.FILE_SKELETON_WALK).resize(width, height);
@@ -45,6 +47,25 @@ public class Skeleton extends Monsters {
         deadSFX    = new GameSoundEffect(GameConstants.FILE_SKELETON_DEAD_SFX);
         
         setIcon(idleGif);
+    }
+    
+    private void setInitialStats() {
+        if ("Easy".equals(difficulty)) {
+            INITIAL_HP = 50;
+            ATTACK_POINT = 10;
+        } else if ("Normal".equals(difficulty)) {
+            INITIAL_HP = 100;
+            ATTACK_POINT = 20;
+        } else if ("Hard".equals(difficulty)) {
+            INITIAL_HP = 150;
+            ATTACK_POINT = 25;
+        } else if ("Expert".equals(difficulty)) {
+            INITIAL_HP = 200;
+            ATTACK_POINT = 30;
+        } else if ("Nightmare".equals(difficulty)) {
+            INITIAL_HP = 300;
+            ATTACK_POINT = 50;
+        }
     }
     
     @Override

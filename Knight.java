@@ -71,12 +71,15 @@ public class Knight extends JLabel {
     private boolean invincible = false;
     private boolean isDead;
     private boolean deathAnimetionFinished = false;
+    private String difficulty;
     
     private GameMap map;
     
-    public Knight(GameFrame pf, GameMap m) {
+    public Knight(GameFrame pf, GameMap m, String gameDifficulty) {
         parentFrame = pf;
         this.map = m;
+        this.difficulty = gameDifficulty;
+        setInitialStats();
         
         idleGif = new GameIcon(GameConstants.FILE_MC_IDLE).resize(width, height);
         runGif = new GameIcon(GameConstants.FILE_MC_RUN).resize(width, height);
@@ -119,6 +122,20 @@ public class Knight extends JLabel {
         setBounds(curX, curY, width, height);
     }
     
+    private void setInitialStats() {
+        if ("Easy".equals(difficulty)) {
+            attackPoint = 40;
+        } else if ("Normal".equals(difficulty)) {
+            attackPoint = 25;
+        } else if ("Hard".equals(difficulty)) {
+            attackPoint = 15;
+        } else if ("Expert".equals(difficulty)) {
+            attackPoint = 10;
+        } else if ("Nightmare".equals(difficulty)) {
+            attackPoint = 5;
+        }
+    }
+    
     public JLabel getAttackLabel() { return attackLabel; }
     public JLabel getRollLabel() { return rollLabel; }
     public Rectangle getAttackHitBox() { 
@@ -126,9 +143,9 @@ public class Knight extends JLabel {
         int atkY = curY - 5;
 
         if (turnLeft) {
-            atkX = curX - attackImageWidth + width;
+            atkX = curX - attackImageWidth + width + 20;
         }
-        return new Rectangle(atkX, atkY, attackImageWidth - width, height + 5); 
+        return new Rectangle(atkX, atkY, attackImageWidth - width - 20, height + 5); 
     }
     public Rectangle getHitBox() { return new Rectangle(curX, curY, hitboxWidth, hitboxHeight); }
     public int getCurX() { return curX; }

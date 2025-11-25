@@ -12,13 +12,17 @@ public class OptionsDialog extends JDialog {
     private GameSoundEffect soundEffect;
     private JSlider volumeSlider;
     private JLabel volumeValueLabel;
-    private JComboBox<String> backgroundCombo;
+    private JComboBox<String> backgroundCombo, comboDifficulty;
     private MenuSystem menuParent;
+    private String selectedDifficulty;
+    private boolean isViewOnly = false; 
 
-    public OptionsDialog(JFrame parent, float initialVolume, GameSoundEffect sound) {
+    public OptionsDialog(JFrame parent, float initialVolume, GameSoundEffect sound, String initialDifficulty, boolean isViewOnly) {
         super(parent, "Options", true);
         this.currentVolume = initialVolume;
         this.soundEffect = sound;
+        this.selectedDifficulty = initialDifficulty;
+        this.isViewOnly = isViewOnly;
 
         if (parent instanceof MenuSystem) {
             this.menuParent = (MenuSystem) parent;
@@ -33,6 +37,10 @@ public class OptionsDialog extends JDialog {
         setContentPane(mainPanel);
 
         createComponents();
+    }
+    
+    public String getSelectedDifficulty() {
+        return selectedDifficulty;
     }
 
     private void createComponents() {
@@ -68,14 +76,20 @@ public class OptionsDialog extends JDialog {
         int radioY = diffY + 35;
         for (int i = 0; i < 5; i++) {
             StyledRadioButton radio = new StyledRadioButton(difficulties[i], diffColors[i]);
+            if (isViewOnly) {
+                radio.setEnabled(false); 
+            }
             radio.setBounds(leftX + 20, radioY, 200, 35);
             difficultyGroup.add(radio);
             add(radio);
 
             final int index = i;
-            radio.addActionListener(e -> System.out.println("Difficulty: " + difficulties[index]));
+            radio.addActionListener(e -> {
+                selectedDifficulty = difficulties[index]; 
+                System.out.println("Difficulty set to: " + selectedDifficulty); 
+            });
 
-            if (i == 1) {
+            if (difficulties[i].equals(selectedDifficulty)) { 
                 radio.setSelected(true);
             }
             radioY += 40;

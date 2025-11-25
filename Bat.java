@@ -14,18 +14,20 @@ public class Bat extends Monsters {
     private static final int BAT_HEIGHT = GameConstants.BAT_HEIGHT;
     private static final int BAT_ATK_WIDTH = GameConstants.BAT_ATK_WIDTH;
     private static final int BAT_ATK_HEIGHT = GameConstants.BAT_ATK_HEIGHT;
-    private static final int INITIAL_HP = 150;
-    private static final int ATTACK_POINT = 15;
+    private static int INITIAL_HP;
+    private static int ATTACK_POINT;
     private static final int SPEED = 3;
     
     protected GameSoundEffect idleSFX, hitSFX, deadSFX;
     
-    public Bat(GameFrame pf, GameMap m, int startX, int startY) {
+    public Bat(GameFrame pf, GameMap m, int startX, int startY, String gameDifficulty) {
         
-        super(pf, m, startX, startY, 
+        super(pf, m, startX, startY, gameDifficulty,
               BAT_WIDTH, BAT_HEIGHT, 
               BAT_ATK_WIDTH, BAT_ATK_HEIGHT, 
               INITIAL_HP, ATTACK_POINT, SPEED);
+        
+        setInitialStats();
 
         this.gravity = 0; 
 
@@ -40,6 +42,25 @@ public class Bat extends Monsters {
         deadSFX    = new GameSoundEffect(GameConstants.FILE_BAT_DEAD_SFX);
         
         setIcon(idleGif);
+    }
+    
+    private void setInitialStats() {
+        if ("Easy".equals(difficulty)) {
+            INITIAL_HP = 100;
+            ATTACK_POINT = 10;
+        } else if ("Normal".equals(difficulty)) {
+            INITIAL_HP = 150;
+            ATTACK_POINT = 15;
+        } else if ("Hard".equals(difficulty)) {
+            INITIAL_HP = 200;
+            ATTACK_POINT = 25;
+        } else if ("Expert".equals(difficulty)) {
+            INITIAL_HP = 300;
+            ATTACK_POINT = 35;
+        } else if ("Nightmare".equals(difficulty)) {
+            INITIAL_HP = 400;
+            ATTACK_POINT = 50;
+        }
     }
     
     @Override

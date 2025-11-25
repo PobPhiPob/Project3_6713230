@@ -37,7 +37,7 @@ public class CreditsDialog extends JDialog {
         JTextArea creditsText = new JTextArea();
         creditsText.setText(
                 "\n\n"
-                + "         Developed by:\n\n"
+                + "                     Developed by:\n\n"
                 + "  6713230 - Natwarit Chuboonsub\n"
                 + "  6713229 - Nutthapat Techapornhiran\n"
                 + "  6713235 - Teetath Prapasanon\n"

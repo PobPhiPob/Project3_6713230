@@ -23,6 +23,7 @@ public abstract class Monsters extends JLabel{
     protected int hp;
     protected int attackPoint;
     protected int speed;
+    protected String difficulty;
     
     protected int vx = 0;
     protected int vy = 0;
@@ -46,7 +47,7 @@ public abstract class Monsters extends JLabel{
     protected GameIcon idleGif, walkGif, deadGif, attackGif, hitGif;
     protected GameIcon idleFlip, walkFlip, deadFlip, attackFlip, hitFlip;
 
-    public Monsters(GameFrame pf, GameMap m, int startX, int startY,
+    public Monsters(GameFrame pf, GameMap m, int startX, int startY, String gameDifficulty,
                    int monsterWidth, int monsterHeight, int atkWidth, int atkHeight, 
                    int initialHP, int initialAttack, int initialSpeed) {
         
@@ -62,6 +63,7 @@ public abstract class Monsters extends JLabel{
         this.hp = initialHP;
         this.attackPoint = initialAttack;
         this.speed = initialSpeed;
+        this.difficulty = gameDifficulty;
         
         this.setLayout(null);
         

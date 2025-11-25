@@ -92,7 +92,7 @@ private int consecutiveMoveCount = 0; // นับจำนวนครั้ง
     // Move 3
     private GameIcon slideGif, slideFlip;
     
-    public Golem(GameFrame pf, GameMap m, int startX, int startY) {
+    public Golem(GameFrame pf, GameMap m, int startX, int startY, String gameDifficulty) {
         parentFrame = pf;
         this.map  = m;
         this.curX = startX;
