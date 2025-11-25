@@ -104,8 +104,8 @@ interface GameConstants
 
     static final String FILE_TITLE     = PATH + "UI/Title.gif";
     static final String FILE_CASTLE_BG     = PATH + "BG/Castle.gif";
-    static final String FILE_HOLLOW_BG     = PATH + "BG/Church.gif";    
-    static final String FILE_FOREST_BG     = PATH + "BG/Forest.gif";
+    static final String FILE_FOREST2_BG     = PATH + "BG/Forest2.gif";    
+    static final String FILE_FOREST1_BG     = PATH + "BG/Forest1.gif";
     static final String FILE_RAIN_BG     = PATH + "BG/Rain.gif";
 
     static final int FRAME_WIDTH  = 960;

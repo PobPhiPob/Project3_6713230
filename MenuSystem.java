@@ -15,14 +15,15 @@ import java.awt.event.*;
 class MenuSystem extends JFrame {
 
     private JLabel backgroundLabel;
-    private String[] backgrounds = {GameConstants.FILE_CASTLE_BG, GameConstants.FILE_HOLLOW_BG, GameConstants.FILE_FOREST_BG, GameConstants.FILE_RAIN_BG};
-    
+    private String[] backgrounds = {GameConstants.FILE_CASTLE_BG, GameConstants.FILE_FOREST1_BG, GameConstants.FILE_FOREST2_BG, GameConstants.FILE_RAIN_BG};
+
     private int currentBgIndex = 0;
     private Timer bgTimer;
+    private boolean isRandomMode = true;
 
     private int frameheight = GameConstants.FRAME_HEIGHT;
     private int framewidth = GameConstants.FRAME_WIDTH;
-    
+
     private GameSoundEffect MenuTheme;
     private float MenuVolume = 0.5f;
     private String gameDifficulty = "Normal";
@@ -43,7 +44,7 @@ class MenuSystem extends JFrame {
         backgroundLabel = new JLabel();
         updateBackground();
         backgroundLabel.setLayout(null);
-        
+
         MenuTheme = new GameSoundEffect(GameConstants.FILE_MENU_THEME);
         MenuTheme.playLoop();
         MenuTheme.setVolume(MenuVolume);
@@ -137,32 +138,41 @@ class MenuSystem extends JFrame {
 
     private void startGame() {
         bgTimer.stop();
-        if(MenuTheme != null) {
+        if (MenuTheme != null) {
             MenuTheme.stop();
         }
         dispose();
         new GameFrame(this.gameDifficulty);
     }
 
- private void openOptions() {
-     OptionsDialog dialog = new OptionsDialog(this, MenuVolume, MenuTheme, gameDifficulty, false);
-     dialog.setVisible(true);
-     MenuVolume = dialog.getCurrentVolume();
-     gameDifficulty = dialog.getSelectedDifficulty();
+    private void openOptions() {
+        OptionsDialog dialog = new OptionsDialog(this, MenuVolume, MenuTheme, gameDifficulty, false, getCurrentBackgroundIndex());
+        dialog.setVisible(true);
+        MenuVolume = dialog.getCurrentVolume();
+        gameDifficulty = dialog.getSelectedDifficulty();
     }
- 
- public void changeBackground(int i) {
-     if (i < 4) {
-         bgTimer.stop();
-         currentBgIndex = i;
-         updateBackground();
-     } else if (i == 4 ) {
-         bgTimer.start();
-     }
- }
- 
+
+    public int getCurrentBackgroundIndex() {
+        if (isRandomMode) {
+            return 4; // Random mode
+        }
+        return currentBgIndex;
+    }
+
+    public void changeBackground(int i) {
+        if (i < 4) {
+            bgTimer.stop();
+            isRandomMode = false;
+            currentBgIndex = i;
+            updateBackground();
+        } else if (i == 4) {
+            isRandomMode = true;
+            bgTimer.start();
+        }
+    }
+
     private void openCredits() {
-    CreditsDialog dialog = new CreditsDialog(this);
-    dialog.setVisible(true);
-}
+        CreditsDialog dialog = new CreditsDialog(this);
+        dialog.setVisible(true);
+    }
 }

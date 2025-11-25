@@ -25,19 +25,37 @@ public class OptionsDialog extends JDialog {
     private MenuSystem menuParent;
     private String selectedDifficulty;
     private boolean isViewOnly = false;
+    private int currentBgIndex;
 
-    public OptionsDialog(JFrame parent, float initialVolume, GameSoundEffect sound, String initialDifficulty, boolean isViewOnly) {
+    // Constructor from Menu
+    public OptionsDialog(JFrame parent, float initialVolume, GameSoundEffect sound, String initialDifficulty, boolean isViewOnly, int bgIndex) {
         super(parent, "Options", true);
         this.soundEffect = sound;
         this.selectedDifficulty = initialDifficulty;
         this.isViewOnly = isViewOnly;
+        this.currentBgIndex = bgIndex;
 
         if (parent instanceof MenuSystem) {
             this.menuParent = (MenuSystem) parent;
         }
 
+        initDialog();
+    }
+
+    // Constructor pause game
+    public OptionsDialog(JFrame parent, float initialVolume, GameSoundEffect sound, String initialDifficulty, boolean isViewOnly) {
+        super(parent, "Options", true);
+        this.soundEffect = sound;
+        this.selectedDifficulty = initialDifficulty;
+        this.isViewOnly = isViewOnly;
+        this.menuParent = null;
+
+        initDialog();
+    }
+
+    private void initDialog() {
         setSize(700, 650);
-        setLocationRelativeTo(parent);
+        setLocationRelativeTo(getParent());
         setUndecorated(true);
 
         BackgroundPanel mainPanel = new BackgroundPanel();
@@ -59,7 +77,7 @@ public class OptionsDialog extends JDialog {
         // Title - Stone gray color matching menu style
         JLabel titleLabel = new JLabel("GAME OPTIONS", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Serif", Font.BOLD, 36));
-        titleLabel.setForeground(new Color(210, 205, 195)); // Stone gray-white
+        titleLabel.setForeground(new Color(210, 205, 195));
         titleLabel.setBounds(0, 30, 700, 60);
         add(titleLabel);
 
@@ -67,7 +85,7 @@ public class OptionsDialog extends JDialog {
         int diffY = startY + 95;
         JLabel diffLabel = new JLabel("Select Difficulty:");
         diffLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        diffLabel.setForeground(new Color(190, 185, 175)); // Lighter stone gray
+        diffLabel.setForeground(new Color(190, 185, 175));
         diffLabel.setBounds(leftX, diffY, 250, 30);
         add(diffLabel);
 
@@ -108,7 +126,7 @@ public class OptionsDialog extends JDialog {
         int labelWidth = 180;
         int sliderWidth = 210;
         int valueWidth = 80;
-        int spacing = 10; // ช่องว่างระหว่าง slider กับ value
+        int spacing = 10;
 
         // Volume Label
         JLabel volumeLabel = new JLabel("Volume Control:");
@@ -118,7 +136,7 @@ public class OptionsDialog extends JDialog {
         add(volumeLabel);
 
         // Volume Slider
-        volumeY += 45; // เลื่อนลงมา 45px จาก label
+        volumeY += 45;
         volumeSlider = new JSlider(0, 100, (int) (GameSoundEffect.masterVolume * 100));
         volumeSlider.setOpaque(false);
         volumeSlider.setFocusable(false);
@@ -136,28 +154,30 @@ public class OptionsDialog extends JDialog {
         });
         add(volumeSlider);
 
-        // Volume Value Label (อยู่ขวาสุดของ slider)
+        // Volume Value Label
         volumeValueLabel = new VolumeValueLabel(String.format("%.0f%%", GameSoundEffect.masterVolume * 100));
         volumeValueLabel.setBounds(rightX + sliderWidth + spacing, volumeY, valueWidth, 40);
         add(volumeValueLabel);
 
-        // Background ComboBox Section
+        // Background ComboBox Section (แสดงเฉพาะเมื่อมี menuParent)
         if (menuParent != null) {
             int bgY = volumeY + 120;
             JLabel bgLabel = new JLabel("Menu Background:");
             bgLabel.setFont(new Font("Arial", Font.BOLD, 16));
-            bgLabel.setForeground(new Color(190, 185, 175)); // Stone gray
+            bgLabel.setForeground(new Color(190, 185, 175));
             bgLabel.setBounds(rightX, bgY, 250, 30);
             add(bgLabel);
 
-            String[] bgOptions = {"Castle", "Church", "Forest", "Rain", "Random"};
+            String[] bgOptions = {"Castle", "Forest1", "Forest2", "Rain", "Random"};
             backgroundCombo = new JComboBox<>(bgOptions);
             backgroundCombo.setFont(new Font("Arial", Font.PLAIN, 14));
-            backgroundCombo.setForeground(new Color(200, 195, 185)); // Same as Credits text
-            backgroundCombo.setBackground(new Color(20, 19, 23)); // Same as Credits panel
-            backgroundCombo.setBorder(BorderFactory.createLineBorder(new Color(90, 85, 80), 2)); // Same as Credits border
+            backgroundCombo.setForeground(new Color(200, 195, 185));
+            backgroundCombo.setBackground(new Color(20, 19, 23));
+            backgroundCombo.setBorder(BorderFactory.createLineBorder(new Color(90, 85, 80), 2));
             backgroundCombo.setBounds(rightX, bgY + 35, 250, 40);
-            backgroundCombo.setSelectedIndex(4);
+            
+            // ตั้งค่า combo box ให้ตรงกับ background ปัจจุบัน
+            backgroundCombo.setSelectedIndex(currentBgIndex);
 
             backgroundCombo.addItemListener(new ItemListener() {
                 @Override
@@ -166,6 +186,7 @@ public class OptionsDialog extends JDialog {
                         int selectedIndex = backgroundCombo.getSelectedIndex();
                         if (menuParent != null) {
                             menuParent.changeBackground(selectedIndex);
+                            currentBgIndex = selectedIndex;
                         }
                     }
                 }
@@ -208,7 +229,7 @@ public class OptionsDialog extends JDialog {
             infoPanel.add(info);
         }
 
-        // Back Button - Dark stone theme
+        // Back Button
         GlowButton backButton = new GlowButton("BACK", new Color(60, 58, 62));
         backButton.setBounds(250, 560, 200, 50);
         backButton.addActionListener(e -> dispose());
@@ -256,7 +277,7 @@ class StyledRadioButton extends JRadioButton {
         super(text);
         this.accentColor = color;
         setFont(new Font("Arial", Font.PLAIN, 14));
-        setForeground(new Color(200, 195, 185)); // Light stone text
+        setForeground(new Color(200, 195, 185));
         setOpaque(false);
         setFocusPainted(false);
     }
@@ -329,7 +350,7 @@ class GlowButton extends JButton {
         super(text);
         this.baseColor = color;
         setFont(new Font("Serif", Font.BOLD, 22));
-        setForeground(new Color(210, 205, 195)); // Stone white text
+        setForeground(new Color(210, 205, 195));
         setFocusPainted(false);
         setContentAreaFilled(false);
         setBorderPainted(false);

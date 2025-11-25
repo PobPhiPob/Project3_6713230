@@ -513,23 +513,23 @@ public class GameFrame extends JFrame {
 //        Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
 //        mc.setBorder(hitbox);
         hpLabel = new JLabel("HP: " + mc.getHp());
-        hpLabel.setBounds(10, 40, 150, 25);
+        hpLabel.setBounds(10, 40, 150, 30);
         hpLabel.setForeground(Color.WHITE);
         hpLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
 
         hpBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, mc.getHp());
-        hpBar.setBounds(10, 10, 200, 25);
+        hpBar.setBounds(10, 10, 200, 30);
         hpBar.setValue(mc.getHp());
         hpBar.setForeground(Color.RED);
         hpBar.setBackground(Color.DARK_GRAY);
 
         staminaLabel = new JLabel("Stamina: " + mc.getStamina());
-        staminaLabel.setBounds(220, 40, 150, 25);
+        staminaLabel.setBounds(220, 40, 150, 30);
         staminaLabel.setForeground(Color.WHITE);
         staminaLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
 
         staminaBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, mc.getStamina());
-        staminaBar.setBounds(220, 10, 200, 25);
+        staminaBar.setBounds(220, 10, 200, 30);
         staminaBar.setValue(mc.getStamina());
         staminaBar.setForeground(Color.ORANGE);
         staminaBar.setBackground(Color.DARK_GRAY);
