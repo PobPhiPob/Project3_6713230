@@ -116,14 +116,14 @@ public class Knight extends JLabel {
     public JLabel getAttackLabel() { return attackLabel; }
     public JLabel getRollLabel() { return rollLabel; }
     public Rectangle getAttackHitBox() { 
-    int atkX = curX + width;
-    int atkY = curY - 10;
+        int atkX = curX + width;
+        int atkY = curY - 5;
 
-    if (turnLeft) {
-        atkX = curX - attackImageWidth + width;
+        if (turnLeft) {
+            atkX = curX - attackImageWidth + width;
+        }
+        return new Rectangle(atkX, atkY, attackImageWidth - width, height + 5); 
     }
-    return new Rectangle(atkX, atkY, attackImageWidth - width, height + 10); 
-}
     public Rectangle getHitBox() { return new Rectangle(curX, curY, hitboxWidth, hitboxHeight); }
     public int getCurX() { return curX; }
     public int getCurY() { return curY; }
