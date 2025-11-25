@@ -16,7 +16,7 @@ public class Bat extends Monsters {
     private static final int BAT_ATK_HEIGHT = GameConstants.BAT_ATK_HEIGHT;
     private static int INITIAL_HP = 150;
     private static int ATTACK_POINT = 15;
-    private static final int SPEED = 3;
+    private static int SPEED = 3;
     
     protected GameSoundEffect idleSFX, hitSFX, deadSFX;
     
@@ -48,18 +48,23 @@ public class Bat extends Monsters {
         if ("Easy".equals(difficulty)) {
             INITIAL_HP = 100;
             ATTACK_POINT = 10;
+            SPEED = 2;
         } else if ("Normal".equals(difficulty)) {
             INITIAL_HP = 150;
             ATTACK_POINT = 15;
+            SPEED = 3;
         } else if ("Hard".equals(difficulty)) {
             INITIAL_HP = 200;
             ATTACK_POINT = 25;
+            SPEED = 4;
         } else if ("Expert".equals(difficulty)) {
             INITIAL_HP = 300;
             ATTACK_POINT = 35;
+            SPEED = 4;
         } else if ("Nightmare".equals(difficulty)) {
             INITIAL_HP = 400;
             ATTACK_POINT = 50;
+            SPEED = 4;
         }
     }
     
