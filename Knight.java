@@ -313,7 +313,7 @@ public class Knight extends JLabel {
         setIdle();
         long now = System.currentTimeMillis();
 
-        new Timer(450, new ActionListener() {
+        new Timer(1200, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 canInput = true;
@@ -321,7 +321,7 @@ public class Knight extends JLabel {
             }
         }).start();
 
-        new Timer(650, e -> {
+        new Timer(1500, e -> {
             heal = false;
             hp += 25;
             if (hp >= 100)
@@ -401,7 +401,7 @@ public class Knight extends JLabel {
     }
 
     public void roll() {
-        if (!canInput || attack || !onGround || stamina < 25 || heal || isDead) return;
+        if (!canInput || attack || stamina < 25 || heal || isDead) return;
         canInput = false;
         roll = true;
         setRoll();

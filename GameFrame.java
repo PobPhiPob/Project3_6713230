@@ -322,12 +322,12 @@ public class GameFrame extends JFrame {
         hpBar.setBackground(Color.DARK_GRAY);
 
         staminaLabel = new JLabel("Stamina: " + mc.getStamina());
-        staminaLabel.setBounds(10, 110, 150, 30);
+        staminaLabel.setBounds(220, 40, 150, 30);
         staminaLabel.setForeground(Color.WHITE);
         staminaLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
 
         staminaBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, mc.getStamina());
-        staminaBar.setBounds(10, 80, 200, 30);
+        staminaBar.setBounds(220, 10, 200, 30);
         staminaBar.setValue(mc.getStamina());
         staminaBar.setForeground(Color.ORANGE);
         staminaBar.setBackground(Color.DARK_GRAY);
