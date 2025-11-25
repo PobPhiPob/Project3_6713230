@@ -807,6 +807,8 @@ public class GameFrame extends JFrame {
                 lastTime = System.nanoTime();
 
                 while(!isPaused) {
+                    if (golemBoss != null && golemBoss.isDead())
+                        break;
                     long now = System.nanoTime();
                     double delta = (now - lastTime) / 1_000_000_000.0;
                     lastTime = now;
@@ -884,6 +886,7 @@ public class GameFrame extends JFrame {
         drawpane.revalidate();
         drawpane.repaint();
     }
+<<<<<<< HEAD
     private JButton createDialogButton(String text) {
         JButton button = new JButton(text) {
             @Override
@@ -918,4 +921,6 @@ public class GameFrame extends JFrame {
         });
         return button;
     }
+=======
+>>>>>>> 79e7a8b0190bcfcae2489f5c967699756dc9882b
 }
