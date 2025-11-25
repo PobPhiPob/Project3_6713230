@@ -30,7 +30,7 @@ public class GameFrame extends JFrame {
 
     private String[] backgroundFilePaths;
     private GameIcon currentBackgroundIcon;
-    
+
     private ArrayList<Monsters> monsters = new ArrayList<>();
     private Golem golemBoss;
     private ArrayList<Rock> rocks = new ArrayList<>();
@@ -135,14 +135,13 @@ public class GameFrame extends JFrame {
                 if (isPaused) {
                     return;
                 }
-                
+
                 if (mc.isRolling()) {
                     if (System.currentTimeMillis() - mc.getRollStartTime() > 300) {
-                        
+
                         if (!mc.getTurn() && movingLeft) {
                             mc.cancelRoll();
-                        }
-                        else if (mc.getTurn() && movingRight) {
+                        } else if (mc.getTurn() && movingRight) {
                             mc.cancelRoll();
                         }
                     }
@@ -261,8 +260,8 @@ public class GameFrame extends JFrame {
 
                 if (mc.getX() > 910) {
                     if (currentBgIndex == backgroundFilePaths.length - 1) {
-                        movingRight = false; 
-                        mc.updateLocation(); 
+                        movingRight = false;
+                        mc.updateLocation();
                     } else {
                         gameMap.nextLevel();
                         gameMap.clearMapVisuals(drawpane);
@@ -296,6 +295,108 @@ public class GameFrame extends JFrame {
         timer.start();
     }
 
+    /*========Classes for Graphic=======*/
+    class DialogButton extends JButton {
+
+        private Color baseColor;
+        private boolean isHovered = false;
+
+        public DialogButton(String text, Color color) {
+            super(text);
+            this.baseColor = color;
+            setFont(new Font("Serif", Font.BOLD, 20));
+            setForeground(new Color(210, 205, 195));
+            //set as ปุ่มใส
+            setFocusPainted(false);
+            setContentAreaFilled(false);
+            setBorderPainted(false);
+
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    isHovered = true;
+                    repaint();
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    isHovered = false;
+                    repaint();
+                }
+            });
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2d = (Graphics2D) g;
+            //Button background
+            if (isHovered) {
+                g2d.setColor(baseColor.brighter());
+            } else {
+                g2d.setColor(baseColor);
+            }
+            g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+            //Button border
+            if (isHovered) {
+                g2d.setColor(new Color(150, 145, 135));
+            } else {
+                g2d.setColor(new Color(100, 95, 85));
+            }
+            g2d.setStroke(new BasicStroke(isHovered ? 3 : 2));
+            g2d.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
+
+            super.paintComponent(g);
+        }
+    }
+
+    //Pause
+    class PauseBgPanel extends JPanel {
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+
+            GradientPaint gradient = new GradientPaint(0, 0, new Color(8, 8, 12), 0, getHeight(), new Color(18, 16, 20));
+            g2d.setPaint(gradient);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+            //Border
+            g2d.setStroke(new BasicStroke(3));
+            g2d.setColor(new Color(80, 75, 70, 180));
+            g2d.drawRoundRect(10, 10, getWidth() - 20, getHeight() - 20, 15, 15);
+            //inner border
+            g2d.setColor(new Color(120, 110, 100, 30));
+            g2d.setStroke(new BasicStroke(1));
+            g2d.drawRoundRect(13, 13, getWidth() - 26, getHeight() - 26, 12, 12);
+        }
+    }
+
+    //GameOver
+    class GameOverBgPanel extends JPanel {
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            GradientPaint gradient = new GradientPaint(
+                    0, 0, new Color(12, 5, 8),
+                    0, getHeight(), new Color(20, 8, 10)
+            );
+            g2d.setPaint(gradient);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+
+            g2d.setStroke(new BasicStroke(3));
+            g2d.setColor(new Color(100, 40, 45, 180));
+            g2d.drawRoundRect(10, 10, getWidth() - 20, getHeight() - 20, 15, 15);
+
+            g2d.setColor(new Color(150, 60, 70, 30));
+            g2d.setStroke(new BasicStroke(1));
+            g2d.drawRoundRect(13, 13, getWidth() - 26, getHeight() - 26, 12, 12);
+        }
+    }
+//===============================================================
     public void addComponent() {
         drawpane = new JLabel();
 
@@ -307,7 +408,7 @@ public class GameFrame extends JFrame {
             GameConstants.FILE_BG_MAP5,
             GameConstants.FILE_BG_MAP6
         };
-        
+
         Image initialBg = new ImageIcon(backgroundFilePaths[currentBgIndex]).getImage();
         initialBg = initialBg.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
         currentBackgroundIcon = new GameIcon(initialBg);
@@ -323,7 +424,6 @@ public class GameFrame extends JFrame {
 
 //        Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
 //        mc.setBorder(hitbox);
-
         hpLabel = new JLabel("HP: " + mc.getHp());
         hpLabel.setBounds(10, 40, 150, 30);
         hpLabel.setForeground(Color.WHITE);
@@ -415,7 +515,7 @@ public class GameFrame extends JFrame {
             monsters.add(new Skeleton(this, gameMap, 600, 400));
         } else if (gameMap.getCurrentLevel() == 1) {
             monsters.add(new Skeleton(this, gameMap, 600, 300));
-        } else if (gameMap.getCurrentLevel() == 5){
+        } else if (gameMap.getCurrentLevel() == 5) {
             themeSound.stop();
             bossTheme.playLoop();
             golemBoss = new Golem(this, gameMap, 300, 350);
@@ -463,7 +563,7 @@ public class GameFrame extends JFrame {
                                 && gameMap.isLethal(startX, startY + skeletonHeight - 1)
                                 && gameMap.isLethal(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
                                 && gameMap.isLethal(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
-                        
+
                         boolean isHazardArea = gameMap.isHazard(startX, startY)
                                 && gameMap.isHazard(startX + skeletonWidth - 1, startY)
                                 && gameMap.isHazard(startX, startY + skeletonHeight - 1)
@@ -495,7 +595,7 @@ public class GameFrame extends JFrame {
                             int checkY_center = startY + GameConstants.BAT_HEIGHT / 2;
 
                             boolean isColliding = gameMap.isSolid(checkX_center, checkY_center)
-                                    || gameMap.isLethal(checkX_center, checkY_center) 
+                                    || gameMap.isLethal(checkX_center, checkY_center)
                                     || gameMap.isHazard(checkX_center, checkY_center);
 
                             if (!isColliding) {
@@ -543,58 +643,69 @@ public class GameFrame extends JFrame {
         for (Monsters m : monsters) {
             m.stopAllSounds();
         }
-        if (gameMap.getCurrentLevel() == 5) bossTheme.stop();
-        else themeSound.stop();
+        if (gameMap.getCurrentLevel() == 5) {
+            bossTheme.stop();
+        } else {
+            themeSound.stop();
+        }
+
         pauseDialog = new JDialog(this, "PAUSED", true);
-        pauseDialog.setSize(400, 300);
+        pauseDialog.setSize(400, 380);
         pauseDialog.setLocationRelativeTo(this);
-        pauseDialog.setLayout(null);
         pauseDialog.setUndecorated(true);
-        pauseDialog.getContentPane().setBackground(new Color(20, 20, 30, 250));
 
-        JLabel titleLabel = new JLabel("GAME PAUSED");
-        titleLabel.setFont(new Font("Serif", Font.BOLD, 32));
-        titleLabel.setForeground(Color.WHITE);
-        titleLabel.setBounds(80, 30, 300, 50);
-        pauseDialog.add(titleLabel);
+        // ใช้ Custom Background Panel
+        PauseBgPanel mainPanel = new PauseBgPanel();
+        mainPanel.setLayout(null);
+        pauseDialog.setContentPane(mainPanel);
 
-        JButton resumeButton = createDialogButton("RESUME");
-        resumeButton.setBounds(100, 100, 200, 50);
+        JLabel titleLabel = new JLabel("GAME PAUSED", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 40));
+        titleLabel.setForeground(new Color(210, 205, 195));
+        titleLabel.setBounds(0, 40, 400, 60);
+        mainPanel.add(titleLabel);
+
+        DialogButton resumeButton = new DialogButton("RESUME", new Color(60, 58, 62));
+        resumeButton.setBounds(100, 130, 200, 50);
         resumeButton.addActionListener(e -> {
             isPaused = false;
             pauseDialog.dispose();
             pauseDialog = null;
-            if (gameMap.getCurrentLevel() == 5) bossTheme.playLoop();
-            else themeSound.playLoop();
+            if (gameMap.getCurrentLevel() == 5) {
+                bossTheme.playLoop();
+            } else {
+                themeSound.playLoop();
+            }
         });
-        pauseDialog.add(resumeButton);
+        mainPanel.add(resumeButton);
 
-        JButton optionsButton = createDialogButton("OPTIONS");
-        optionsButton.setBounds(100, 170, 200, 50);
+        DialogButton optionsButton = new DialogButton("OPTIONS", new Color(60, 58, 62));
+        optionsButton.setBounds(100, 195, 200, 50);
         optionsButton.addActionListener(e -> {
             pauseDialog.setVisible(false);
             openOptions();
-            // Show pause menu again after closing options
             if (isPaused && pauseDialog != null) {
                 pauseDialog.setVisible(true);
             }
         });
-        pauseDialog.add(optionsButton);
+        mainPanel.add(optionsButton);
 
-        JButton mainMenuButton = createDialogButton("MAIN MENU");
-        mainMenuButton.setBounds(100, 240, 200, 50);
+        DialogButton mainMenuButton = new DialogButton("MAIN MENU", new Color(60, 58, 62));
+        mainMenuButton.setBounds(100, 260, 200, 50);
         mainMenuButton.addActionListener(e -> {
             pauseDialog.dispose();
             pauseDialog = null;
             timer.stop();
             dispose();
-            if (gameMap.getCurrentLevel() == 5) bossTheme.stop();
+            if (gameMap.getCurrentLevel() == 5) {
+                bossTheme.stop();
+            }
             themeSound.stop();
             restartGame();
             MenuSystem menu = new MenuSystem();
             menu.setVisible(true);
         });
-        pauseDialog.add(mainMenuButton);
+        mainPanel.add(mainMenuButton);
 
         pauseDialog.addWindowListener(new WindowAdapter() {
             @Override
@@ -616,37 +727,44 @@ public class GameFrame extends JFrame {
     private void showGameOver() {
         isPaused = true;
         gameOverDialog = new JDialog(this, "GAME OVER", true);
-        gameOverDialog.setSize(400, 350);
+        gameOverDialog.setSize(400, 380);
         gameOverDialog.setLocationRelativeTo(this);
-        gameOverDialog.setLayout(null);
         gameOverDialog.setUndecorated(true);
-        gameOverDialog.getContentPane().setBackground(new Color(30, 10, 10, 250));
-        if (gameMap.getCurrentLevel() == 5) bossTheme.stop();
-        else themeSound.stop();
 
-        JLabel titleLabel = new JLabel("YOU DIED");
-        titleLabel.setFont(new Font("Serif", Font.BOLD, 40));
-        titleLabel.setForeground(new Color(200, 50, 50));
-        titleLabel.setBounds(100, 40, 300, 60);
-        gameOverDialog.add(titleLabel);
+        if (gameMap.getCurrentLevel() == 5) {
+            bossTheme.stop();
+        } else {
+            themeSound.stop();
+        }
 
-        JLabel messageLabel = new JLabel("YYYYY Mai dai keng...");
+        // ใช้ Custom Background Panel
+        GameOverBgPanel mainPanel = new GameOverBgPanel();
+        mainPanel.setLayout(null);
+        gameOverDialog.setContentPane(mainPanel);
+
+        JLabel titleLabel = new JLabel("YOU DIED", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 48));
+        titleLabel.setForeground(new Color(220, 80, 80));
+        titleLabel.setBounds(0, 40, 400, 70);
+        mainPanel.add(titleLabel);
+
+        JLabel messageLabel = new JLabel("R.I.P. 💀 ", SwingConstants.CENTER);
         messageLabel.setFont(new Font("Serif", Font.ITALIC, 18));
-        messageLabel.setForeground(Color.LIGHT_GRAY);
-        messageLabel.setBounds(100, 110, 300, 30);
-        gameOverDialog.add(messageLabel);
+        messageLabel.setForeground(new Color(180, 170, 160));
+        messageLabel.setBounds(0, 120, 400, 30);
+        mainPanel.add(messageLabel);
 
-        JButton restartButton = createDialogButton("RESTART");
-        restartButton.setBounds(100, 160, 200, 50);
+        DialogButton restartButton = new DialogButton("RESTART", new Color(80, 40, 45));
+        restartButton.setBounds(100, 180, 200, 50);
         restartButton.addActionListener(e -> {
             gameOverDialog.dispose();
             gameOverDialog = null;
             restartGame();
         });
-        gameOverDialog.add(restartButton);
+        mainPanel.add(restartButton);
 
-        JButton exitButton = createDialogButton("MAIN MENU");
-        exitButton.setBounds(100, 230, 200, 50);
+        DialogButton exitButton = new DialogButton("MAIN MENU", new Color(80, 40, 45));
+        exitButton.setBounds(100, 250, 200, 50);
         exitButton.addActionListener(e -> {
             gameOverDialog.dispose();
             gameOverDialog = null;
@@ -655,7 +773,8 @@ public class GameFrame extends JFrame {
             MenuSystem menu = new MenuSystem();
             menu.setVisible(true);
         });
-        gameOverDialog.add(exitButton);
+        mainPanel.add(exitButton);
+
         gameOverDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
         new Timer(1000, new ActionListener() {
@@ -676,8 +795,8 @@ public class GameFrame extends JFrame {
         themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
         themeSound.playLoop();
         themeSound.setVolume(currentVolume);
-        
-        Image initialBg = new ImageIcon(backgroundFilePaths[currentBgIndex]).getImage(); 
+
+        Image initialBg = new ImageIcon(backgroundFilePaths[currentBgIndex]).getImage();
         initialBg = initialBg.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
         currentBackgroundIcon = new GameIcon(initialBg);
 
@@ -731,40 +850,5 @@ public class GameFrame extends JFrame {
 
         drawpane.revalidate();
         drawpane.repaint();
-    }
-
-    private JButton createDialogButton(String text) {
-        JButton button = new JButton(text) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                g.setColor(getBackground());
-                g.fillRect(0, 0, getWidth(), getHeight());
-                super.paintComponent(g);
-            }
-        };
-
-        button.setFont(new Font("Serif", Font.BOLD, 20));
-        button.setForeground(Color.WHITE);
-        button.setBackground(new Color(50, 50, 60, 200));
-        button.setFocusPainted(false);
-        button.setContentAreaFilled(false);
-        button.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150), 2));
-
-        button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setBackground(new Color(80, 80, 100, 230));
-                button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3));
-                button.repaint();
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                button.setBackground(new Color(50, 50, 60, 200));
-                button.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150), 2));
-                button.repaint();
-            }
-        });
-        return button;
     }
 }
