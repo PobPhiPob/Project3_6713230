@@ -431,19 +431,19 @@ public class GameFrame extends JFrame {
                                 && !gameMap.isSolid(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
                                 && !gameMap.isSolid(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
 
-                        boolean isLethalArea = !gameMap.isLethal(startX, startY)
-                                && !gameMap.isLethal(startX + skeletonWidth - 1, startY)
-                                && !gameMap.isLethal(startX, startY + skeletonHeight - 1)
-                                && !gameMap.isLethal(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
-                                && !gameMap.isLethal(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
+                        boolean isLethalArea = gameMap.isLethal(startX, startY)
+                                && gameMap.isLethal(startX + skeletonWidth - 1, startY)
+                                && gameMap.isLethal(startX, startY + skeletonHeight - 1)
+                                && gameMap.isLethal(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
+                                && gameMap.isLethal(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
                         
-                        boolean isHazardArea = !gameMap.isHazard(startX, startY)
-                                && !gameMap.isHazard(startX + skeletonWidth - 1, startY)
-                                && !gameMap.isHazard(startX, startY + skeletonHeight - 1)
-                                && !gameMap.isHazard(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
-                                && !gameMap.isHazard(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
+                        boolean isHazardArea = gameMap.isHazard(startX, startY)
+                                && gameMap.isHazard(startX + skeletonWidth - 1, startY)
+                                && gameMap.isHazard(startX, startY + skeletonHeight - 1)
+                                && gameMap.isHazard(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
+                                && gameMap.isHazard(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
 
-                        if (hasSupport && !isLethalArea && notCeiling && notInMap && isHazardArea) {
+                        if (hasSupport && !isLethalArea && notCeiling && notInMap && !isHazardArea) {
                             validSpawnFound = true;
                             break;
                         }
