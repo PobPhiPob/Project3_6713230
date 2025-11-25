@@ -188,6 +188,7 @@ public class Knight extends JLabel {
     }
 
     public void setHit() {
+        attackLabel.setVisible(false);
         if (turnLeft) {
             setIcon(hitFlip);
         } else {
