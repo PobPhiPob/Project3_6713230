@@ -170,7 +170,8 @@ class GameIcon extends ImageIcon
 class GameSoundEffect
 {
     private Clip clip;
-    private FloatControl gainControl;         
+    private FloatControl gainControl;
+    public static float masterVolume = 0.5f;
     public GameSoundEffect(String filename)
     {
         try
@@ -180,6 +181,7 @@ class GameSoundEffect
             clip = AudioSystem.getClip();
             clip.open(audioStream);        
             gainControl = (FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+            setVolume(masterVolume);
         }
         catch (Exception e) { e.printStackTrace(); }
     }

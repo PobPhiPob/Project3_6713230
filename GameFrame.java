@@ -37,17 +37,16 @@ public class GameFrame extends JFrame {
     private ArrayList<Monsters> monsters = new ArrayList<>();
     private Golem golemBoss;
     private ArrayList<Rock> rocks = new ArrayList<>();
-    private int currentBgIndex = 0;
+    private GameMap gameMap = new GameMap();
+    private String gameDifficulty;
+    private int currentBgIndex = gameMap.getCurrentLevel();
 
     private Knight mc;
     private GameFrame currentFrame;
 
     private boolean movingLeft = false;
     private boolean movingRight = false;
-
-    private GameMap gameMap = new GameMap();
-    private String gameDifficulty;
-
+    
     private int framewidth = GameConstants.FRAME_WIDTH;
     private int frameheight = GameConstants.FRAME_HEIGHT;
 
@@ -477,10 +476,10 @@ public class GameFrame extends JFrame {
 
         themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
         themeSound.playLoop();
-        themeSound.setVolume(currentVolume);
+        themeSound.setVolume(GameSoundEffect.masterVolume * currentVolume);
 
         bossTheme = new GameSoundEffect(GameConstants.FILE_BOSS_THEME);
-        bossTheme.setVolume(currentVolume);
+        bossTheme.setVolume(GameSoundEffect.masterVolume * currentVolume);
 
         contentpane.add(drawpane);
         startTimer();
@@ -918,43 +917,5 @@ public class GameFrame extends JFrame {
             }
         });
         return button;
-    }
-    
-    public void applyNewDifficulty() {
-        if (mc != null) mc.stopAllSounds();
-        for (Monsters m : monsters) {
-            m.stopAllSounds();
-            drawpane.remove(m.getAttackLabel());
-            drawpane.remove(m);
-        }
-        monsters.clear();
-        if (golemBoss != null) {
-            drawpane.remove(golemBoss.getAttackLabel());
-            drawpane.remove(golemBoss);
-            golemBoss = null;
-        }
-        if (themeSound != null) themeSound.stop();
-        if (bossTheme != null) bossTheme.stop();
-
-        if (mc != null) drawpane.remove(mc);
-
-        mc = new Knight(currentFrame, gameMap, gameDifficulty);
-        mc.setStartPosition(); 
-        drawpane.add(mc);
-
-        hpBar.setMaximum(mc.getHp());
-        hpBar.setValue(mc.getHp());
-        staminaBar.setMaximum(mc.getStamina());
-        staminaBar.setValue(mc.getStamina());
-        hpLabel.setText("HP: " + mc.getHp());
-        staminaLabel.setText("Stamina: " + mc.getStamina());
-
-        spawnMonsters();
-
-        if (gameMap.getCurrentLevel() == 5 && golemBoss != null) bossTheme.playLoop();
-        else if (themeSound != null) themeSound.playLoop();
-
-        drawpane.revalidate();
-        drawpane.repaint();
     }
 }

@@ -8,18 +8,16 @@ import java.awt.event.*;
 
 public class OptionsDialog extends JDialog {
 
-    private float currentVolume;
     private GameSoundEffect soundEffect;
     private JSlider volumeSlider;
     private JLabel volumeValueLabel;
-    private JComboBox<String> backgroundCombo, comboDifficulty;
+    private JComboBox<String> backgroundCombo;
     private MenuSystem menuParent;
     private String selectedDifficulty;
     private boolean isViewOnly = false; 
 
     public OptionsDialog(JFrame parent, float initialVolume, GameSoundEffect sound, String initialDifficulty, boolean isViewOnly) {
         super(parent, "Options", true);
-        this.currentVolume = initialVolume;
         this.soundEffect = sound;
         this.selectedDifficulty = initialDifficulty;
         this.isViewOnly = isViewOnly;
@@ -103,11 +101,11 @@ public class OptionsDialog extends JDialog {
         volumeLabel.setBounds(rightX, volumeY, 250, 30);
         add(volumeLabel);
 
-        volumeValueLabel = new VolumeValueLabel(String.format("%.0f%%", currentVolume * 100));
+        volumeValueLabel = new VolumeValueLabel(String.format("%.0f%%", GameSoundEffect.masterVolume * 100));
         volumeValueLabel.setBounds(rightX + 220, volumeY + 45, 80, 40);
         add(volumeValueLabel);
 
-        volumeSlider = new JSlider(0, 100, (int) (currentVolume * 100));
+        volumeSlider = new JSlider(0, 100, (int) (GameSoundEffect.masterVolume * 100));
         volumeSlider.setOpaque(false);
         volumeSlider.setFocusable(false);
         volumeSlider.setBounds(rightX, volumeY + 45, 210, 50);
@@ -115,10 +113,10 @@ public class OptionsDialog extends JDialog {
             @Override
             public void stateChanged(ChangeEvent e) {
                 int value = volumeSlider.getValue();
-                currentVolume = value / 100.0f;
-                volumeValueLabel.setText(String.format("%.0f%%", currentVolume * 100));
+                GameSoundEffect.masterVolume = value / 100.0f;
+                volumeValueLabel.setText(String.format("%.0f%%", GameSoundEffect.masterVolume * 100));
                 if (soundEffect != null) {
-                    soundEffect.setVolume(currentVolume);
+                    soundEffect.setVolume(GameSoundEffect.masterVolume);
                 }
             }
         });
@@ -199,7 +197,7 @@ public class OptionsDialog extends JDialog {
     }
 
     public float getCurrentVolume() {
-        return currentVolume;
+        return GameSoundEffect.masterVolume;
     }
 }
 

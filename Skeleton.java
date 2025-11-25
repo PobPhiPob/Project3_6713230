@@ -16,7 +16,7 @@ public class Skeleton extends Monsters {
     private static final int SKELETON_ATK_HEIGHT = GameConstants.SKELETON_ATK_HEIGHT;
     private static int INITIAL_HP = 200;
     private static int ATTACK_POINT = 20;
-    private static final int SPEED = 2;
+    private static int SPEED = 2;
     
     protected GameSoundEffect attackSFX, walkSFX, hitSFX, deadSFX;
     
@@ -53,18 +53,23 @@ public class Skeleton extends Monsters {
         if ("Easy".equals(difficulty)) {
             INITIAL_HP = 50;
             ATTACK_POINT = 10;
+            SPEED = 1;
         } else if ("Normal".equals(difficulty)) {
             INITIAL_HP = 100;
             ATTACK_POINT = 20;
+            SPEED = 2;
         } else if ("Hard".equals(difficulty)) {
             INITIAL_HP = 150;
             ATTACK_POINT = 25;
+            SPEED = 3;
         } else if ("Expert".equals(difficulty)) {
             INITIAL_HP = 200;
-            ATTACK_POINT = 30;
+            ATTACK_POINT = 35;
+            SPEED = 3;
         } else if ("Nightmare".equals(difficulty)) {
             INITIAL_HP = 300;
             ATTACK_POINT = 50;
+            SPEED = 4;
         }
     }
     
@@ -96,7 +101,7 @@ public class Skeleton extends Monsters {
         stopAllSounds();
         if (attackSFX != null) {
             attackSFX.playOnce();
-            attackSFX.setVolume(0.3f);
+            attackSFX.setVolume(0.3f * GameSoundEffect.masterVolume);
         }
     }
     
@@ -104,7 +109,7 @@ public class Skeleton extends Monsters {
     protected void playWalkSound() {
         if (walkSFX != null) {
             walkSFX.playLoop();
-            attackSFX.setVolume(0.3f);
+            attackSFX.setVolume(0.3f * GameSoundEffect.masterVolume);
         }
     }
     
@@ -113,7 +118,7 @@ public class Skeleton extends Monsters {
         stopAllSounds();
         if (hitSFX != null) {
             hitSFX.playOnce();
-            hitSFX.setVolume(0.3f);
+            hitSFX.setVolume(0.3f * GameSoundEffect.masterVolume);
         }
     }
     
@@ -122,7 +127,7 @@ public class Skeleton extends Monsters {
         stopAllSounds();
         if (deadSFX != null) {
             deadSFX.playOnce();
-            deadSFX.setVolume(0.3f);
+            deadSFX.setVolume(0.3f * GameSoundEffect.masterVolume);
         }
     }
     

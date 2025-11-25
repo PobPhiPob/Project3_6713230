@@ -64,7 +64,7 @@ public class Bat extends Monsters {
         } else if ("Nightmare".equals(difficulty)) {
             INITIAL_HP = 400;
             ATTACK_POINT = 50;
-            SPEED = 4;
+            SPEED = 5;
         }
     }
     
@@ -268,7 +268,7 @@ public class Bat extends Monsters {
     protected void playIdleSound() {
         if (idleSFX != null) {
             idleSFX.playLoop();
-            idleSFX.setVolume(0.3f);
+            idleSFX.setVolume(0.3f * GameSoundEffect.masterVolume);
         }
     }
     
@@ -283,7 +283,7 @@ public class Bat extends Monsters {
         stopAllSounds();
         if (hitSFX != null) {
             hitSFX.playOnce();
-            hitSFX.setVolume(0.3f);
+            hitSFX.setVolume(0.3f * GameSoundEffect.masterVolume);
         }
     }
     
@@ -292,7 +292,7 @@ public class Bat extends Monsters {
         stopAllSounds();
         if (idleSFX != null) {
             deadSFX.playOnce();
-            deadSFX.setVolume(0.3f);
+            deadSFX.setVolume(0.3f * GameSoundEffect.masterVolume);
         }
     }
 }
