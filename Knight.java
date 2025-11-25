@@ -594,6 +594,9 @@ public class Knight extends JLabel {
                 vx = -8;
             }
         }
+        if (curY > GameConstants.FRAME_HEIGHT) {
+            hp = 0;
+        }
         
         if (curX < 0) curX = 0;
         if (curX > 960 - width) curX = 960 - width;
