@@ -21,12 +21,16 @@ public class GameFrame extends JFrame {
     private JLabel drawpane;
     private JLabel hpLabel, staminaLabel;
     private JProgressBar hpBar, staminaBar;
+    private JLabel potionLabel, potion;
+    private GameIcon potionIcon;
     private GameSoundEffect themeSound;
     private GameSoundEffect bossTheme;
     private Timer timer;
     private int staminaCounter = 0;
 
-    private ArrayList<GameIcon> backgroundImages = new ArrayList<>();
+    private String[] backgroundFilePaths;
+    private GameIcon currentBackgroundIcon;
+    
     private ArrayList<Monsters> monsters = new ArrayList<>();
     private Golem golemBoss;
     private ArrayList<Rock> rocks = new ArrayList<>();
@@ -131,6 +135,20 @@ public class GameFrame extends JFrame {
                 if (isPaused) {
                     return;
                 }
+                
+                if (mc.isRolling()) {
+                    if (System.currentTimeMillis() - mc.getRollStartTime() > 250) {
+                        
+                        if (!mc.getTurn() && movingLeft) {
+                            System.out.println("cancel roll when you press A");
+                            mc.cancelRoll();
+                        }
+                        else if (mc.getTurn() && movingRight) {
+                            System.out.println("cancel roll when you press D");
+                            mc.cancelRoll();
+                        }
+                    }
+                }
 
                 if (movingLeft && !movingRight) {
                     mc.moveLeft();
@@ -234,6 +252,7 @@ public class GameFrame extends JFrame {
                 hpBar.setValue(mc.getHp());
                 staminaLabel.setText("Stamina: " + mc.getStamina());
                 staminaBar.setValue(mc.getStamina());
+                potionLabel.setText("Potion: " + mc.getPotion());
 
                 // Check if player died
                 if (mc.getHp() <= 0) {
@@ -243,18 +262,26 @@ public class GameFrame extends JFrame {
                 }
 
                 if (mc.getX() > 910) {
-                    gameMap.nextLevel();
-                    gameMap.clearMapVisuals(drawpane);
-                    mc.setStartPosition();
-                    currentBgIndex++;
-                    if (currentBgIndex >= backgroundImages.size()) {
-                        currentBgIndex = 0;
+                    if (currentBgIndex == backgroundFilePaths.length - 1) {
+                        movingRight = false; 
+                        mc.updateLocation(); 
+                    } else {
+                        gameMap.nextLevel();
+                        gameMap.clearMapVisuals(drawpane);
+                        mc.setStartPosition();
+
+                        currentBgIndex++;
+                        Image newBg = new ImageIcon(backgroundFilePaths[currentBgIndex]).getImage();
+                        newBg = newBg.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+                        currentBackgroundIcon = new GameIcon(newBg);
+
+                        drawpane.setIcon(currentBackgroundIcon);
+
+                        gameMap.drawMap(drawpane);
+                        drawpane.remove(mc);
+                        drawpane.add(mc);
+                        spawnMonsters();
                     }
-                    drawpane.setIcon(backgroundImages.get(currentBgIndex));
-                    gameMap.drawMap(drawpane);
-                    drawpane.remove(mc);
-                    drawpane.add(mc);
-                    spawnMonsters();
                 }
 
                 drawpane.revalidate();
@@ -274,35 +301,24 @@ public class GameFrame extends JFrame {
     public void addComponent() {
         drawpane = new JLabel();
 
-        Image bg1 = new ImageIcon(GameConstants.FILE_BG_MAP1).getImage();
-        bg1 = bg1.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-        backgroundImages.add(new GameIcon(bg1));
-
-        Image bg2 = new ImageIcon(GameConstants.FILE_BG_MAP2).getImage();
-        bg2 = bg2.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-        backgroundImages.add(new GameIcon(bg2));
-
-        Image bg3 = new ImageIcon(GameConstants.FILE_BG_MAP3).getImage();
-        bg3 = bg3.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-        backgroundImages.add(new GameIcon(bg3));
-
-         Image bg4 = new ImageIcon(GameConstants.FILE_BG_MAP4).getImage();
-         bg4 = bg4.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-         backgroundImages.add(new GameIcon(bg4));
-
-         Image bg5 = new ImageIcon(GameConstants.FILE_BG_MAP5).getImage();
-         bg5 = bg5.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-         backgroundImages.add(new GameIcon(bg5));
-
-         Image bg6 = new ImageIcon(GameConstants.FILE_BG_MAP6).getImage();
-         bg6 = bg6.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
-         backgroundImages.add(new GameIcon(bg6));
+        backgroundFilePaths = new String[]{
+            GameConstants.FILE_BG_MAP1,
+            GameConstants.FILE_BG_MAP2,
+            GameConstants.FILE_BG_MAP3,
+            GameConstants.FILE_BG_MAP4,
+            GameConstants.FILE_BG_MAP5,
+            GameConstants.FILE_BG_MAP6
+        };
+        
+        Image initialBg = new ImageIcon(backgroundFilePaths[currentBgIndex]).getImage();
+        initialBg = initialBg.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        currentBackgroundIcon = new GameIcon(initialBg);
 
         gameMap.drawMap(drawpane);
         drawpane.revalidate();
         drawpane.repaint();
 
-        drawpane.setIcon(backgroundImages.get(currentBgIndex));
+        drawpane.setIcon(currentBackgroundIcon);
         drawpane.setLayout(null);
 
         mc = new Knight(currentFrame, gameMap);
@@ -332,10 +348,22 @@ public class GameFrame extends JFrame {
         staminaBar.setForeground(Color.ORANGE);
         staminaBar.setBackground(Color.DARK_GRAY);
 
+        potionLabel = new JLabel("Potion: " + mc.getPotion());
+        potionLabel.setBounds(480, 15, 150, 30);
+        potionLabel.setForeground(Color.WHITE);
+        potionLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
+
+        potionIcon = new GameIcon(GameConstants.FILE_POTION).resize(40, 40);
+        potion = new JLabel();
+        potion.setBounds(430, 10, 40, 40);
+        potion.setIcon(potionIcon);
+
         drawpane.add(hpLabel);
         drawpane.add(hpBar);
         drawpane.add(staminaLabel);
         drawpane.add(staminaBar);
+        drawpane.add(potionLabel);
+        drawpane.add(potion);
 
         drawpane.add(mc.getAttackLabel());
         drawpane.add(mc.getRollLabel());
@@ -395,8 +423,8 @@ public class GameFrame extends JFrame {
             golemBoss = new Golem(this, gameMap, 300, 350);
         } else {
             // Random spawning for other levels
-            int minMonsters = 3;
-            int maxMonsters = 6;
+            int minMonsters = 4;
+            int maxMonsters = 7;
             int numToSpawn = rand.nextInt(maxMonsters - minMonsters + 1) + minMonsters;
 
             for (int i = 0; i < numToSpawn; i++) {
@@ -650,6 +678,10 @@ public class GameFrame extends JFrame {
         themeSound = new GameSoundEffect(GameConstants.FILE_THEME);
         themeSound.playLoop();
         themeSound.setVolume(currentVolume);
+        
+        Image initialBg = new ImageIcon(backgroundFilePaths[currentBgIndex]).getImage(); 
+        initialBg = initialBg.getScaledInstance(framewidth, frameheight, Image.SCALE_SMOOTH);
+        currentBackgroundIcon = new GameIcon(initialBg);
 
         for (Monsters m : monsters) {
             m.stopAllSounds();
@@ -690,7 +722,7 @@ public class GameFrame extends JFrame {
         staminaLabel.setText("Stamina: " + mc.getStamina());
         staminaBar.setValue(mc.getStamina());
 
-        drawpane.setIcon(backgroundImages.get(currentBgIndex));
+        drawpane.setIcon(currentBackgroundIcon);
         gameMap.drawMap(drawpane);
 
         drawpane.add(mc.getAttackLabel());

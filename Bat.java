@@ -61,6 +61,11 @@ public class Bat extends Monsters {
                 setDead();
             }
         }
+        
+        if (curY < 0) {
+            curY = 0;
+            vy = 0;
+        }
 
         int nextX = curX + vx;
         int nextY = curY + vy;

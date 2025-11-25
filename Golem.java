@@ -48,8 +48,8 @@ public class Golem extends JLabel {
     
     //----- Phase and Cooldown Constants
     private final int HP_PHASE_2 = GameConstants.GOLEM_MAX_HP / 2;
-    private final long RECHARGE_DURATION_PHASE1 = GameConstants.GOLEM_RECHARGE_TIME; // 1500 ms (ตัวอย่าง)
-    private final long RECHARGE_DURATION_PHASE2 = (long)(GameConstants.GOLEM_RECHARGE_TIME * 0.7); // 750 ms (เร็วขึ้น 50%)
+    private final long RECHARGE_DURATION_PHASE1 = GameConstants.GOLEM_RECHARGE_TIME;
+    private final long RECHARGE_DURATION_PHASE2 = (long)(GameConstants.GOLEM_RECHARGE_TIME * 0.8);
     
     // เพิ่มตัวแปรสำหรับเช็คท่าซ้ำ
 private int lastMove = -1;           // เก็บท่าล่าสุดที่ใช้ (0, 1, หรือ 2)
@@ -359,6 +359,7 @@ private int consecutiveMoveCount = 0; // นับจำนวนครั้ง
                     // *** Rock Projectile Attack Logic ***
                     // ตรวจสอบว่ายังไม่ได้เสกหินในรอบนี้ (ใช้ currentAnimFrame เป็น flag ชั่วคราว)
                     if (currentAnimFrame == 0 || currentAnimFrame == 99) {
+                        vx = 0;
                         int rockX, rockY;
                         int rockVX = (turnLeft ? -GameConstants.ROCK_PROJECTILE_VX : GameConstants.ROCK_PROJECTILE_VX);
 
@@ -376,6 +377,7 @@ private int consecutiveMoveCount = 0; // นับจำนวนครั้ง
                         currentAnimFrame = 99; // ตั้ง Flag ว่าได้เสกหินแล้ว
                     }
                 } else if (System.currentTimeMillis() <= lastActionTime + 300) {
+                    vx = turnLeft ? 5 : -5;
                     currentAnimFrame = 0; // Reset Flag เมื่อเริ่ม Animation
                 }
                 break;

@@ -19,6 +19,8 @@ public class Rock extends JLabel {
     private boolean isDestroyed = false;
     private boolean isParticle = false;
     private long particleTimeEnd = 0; // เวลาสิ้นสุด Particle
+    
+    private GameSoundEffect rocksmashSFX;
 
     private GameIcon rockIcon;
     private GameIcon particleIcon;
@@ -34,6 +36,8 @@ public class Rock extends JLabel {
 
         rockIcon = new GameIcon(GameConstants.FILE_GOLEM_ROCK).resize(width, height);
         particleIcon = new GameIcon(GameConstants.FILE_GOLEM_ROCKPARTICLE).resize(width, height);
+        
+        rocksmashSFX   = new GameSoundEffect(GameConstants.FILE_ROCK_SMASH_SFX);
 
         setBounds(curX, curY, width, height);
         setIcon(rockIcon);
@@ -66,7 +70,7 @@ public class Rock extends JLabel {
         vy = 0;
 
         particleTimeEnd = System.currentTimeMillis() + GameConstants.PARTICLE_DURATION_MS;
-
+        if (rocksmashSFX != null) rocksmashSFX.playOnce();
         setIcon(particleIcon); // เปลี่ยนเป็นภาพที่แตกแล้ว
     }
 

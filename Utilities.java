@@ -22,6 +22,7 @@ interface GameConstants
     static final String FILE_BG_MAP4     = PATH + "tilebase4.jpg";
     static final String FILE_BG_MAP5     = PATH + "tilebase5.jpg";
     static final String FILE_BG_MAP6     = PATH + "tilebase6.jpg";
+    static final String FILE_POTION      = PATH + "potion.png";
     
     static final String FILE_THEME                  = PATH + "Sound/CardCastle.wav";
     static final String FILE_BOSS_THEME             = PATH + "Sound/BossTheme.wav";
@@ -33,6 +34,7 @@ interface GameConstants
     static final String FILE_MC_HIT_SFX             = PATH + "Sound/Knight/hit.wav";
     static final String FILE_MC_HEAL_SFX            = PATH + "Sound/Knight/heal.wav";
     static final String FILE_MC_DEAD_SFX            = PATH + "Sound/Knight/dead.wav";
+    static final String FILE_MC_NOPE_SFX            = PATH + "Sound/Knight/nope.wav";
     static final String FILE_SKELETON_ATTACK_SFX    = PATH + "Sound/Monsters/Skeleton/Attack.wav";
     static final String FILE_SKELETON_WALK_SFX      = PATH + "Sound/Monsters/Skeleton/Walk.wav";
     static final String FILE_SKELETON_HIT_SFX       = PATH + "Sound/Monsters/Skeleton/Hit.wav";
@@ -46,6 +48,7 @@ interface GameConstants
     static final String FILE_GOLEM_SLIDE_SFX    = PATH + "Sound/Boss/Slide.wav";
     static final String FILE_GOLEM_HIT_SFX      = PATH + "Sound/Boss/Hit.wav";
     static final String FILE_GOLEM_DEAD_SFX     = PATH + "Sound/Boss/Dead.wav";
+    static final String FILE_ROCK_SMASH_SFX     = PATH + "Sound/Boss/Rocksmash.wav";
     
     static final String FILE_MC_IDLE     = PATH + "Sprite/Knight/mc_Idle.gif";
     static final String FILE_MC_IDLEFLIP = PATH + "Sprite/Knight/mc_IdleFlip.gif";
@@ -127,14 +130,14 @@ interface GameConstants
     static final int ROCK_PROJECTILE_VX = 10;
     static final int PARTICLE_DURATION_MS = 1000;
     
-    final int GOLEM_WIDTH         = 230;
+    final int        GOLEM_WIDTH         = 230;
     static final int GOLEM_HEIGHT        = 170;
     static final int GOLEM_ATK_WIDTH     = 270;
     static final int GOLEM_ATK_HEIGHT    = 170;
     static final int GOLEM_JUMP_WIDTH     = 290;
     static final int GOLEM_JUMP_HEIGHT    = 240;
     static final int GOLEM_MAX_HP        = 1000;
-    static final int GOLEM_MELEE_DMG     = 25;
+    static final int GOLEM_MELEE_DMG = 25;
     static final int GOLEM_JUMP_SLIDE_DMG= 25;
     static final int GOLEM_ROCK_DMG      = 25;
     static final int GOLEM_RECHARGE_TIME = 1500;
