@@ -394,8 +394,8 @@ public class GameFrame extends JFrame {
             golemBoss = new Golem(this, gameMap, 300, 350);
         } else {
             // Random spawning for other levels
-            int minMonsters = 3;
-            int maxMonsters = 6;
+            int minMonsters = 4;
+            int maxMonsters = 7;
             int numToSpawn = rand.nextInt(maxMonsters - minMonsters + 1) + minMonsters;
 
             for (int i = 0; i < numToSpawn; i++) {
