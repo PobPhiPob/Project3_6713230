@@ -14,8 +14,8 @@ public class Bat extends Monsters {
     private static final int BAT_HEIGHT = GameConstants.BAT_HEIGHT;
     private static final int BAT_ATK_WIDTH = GameConstants.BAT_ATK_WIDTH;
     private static final int BAT_ATK_HEIGHT = GameConstants.BAT_ATK_HEIGHT;
-    private static final int INITIAL_HP = 100;
-    private static final int ATTACK_POINT = 30;
+    private static final int INITIAL_HP = 150;
+    private static final int ATTACK_POINT = 15;
     private static final int SPEED = 3;
     
     protected GameSoundEffect idleSFX, hitSFX, deadSFX;
