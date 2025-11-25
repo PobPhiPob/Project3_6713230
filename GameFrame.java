@@ -242,7 +242,7 @@ public class GameFrame extends JFrame {
                     }
                 }
 
-                if (mc.getX() > 910) {
+                if (mc.getX() > 910 && !gameMap.FinalLevel()) {
                     gameMap.nextLevel();
                     gameMap.clearMapVisuals(drawpane);
                     mc.setStartPosition();
