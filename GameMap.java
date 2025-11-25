@@ -228,13 +228,13 @@ public class GameMap {
                         debugTile.setOpaque(false); 
 
                         if (tileValue == 1) {
-                            debugTile.setBorder(BorderFactory.createLineBorder(Color.RED));
+                            //debugTile.setBorder(BorderFactory.createLineBorder(Color.RED));
                         } 
                         else if (tileValue == 2) {
-                            debugTile.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 2));
+                            //debugTile.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 2));
                         }
                         else if (tileValue == 3) {
-                            debugTile.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                            //debugTile.setBorder(BorderFactory.createLineBorder(Color.WHITE));
                         }
 
                         drawpane.add(debugTile);
