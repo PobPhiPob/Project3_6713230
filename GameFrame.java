@@ -259,15 +259,6 @@ public class GameFrame extends JFrame {
                     }
                 }
 
-<<<<<<< HEAD
-                if (mc.getX() > 910 && !gameMap.FinalLevel()) {
-                    gameMap.nextLevel();
-                    gameMap.clearMapVisuals(drawpane);
-                    mc.setStartPosition();
-                    currentBgIndex++;
-                    if (currentBgIndex >= backgroundImages.size()) {
-                        currentBgIndex = 0;
-=======
                 if (mc.getX() > 910) {
                     if (currentBgIndex == backgroundFilePaths.length - 1) {
                         movingRight = false; 
@@ -288,7 +279,6 @@ public class GameFrame extends JFrame {
                         drawpane.remove(mc);
                         drawpane.add(mc);
                         spawnMonsters();
->>>>>>> d65eefc9505edb2ea86e27368ce76ebabb2e4c2c
                     }
                 }
 
