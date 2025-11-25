@@ -53,7 +53,7 @@ public class Knight extends JLabel {
     public boolean isJumping = false;
     
     private int hp = 100;
-    private int attackPoint = 25;
+    private int attackPoint;
     private int currentAttack;
     private int stamina = 50;
     private int potion = 10;
@@ -124,7 +124,7 @@ public class Knight extends JLabel {
     
     private void setInitialStats() {
         if ("Easy".equals(difficulty)) {
-            attackPoint = 40;
+            attackPoint = 9999;
             potion = 20;
         } else if ("Normal".equals(difficulty)) {
             attackPoint = 25;

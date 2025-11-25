@@ -49,6 +49,7 @@ interface GameConstants
     static final String FILE_GOLEM_HIT_SFX      = PATH + "Sound/Boss/Hit.wav";
     static final String FILE_GOLEM_DEAD_SFX     = PATH + "Sound/Boss/Dead.wav";
     static final String FILE_ROCK_SMASH_SFX     = PATH + "Sound/Boss/Rocksmash.wav";
+    static final String FILE_VICTORY_SFX          = PATH+ "Sound/Victory.wav";
     
     static final String FILE_MC_IDLE     = PATH + "Sprite/Knight/mc_Idle.gif";
     static final String FILE_MC_IDLEFLIP = PATH + "Sprite/Knight/mc_IdleFlip.gif";

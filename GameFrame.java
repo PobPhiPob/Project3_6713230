@@ -28,6 +28,7 @@ public class GameFrame extends JFrame {
     private double elaspedSecond;
     private GameSoundEffect themeSound;
     private GameSoundEffect bossTheme;
+    private GameSoundEffect VictorySound;
     private Timer timer;
     private int staminaCounter = 0;
 
@@ -46,7 +47,7 @@ public class GameFrame extends JFrame {
 
     private boolean movingLeft = false;
     private boolean movingRight = false;
-    
+
     private int framewidth = GameConstants.FRAME_WIDTH;
     private int frameheight = GameConstants.FRAME_HEIGHT;
 
@@ -66,6 +67,7 @@ public class GameFrame extends JFrame {
 
     public GameFrame(String difficulty) {
         setTitle("Rock & Slash Game");
+        setUndecorated(true);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         currentFrame = this;
@@ -228,6 +230,10 @@ public class GameFrame extends JFrame {
                     drawpane.remove(golemBoss.getParticleLabel());
                     drawpane.remove(golemBoss.getJumpLabel());
                     golemBoss = null;
+
+                    if (gameOverDialog == null) {
+                        showVictory();
+                    }
                 }
 
                 // Cleanup Rocks
@@ -296,7 +302,7 @@ public class GameFrame extends JFrame {
         timer.start();
     }
 
-    /*========Classes for Graphic=======*/
+    /*====================Classes for Graphic====================*/
     class DialogButton extends JButton {
 
         private Color baseColor;
@@ -379,7 +385,6 @@ public class GameFrame extends JFrame {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2d = (Graphics2D) g;
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             GradientPaint gradient = new GradientPaint(
                     0, 0, new Color(12, 5, 8),
@@ -397,7 +402,89 @@ public class GameFrame extends JFrame {
             g2d.drawRoundRect(13, 13, getWidth() - 26, getHeight() - 26, 12, 12);
         }
     }
-//===============================================================
+
+    //Victory
+    class VictoryBgPanel extends JPanel {
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+
+            GradientPaint gradient = new GradientPaint(0, 0, new Color(229, 187, 92), 0, getHeight(), new Color(236, 204, 133));
+
+            g2d.setPaint(gradient);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
+
+            //Outer border
+            g2d.setStroke(new BasicStroke(3));
+            g2d.setColor(new Color(180, 140, 60, 200));
+            g2d.drawRoundRect(10, 10, getWidth() - 20, getHeight() - 20, 15, 15);
+
+            //Inner border
+            g2d.setStroke(new BasicStroke(3));
+            g2d.setColor(new Color(180, 140, 60, 200));
+            g2d.drawRoundRect(13, 13, getWidth() - 26, getHeight() - 26, 12, 12);
+        }
+    }
+//==============================================================================
+
+    private void showVictory() {
+        JDialog victoryDialog = new JDialog(this, "VICTORY", true);
+        victoryDialog.setSize(400, 420);
+        victoryDialog.setLocationRelativeTo(this);
+        victoryDialog.setUndecorated(true);
+        bossTheme.stop();
+
+        new Timer(2000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                movingLeft = false;
+                movingRight = false;
+                VictorySound.playOnce();
+                ((Timer) e.getSource()).stop();
+
+                VictoryBgPanel mainPanel = new VictoryBgPanel();
+                mainPanel.setLayout(null);
+                victoryDialog.setContentPane(mainPanel);
+
+                // Title Label
+                JLabel titleLabel = new JLabel("VICTORY!", SwingConstants.CENTER);
+                titleLabel.setFont(new Font("Serif", Font.BOLD, 48));
+                titleLabel.setForeground(new Color(80, 65, 35));
+                titleLabel.setBounds(0, 40, 400, 70);
+                mainPanel.add(titleLabel);
+
+                JLabel timeLabel = new JLabel("Time: " + String.format("%.2f", elaspedSecond) + " seconds", SwingConstants.CENTER);
+                timeLabel.setFont(new Font("Monospaced", Font.BOLD, 24));
+                timeLabel.setForeground(new Color(80, 65, 35));
+                timeLabel.setBounds(0, 120, 400, 30);
+                mainPanel.add(timeLabel);
+
+                // Trophy/Victory Icon (optional - ใช้ emoji)
+                JLabel trophyLabel = new JLabel("🏆", SwingConstants.CENTER);
+                trophyLabel.setFont(new Font("Serif", Font.PLAIN, 50));
+                trophyLabel.setBounds(0, 220, 400, 60);
+                mainPanel.add(trophyLabel);
+
+                // Main Menu Button
+                DialogButton mainMenuButton = new DialogButton("MAIN MENU", new Color(80, 65, 35));
+                mainMenuButton.setBounds(100, 310, 200, 50);
+                mainMenuButton.addActionListener(ex -> {
+                    victoryDialog.dispose();
+                    timer.stop();
+                    dispose();
+                    MenuSystem menu = new MenuSystem();
+                    menu.setVisible(true);
+                });
+                mainPanel.add(mainMenuButton);
+
+                victoryDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+                victoryDialog.setVisible(true);
+            }
+        }).start();
+    }
+
     public void addComponent() {
         drawpane = new JLabel();
 
@@ -426,23 +513,23 @@ public class GameFrame extends JFrame {
 //        Border hitbox = BorderFactory.createLineBorder(Color.RED, 2);
 //        mc.setBorder(hitbox);
         hpLabel = new JLabel("HP: " + mc.getHp());
-        hpLabel.setBounds(10, 40, 150, 30);
+        hpLabel.setBounds(10, 40, 150, 25);
         hpLabel.setForeground(Color.WHITE);
         hpLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
 
         hpBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, mc.getHp());
-        hpBar.setBounds(10, 10, 200, 30);
+        hpBar.setBounds(10, 10, 200, 25);
         hpBar.setValue(mc.getHp());
         hpBar.setForeground(Color.RED);
         hpBar.setBackground(Color.DARK_GRAY);
 
         staminaLabel = new JLabel("Stamina: " + mc.getStamina());
-        staminaLabel.setBounds(220, 40, 150, 30);
+        staminaLabel.setBounds(220, 40, 150, 25);
         staminaLabel.setForeground(Color.WHITE);
         staminaLabel.setFont(new Font("Monospaced", Font.BOLD, 18));
 
         staminaBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, mc.getStamina());
-        staminaBar.setBounds(220, 10, 200, 30);
+        staminaBar.setBounds(220, 10, 200, 25);
         staminaBar.setValue(mc.getStamina());
         staminaBar.setForeground(Color.ORANGE);
         staminaBar.setBackground(Color.DARK_GRAY);
@@ -480,6 +567,9 @@ public class GameFrame extends JFrame {
 
         bossTheme = new GameSoundEffect(GameConstants.FILE_BOSS_THEME);
         bossTheme.setVolume(GameSoundEffect.masterVolume * currentVolume);
+
+        VictorySound = new GameSoundEffect(GameConstants.FILE_VICTORY_SFX);
+        VictorySound.setVolume(GameSoundEffect.masterVolume * currentVolume);
 
         contentpane.add(drawpane);
         startTimer();
@@ -523,7 +613,7 @@ public class GameFrame extends JFrame {
             monsters.add(new Skeleton(this, gameMap, 600, 400, gameDifficulty));
         } else if (gameMap.getCurrentLevel() == 1) {
             monsters.add(new Skeleton(this, gameMap, 600, 300, gameDifficulty));
-        } else if (gameMap.getCurrentLevel() == 5){
+        } else if (gameMap.getCurrentLevel() == 5) {
             themeSound.stop();
             bossTheme.playLoop();
             golemBoss = new Golem(this, gameMap, 300, 350, gameDifficulty);
@@ -680,8 +770,11 @@ public class GameFrame extends JFrame {
             pauseDialog.dispose();
             pauseDialog = null;
             startTimer();
-            if (gameMap.getCurrentLevel() == 5) bossTheme.playLoop();
-            else themeSound.playLoop();
+            if (gameMap.getCurrentLevel() == 5) {
+                bossTheme.playLoop();
+            } else {
+                themeSound.playLoop();
+            }
         });
         mainPanel.add(resumeButton);
 
@@ -724,10 +817,10 @@ public class GameFrame extends JFrame {
     }
 
     private void openOptions() {
-        OptionsDialog dialog = new OptionsDialog(currentFrame, currentVolume, themeSound, gameDifficulty, true); 
-        dialog.setVisible(true); 
+        OptionsDialog dialog = new OptionsDialog(currentFrame, currentVolume, themeSound, gameDifficulty, true);
+        dialog.setVisible(true);
 
-        float newVolume = dialog.getCurrentVolume();           
+        float newVolume = dialog.getCurrentVolume();
 
         if (currentVolume != newVolume) {
             currentVolume = newVolume;
@@ -806,9 +899,10 @@ public class GameFrame extends JFrame {
             public void run() {
                 lastTime = System.nanoTime();
 
-                while(!isPaused) {
-                    if (golemBoss != null && golemBoss.isDead())
+                while (!isPaused) {
+                    if (golemBoss != null && golemBoss.isDead()) {
                         break;
+                    }
                     long now = System.nanoTime();
                     double delta = (now - lastTime) / 1_000_000_000.0;
                     lastTime = now;
@@ -886,41 +980,4 @@ public class GameFrame extends JFrame {
         drawpane.revalidate();
         drawpane.repaint();
     }
-<<<<<<< HEAD
-    private JButton createDialogButton(String text) {
-        JButton button = new JButton(text) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                g.setColor(getBackground());
-                g.fillRect(0, 0, getWidth(), getHeight());
-                super.paintComponent(g);
-            }
-        };
-
-        button.setFont(new Font("Serif", Font.BOLD, 20));
-        button.setForeground(Color.WHITE);
-        button.setBackground(new Color(50, 50, 60, 200));
-        button.setFocusPainted(false);
-        button.setContentAreaFilled(false);
-        button.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150), 2));
-
-        button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setBackground(new Color(80, 80, 100, 230));
-                button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3));
-                button.repaint();
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                button.setBackground(new Color(50, 50, 60, 200));
-                button.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150), 2));
-                button.repaint();
-            }
-        });
-        return button;
-    }
-=======
->>>>>>> 79e7a8b0190bcfcae2489f5c967699756dc9882b
 }

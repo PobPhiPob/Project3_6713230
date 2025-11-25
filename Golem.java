@@ -1,5 +1,3 @@
-package Project3_6713230;
-
 /**
  *
  * @author 6713230_Natwarit Chuboonsub
@@ -10,6 +8,7 @@ package Project3_6713230;
  *
  * Golem Boss: State Machine & Fair Play Logic
  */
+package Project3_6713230;
 
 import javax.swing.*;
 import java.awt.*;

@@ -36,6 +36,7 @@ class MenuSystem extends JFrame {
         setTitle("ROCK & SLASH - Main Menu");
         setSize(framewidth, frameheight);
         setResizable(false);
+        setUndecorated(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 

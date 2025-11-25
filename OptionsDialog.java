@@ -1,3 +1,13 @@
+/**
+ *
+ * @author 6713230_Natwarit Chuboonsub
+ * @author 6713229_Nutthapat Techapornhiran
+ * @author 6713235_Teetath Prapasanon
+ * @author 6713239_Nitich Uanjityanon
+ * @author 6713243_Puttipong Chutipongwanit
+ *
+ * Golem Boss: State Machine & Fair Play Logic
+ */
 package Project3_6713230;
 
 import javax.swing.*;
@@ -14,7 +24,7 @@ public class OptionsDialog extends JDialog {
     private JComboBox<String> backgroundCombo;
     private MenuSystem menuParent;
     private String selectedDifficulty;
-    private boolean isViewOnly = false; 
+    private boolean isViewOnly = false;
 
     public OptionsDialog(JFrame parent, float initialVolume, GameSoundEffect sound, String initialDifficulty, boolean isViewOnly) {
         super(parent, "Options", true);
@@ -36,7 +46,7 @@ public class OptionsDialog extends JDialog {
 
         createComponents();
     }
-    
+
     public String getSelectedDifficulty() {
         return selectedDifficulty;
     }
@@ -64,18 +74,18 @@ public class OptionsDialog extends JDialog {
         ButtonGroup difficultyGroup = new ButtonGroup();
         String[] difficulties = {"Easy", "Normal", "Hard", "Expert", "Nightmare"};
         Color[] diffColors = {
-            new Color(120, 180, 120),      // Easy - muted green
-            new Color(160, 160, 180),      // Normal - gray
-            new Color(200, 140, 80),       // Hard - muted orange
-            new Color(180, 100, 100),      // Expert - muted red
-            new Color(140, 100, 140)       // Nightmare - muted purple
+            new Color(120, 180, 120), // Easy - muted green
+            new Color(160, 160, 180), // Normal - gray
+            new Color(200, 140, 80), // Hard - muted orange
+            new Color(180, 100, 100), // Expert - muted red
+            new Color(140, 100, 140) // Nightmare - muted purple
         };
 
         int radioY = diffY + 35;
         for (int i = 0; i < 5; i++) {
             StyledRadioButton radio = new StyledRadioButton(difficulties[i], diffColors[i]);
             if (isViewOnly) {
-                radio.setEnabled(false); 
+                radio.setEnabled(false);
             }
             radio.setBounds(leftX + 20, radioY, 200, 35);
             difficultyGroup.add(radio);
@@ -83,11 +93,11 @@ public class OptionsDialog extends JDialog {
 
             final int index = i;
             radio.addActionListener(e -> {
-                selectedDifficulty = difficulties[index]; 
-                System.out.println("Difficulty set to: " + selectedDifficulty); 
+                selectedDifficulty = difficulties[index];
+                System.out.println("Difficulty set to: " + selectedDifficulty);
             });
 
-            if (difficulties[i].equals(selectedDifficulty)) { 
+            if (difficulties[i].equals(selectedDifficulty)) {
                 radio.setSelected(true);
             }
             radioY += 40;
@@ -95,20 +105,24 @@ public class OptionsDialog extends JDialog {
 
         // Volume Section
         int volumeY = startY;
+        int labelWidth = 180;
+        int sliderWidth = 210;
+        int valueWidth = 80;
+        int spacing = 10; // ช่องว่างระหว่าง slider กับ value
+
+        // Volume Label
         JLabel volumeLabel = new JLabel("Volume Control:");
         volumeLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        volumeLabel.setForeground(new Color(190, 185, 175)); // Stone gray
-        volumeLabel.setBounds(rightX, volumeY, 250, 30);
+        volumeLabel.setForeground(new Color(190, 185, 175));
+        volumeLabel.setBounds(rightX, volumeY, labelWidth, 30);
         add(volumeLabel);
 
-        volumeValueLabel = new VolumeValueLabel(String.format("%.0f%%", GameSoundEffect.masterVolume * 100));
-        volumeValueLabel.setBounds(rightX + 220, volumeY + 45, 80, 40);
-        add(volumeValueLabel);
-
+        // Volume Slider
+        volumeY += 45; // เลื่อนลงมา 45px จาก label
         volumeSlider = new JSlider(0, 100, (int) (GameSoundEffect.masterVolume * 100));
         volumeSlider.setOpaque(false);
         volumeSlider.setFocusable(false);
-        volumeSlider.setBounds(rightX, volumeY + 45, 210, 50);
+        volumeSlider.setBounds(rightX, volumeY, sliderWidth, 50);
         volumeSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -121,6 +135,11 @@ public class OptionsDialog extends JDialog {
             }
         });
         add(volumeSlider);
+
+        // Volume Value Label (อยู่ขวาสุดของ slider)
+        volumeValueLabel = new VolumeValueLabel(String.format("%.0f%%", GameSoundEffect.masterVolume * 100));
+        volumeValueLabel.setBounds(rightX + sliderWidth + spacing, volumeY, valueWidth, 40);
+        add(volumeValueLabel);
 
         // Background ComboBox Section
         if (menuParent != null) {
@@ -158,17 +177,17 @@ public class OptionsDialog extends JDialog {
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(null);
         infoPanel.setOpaque(true);
-        infoPanel.setBackground(new Color(20, 19, 23)); 
+        infoPanel.setBackground(new Color(20, 19, 23));
         infoPanel.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(90, 85, 80), 2), 
-            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                BorderFactory.createLineBorder(new Color(90, 85, 80), 2),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
         infoPanel.setBounds(rightX, volumeY + (menuParent != null ? 190 : 120), 280, 180);
         add(infoPanel);
 
         JLabel infoTitle = new JLabel("Game Information");
         infoTitle.setFont(new Font("Arial", Font.BOLD, 16));
-        infoTitle.setForeground(new Color(210, 205, 195)); 
+        infoTitle.setForeground(new Color(210, 205, 195));
         infoTitle.setBounds(5, 5, 250, 30);
         infoPanel.add(infoTitle);
 
@@ -180,7 +199,7 @@ public class OptionsDialog extends JDialog {
             "• L - Heal",
             "• K - Roll"
         };
-        
+
         for (int i = 0; i < infoTexts.length; i++) {
             JLabel info = new JLabel(infoTexts[i]);
             info.setFont(new Font("Monospaced", Font.PLAIN, 12));
@@ -202,24 +221,25 @@ public class OptionsDialog extends JDialog {
 }
 
 class BackgroundPanel extends JPanel {
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        
+
         // dark gradient
         GradientPaint gradient = new GradientPaint(
-            0, 0, new Color(8, 8, 12),
-            0, getHeight(), new Color(18, 16, 20)
+                0, 0, new Color(8, 8, 12),
+                0, getHeight(), new Color(18, 16, 20)
         );
         g2d.setPaint(gradient);
         g2d.fillRect(0, 0, getWidth(), getHeight());
-        
+
         // Subtle stone-like border
         g2d.setStroke(new BasicStroke(3));
         g2d.setColor(new Color(80, 75, 70, 180));
         g2d.drawRoundRect(10, 10, getWidth() - 20, getHeight() - 20, 15, 15);
-        
+
         // subtle inner highlight
         g2d.setColor(new Color(120, 110, 100, 30));
         g2d.setStroke(new BasicStroke(1));
@@ -229,6 +249,7 @@ class BackgroundPanel extends JPanel {
 
 // radio button
 class StyledRadioButton extends JRadioButton {
+
     private Color accentColor;
 
     public StyledRadioButton(String text, Color color) {
@@ -251,7 +272,7 @@ class StyledRadioButton extends JRadioButton {
         // outer circle
         g2d.setColor(new Color(12, 12, 15));
         g2d.fillOval(5, circleY, circleSize, circleSize);
-        
+
         g2d.setColor(accentColor);
         g2d.setStroke(new BasicStroke(2));
         g2d.drawOval(5, circleY, circleSize, circleSize);
@@ -272,10 +293,11 @@ class StyledRadioButton extends JRadioButton {
 
 // Dark volume label
 class VolumeValueLabel extends JLabel {
+
     public VolumeValueLabel(String text) {
         super(text, SwingConstants.CENTER);
         setFont(new Font("Monospaced", Font.BOLD, 20));
-        setForeground(new Color(210, 205, 195)); 
+        setForeground(new Color(210, 205, 195));
         setOpaque(false);
     }
 
@@ -299,6 +321,7 @@ class VolumeValueLabel extends JLabel {
 
 // Dark atmospheric button
 class GlowButton extends JButton {
+
     private Color baseColor;
     private boolean isHovered = false;
 
