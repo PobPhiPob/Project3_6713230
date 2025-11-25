@@ -43,20 +43,31 @@ public class Golem extends JLabel {
      private final int MAX_JUMP_SPEED_X = 30;
     private final int SLIDE_SPEED = 15;
     private final int JUMP_STRENGTH = -25;
-    private final long PRESLIDE_CHARGE_TIME = 500;
+    private final long PRESLIDE_CHARGE_TIME = 800;
     private final int GROUNDHIT_ROCK_VX = 4; // ความเร็วแนวนอนสำหรับ Rock ที่พุ่งเฉียง
     
     //----- Phase and Cooldown Constants
     private final int HP_PHASE_2 = GameConstants.GOLEM_MAX_HP / 2;
-    private final long RECHARGE_DURATION_PHASE1 = GameConstants.GOLEM_RECHARGE_TIME; // 1500 ms (ตัวอย่าง)
-    private final long RECHARGE_DURATION_PHASE2 = GameConstants.GOLEM_RECHARGE_TIME / 2; // 750 ms (เร็วขึ้น 50%)
+    private final long RECHARGE_DURATION_PHASE1 = GameConstants.GOLEM_RECHARGE_TIME;
+    private final long RECHARGE_DURATION_PHASE2 = (long)(GameConstants.GOLEM_RECHARGE_TIME * 0.8);
+    
+    // เพิ่มตัวแปรสำหรับเช็คท่าซ้ำ
+private int lastMove = -1;           // เก็บท่าล่าสุดที่ใช้ (0, 1, หรือ 2)
+private int consecutiveMoveCount = 0; // นับจำนวนครั้งที่ใช้ท่านั้นซ้ำ
+    
+    // ----- Sound Effects -----
+    private GameSoundEffect attackSFX;
+    private GameSoundEffect jumpSFX;
+    private GameSoundEffect landSFX;
+    private GameSoundEffect slideSFX;
+    private GameSoundEffect hitSFX;
+    private GameSoundEffect deadSFX;
     
     private enum GolemState {
         IDLE, ATTACK1, PREJUMP, ONAIR, FALL, GROUNDHIT, PRESLIDE, SLIDE, SLIDE_END, RECHARGE
     }
     private GolemState currentState = GolemState.IDLE;
     private long lastActionTime = 0;
-    private final long RECHARGE_DURATION = GameConstants.GOLEM_RECHARGE_TIME;
     
     //----- Attack Animation Labels/Icons
     private JLabel attackLabel; // ใช้สำหรับท่าโจมตีที่ขยายขนาด
@@ -108,6 +119,14 @@ public class Golem extends JLabel {
         slideGif    = new GameIcon(GameConstants.FILE_GOLEM_SLIDE).resize(width, height);
         particleSlide = new GameIcon(GameConstants.FILE_GOLEM_SLIDEPARTICLE).resize(width, height);
         particleSlideFlip = new GameIcon(GameConstants.FILE_GOLEM_SLIDEPARTICLEFLIP).resize(width, height);
+        
+        // Sound setup
+        attackSFX = new GameSoundEffect(GameConstants.FILE_GOLEM_ATTACK_SFX);
+        jumpSFX   = new GameSoundEffect(GameConstants.FILE_GOLEM_JUMP_SFX);
+        landSFX   = new GameSoundEffect(GameConstants.FILE_GOLEM_LAND_SFX);
+        slideSFX  = new GameSoundEffect(GameConstants.FILE_GOLEM_SLIDE_SFX);
+        hitSFX    = new GameSoundEffect(GameConstants.FILE_GOLEM_HIT_SFX);
+        deadSFX   = new GameSoundEffect(GameConstants.FILE_GOLEM_DEAD_SFX);
         
         // Setup auxiliary labels
         attackLabel = new JLabel();
@@ -177,9 +196,11 @@ public class Golem extends JLabel {
         if (hp <= 0) {
             hp = 0;
             isDead = true;
+            if (deadSFX != null) deadSFX.playOnce();
             setDead();
             System.out.printf("Golem Dead\n");
         } else {
+            if (hitSFX != null) hitSFX.playOnce();
             hitTime = System.currentTimeMillis() + GameConstants.DURATION_MS;
             flashTime = System.currentTimeMillis() + FLASH_DURATION;
         }
@@ -224,6 +245,7 @@ public class Golem extends JLabel {
             if (!onGround) {
                 // ถ้าเพิ่งลงพื้น
                 if (currentState == GolemState.FALL) {
+                    if (landSFX != null) landSFX.playOnce();
                     currentState = GolemState.GROUNDHIT;
                     lastActionTime = System.currentTimeMillis();
                     currentAnimFrame = 0;
@@ -281,14 +303,12 @@ public class Golem extends JLabel {
         // Boss State Machine
         switch (currentState) {
             case IDLE:
-                vx = 0;
-                // ตรวจสอบ Cooldown ก่อนเริ่มท่าใหม่
-                if (System.currentTimeMillis() > lastActionTime + currentRechargeDuration) {
+                vx = 0; 
+                    int chosenMove;
                     
-                    // Boss Attack Logic (Fair Play & Phase 2)
-                    int chosenMove; 
+                    // --- 1. สุ่มท่าตามปกติ (Logic เดิม) ---
                     if (isPhase2) {
-                        // Phase 2: โอกาสใช้ Jump/Slide สูงขึ้น (0=Slide, 1=Jump, 2=Slide)
+                        // Phase 2: (0=Slide, 1=Jump, 2=Slide)
                         chosenMove = rand.nextInt(3); 
                         if (chosenMove == 0 || chosenMove == 2) chosenMove = 2; // Slide
                         else chosenMove = 1; // Jump
@@ -296,16 +316,38 @@ public class Golem extends JLabel {
                         // Phase 1: สุ่ม 3 ท่า (0=Attack1, 1=Jump, 2=Slide)
                         chosenMove = rand.nextInt(3); 
                     }
+
+                    // --- 2. ตรวจสอบว่าใช้ท่าเดิมซ้ำเกิน 2 รอบหรือไม่ ---
+                    if (chosenMove == lastMove && consecutiveMoveCount >= 2) {
+                        // ถ้าซ้ำ ให้บังคับเปลี่ยนท่า (Force Change)
+                        if (isPhase2) {
+                            // Phase 2 มีแค่ท่า 1 กับ 2 ถ้าท่าปัจจุบันติดล็อค ให้สลับเป็นอีกท่าทันที
+                            if (chosenMove == 2) chosenMove = 1; // ถ้า Slide ซ้ำ -> เปลี่ยนเป็น Jump
+                            else chosenMove = 2; // ถ้า Jump ซ้ำ -> เปลี่ยนเป็น Slide
+                        } else {
+                            // Phase 1 มีท่า 0, 1, 2 ให้ขยับไปท่าถัดไป (เช่น 0->1, 1->2, 2->0)
+                            chosenMove = (chosenMove + 1) % 3;
+                        }
+                    }
+
+                    // --- 3. อัปเดตประวัติการใช้ท่า ---
+                    if (chosenMove == lastMove) {
+                        consecutiveMoveCount++;
+                    } else {
+                        lastMove = chosenMove;
+                        consecutiveMoveCount = 1;
+                    }
                     
                     if (chosenMove == 0 && !isPhase2) { // Attack 1 เฉพาะ Phase 1
                         currentState = GolemState.ATTACK1;
+                        if (attackSFX != null) attackSFX.playOnce();
                     } else if (chosenMove == 1 && onGround) { // Jump Slam
                         currentState = GolemState.PREJUMP;
+                        if (jumpSFX != null) jumpSFX.playOnce();
                     } else { // Slide (หรือเป็นท่า default ของ Phase 2)
                         currentState = GolemState.PRESLIDE; 
                     }
                     lastActionTime = System.currentTimeMillis(); // Reset timer for new action
-                }
                 break;
                 
             case ATTACK1:
@@ -313,10 +355,11 @@ public class Golem extends JLabel {
                 if (System.currentTimeMillis() > lastActionTime+920) { // ระยะเวลา Animation
                     currentState = GolemState.RECHARGE;
                     lastActionTime = System.currentTimeMillis();
-                } else if (System.currentTimeMillis() > lastActionTime + 300 && currentAnimFrame != 99) { // สมมติว่าเฟรมที่ 300ms เป็นเฟรมที่ "ง้างหมัด"
+                } else if (System.currentTimeMillis() > lastActionTime + 900 && currentAnimFrame != 99) { // สมมติว่าเฟรมที่ 400ms เป็นเฟรมที่ "ง้างหมัด"
                     // *** Rock Projectile Attack Logic ***
                     // ตรวจสอบว่ายังไม่ได้เสกหินในรอบนี้ (ใช้ currentAnimFrame เป็น flag ชั่วคราว)
                     if (currentAnimFrame == 0 || currentAnimFrame == 99) {
+                        vx = 0;
                         int rockX, rockY;
                         int rockVX = (turnLeft ? -GameConstants.ROCK_PROJECTILE_VX : GameConstants.ROCK_PROJECTILE_VX);
 
@@ -334,6 +377,7 @@ public class Golem extends JLabel {
                         currentAnimFrame = 99; // ตั้ง Flag ว่าได้เสกหินแล้ว
                     }
                 } else if (System.currentTimeMillis() <= lastActionTime + 300) {
+                    vx = turnLeft ? 5 : -5;
                     currentAnimFrame = 0; // Reset Flag เมื่อเริ่ม Animation
                 }
                 break;
@@ -409,6 +453,7 @@ public class Golem extends JLabel {
                 if (System.currentTimeMillis() > lastActionTime + PRESLIDE_CHARGE_TIME) { 
                     lockedDirection = turnLeft;
                     currentState = GolemState.SLIDE;
+                    if (slideSFX != null) slideSFX.playOnce();
                     lastActionTime = System.currentTimeMillis();
                     currentAnimFrame = 0;
                 }
@@ -419,6 +464,7 @@ public class Golem extends JLabel {
                 vx = lockedDirection ? -SLIDE_SPEED : SLIDE_SPEED;
                 if (System.currentTimeMillis() > lastActionTime + 800) { // 0.8s Slide Duration
                     currentState = GolemState.SLIDE_END;
+                    if (slideSFX != null) slideSFX.stop();
                     lastActionTime = System.currentTimeMillis();
                 }
                 break;
@@ -448,7 +494,8 @@ public class Golem extends JLabel {
 
             case RECHARGE: // พัก (Fair Play Logic)
                 vx = 0;
-                if (System.currentTimeMillis() > lastActionTime + RECHARGE_DURATION) {
+                long waitTime = isPhase2 ? RECHARGE_DURATION_PHASE2 : RECHARGE_DURATION_PHASE1;
+                if (System.currentTimeMillis() > lastActionTime + waitTime) {
                     currentState = GolemState.IDLE; // กลับไป IDLE เพื่อเลือกท่าใหม่
                 }
                 break;
@@ -588,5 +635,12 @@ public class Golem extends JLabel {
     // ตรวจสอบว่า Ground Particle ทำดาเมจ (Move 2)
     public boolean isParticleDamageActive() {
         return currentState == GolemState.GROUNDHIT;
+    }
+    
+    public void stopAllSounds() {
+        if (attackSFX != null) attackSFX.stop();
+        if (jumpSFX != null) jumpSFX.stop();
+        if (landSFX != null) landSFX.stop();
+        if (slideSFX != null) slideSFX.stop();
     }
 }

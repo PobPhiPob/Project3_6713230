@@ -42,7 +42,8 @@ public class Knight extends JLabel {
     private int curX = 10;
     private int curY = 430;
     private int speed = 5;
-    private int rollSpeed = 6;
+    private int rollSpeed = 7;
+
     private int vx = 0;
     private int vy = 0;
     private int jumpStrength = -14;
@@ -59,7 +60,12 @@ public class Knight extends JLabel {
     private boolean attack;
     private boolean isHit;
     private boolean canInput = true;
+    
     private boolean roll;
+    private Timer rollDurationTimer;
+    private Timer rollInputTimer;
+    private long rollStartTime = 0;
+    
     private boolean heal;
     private long invincibleEndTime = 0;
     private boolean invincible = false;
@@ -132,6 +138,8 @@ public class Knight extends JLabel {
     public int getPotion() { return potion; }
     public boolean isDeathAnimetionFinished() { return deathAnimetionFinished; }
     public boolean isAttacking() { return attack; }
+    public long getRollStartTime() { return rollStartTime; }
+    public boolean isRolling() { return roll; }
     public int getAttackPoint() { return attackPoint; }
     public boolean getTurn() { return turnLeft; }
 
@@ -180,6 +188,7 @@ public class Knight extends JLabel {
     }
 
     public void setHit() {
+        attackLabel.setVisible(false);
         if (turnLeft) {
             setIcon(hitFlip);
         } else {
@@ -308,6 +317,34 @@ public class Knight extends JLabel {
             }
         }).start();
     }
+    
+    private void showHealEffectText() {
+        JLabel healText = new JLabel("+25");
+        healText.setFont(new Font("Arial", Font.BOLD, 25));
+        healText.setForeground(Color.GREEN);
+        
+        healText.setBounds(curX + (width/2) - 15, curY - 30, 100, 30);
+        parentFrame.getDrawPane().add(healText);
+        parentFrame.getDrawPane().setComponentZOrder(healText, 0);
+        parentFrame.getDrawPane().repaint();
+
+        new Timer(40, new ActionListener() {
+            int frames = 0;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                healText.setLocation(healText.getX(), healText.getY() - 2);
+                frames++;
+
+                if (frames > 20) {
+                    healText.setVisible(false);
+                    parentFrame.getDrawPane().remove(healText);
+                    parentFrame.getDrawPane().repaint();
+                    ((Timer)e.getSource()).stop();
+                }
+            }
+        }).start();
+    }
 
     public void regenHp() {
         if (!canInput || attack || roll || !onGround || isDead) return;
@@ -334,6 +371,7 @@ public class Knight extends JLabel {
             if (hp >= 100)
                 hp = 100;
             playSound(healSFX);
+            showHealEffectText();
             potion -= 1;
             invincible = true;
             invincibleEndTime = now + (2 * GameConstants.DURATION_MS);
@@ -410,31 +448,53 @@ public class Knight extends JLabel {
 
     public void roll() {
         if (!canInput || attack || stamina < 25 || heal || isDead) return;
+        
+        if (parentFrame.getStaminaCounter() >= 188)
+            stamina -= 50;
+        else 
+            stamina -= 25;
+        
+        isHit = false;
         canInput = false;
         roll = true;
+        rollStartTime = System.currentTimeMillis();
+        
         setRoll();
         playSound(rollSFX);
 
-        new Timer(850, new ActionListener() {
+        rollInputTimer = new Timer(850, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 canInput = true;
                 ((Timer)e.getSource()).stop();
             }
-        }).start();
+        });  
+        rollInputTimer.start();
 
-        new Timer(650, new ActionListener() {
+        rollDurationTimer = new Timer(650, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                roll = false;
-                rollLabel.setVisible(false);
-                if (parentFrame.getStaminaCounter() >= 188)
-                    stamina -= 50;
-                else stamina -= 25;
-                setIdle();
+                finishRoll();
                 ((Timer)e.getSource()).stop();
             }
-        }).start();
+        });
+        rollDurationTimer.start();
+    }
+    
+    public void cancelRoll() {
+        if (!roll) return;
+        if (rollInputTimer != null) rollInputTimer.stop();
+        if (rollDurationTimer != null) rollDurationTimer.stop();
+        
+        finishRoll();
+        canInput = true;
+    }
+
+    private void finishRoll() {
+        System.out.println("finishRoll");
+        roll = false;
+        rollLabel.setVisible(false);
+        setIdle();
     }
 
     public void updateLocation() {
@@ -542,6 +602,7 @@ public class Knight extends JLabel {
         if (curX > 960 - width) curX = 960 - width;
 
         if (roll) {
+            vx = 0;
             nextX = curX + (turnLeft ? -rollSpeed : rollSpeed);
 
             if (turnLeft) {

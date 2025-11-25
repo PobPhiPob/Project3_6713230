@@ -135,6 +135,18 @@ public class GameFrame extends JFrame {
                 if (isPaused) {
                     return;
                 }
+                
+                if (mc.isRolling()) {
+                    if (System.currentTimeMillis() - mc.getRollStartTime() > 300) {
+                        
+                        if (!mc.getTurn() && movingLeft) {
+                            mc.cancelRoll();
+                        }
+                        else if (mc.getTurn() && movingRight) {
+                            mc.cancelRoll();
+                        }
+                    }
+                }
 
                 if (movingLeft && !movingRight) {
                     mc.moveLeft();
@@ -247,7 +259,11 @@ public class GameFrame extends JFrame {
                     }
                 }
 
+<<<<<<< HEAD
                 if (mc.getX() > 910 && !gameMap.FinalLevel()) {
+=======
+                if (mc.getX() > 910) {
+>>>>>>> fa23efeba4338e900d2a07573718544b0f232956
                     if (currentBgIndex == backgroundFilePaths.length - 1) {
                         movingRight = false; 
                         mc.updateLocation(); 
@@ -446,19 +462,19 @@ public class GameFrame extends JFrame {
                                 && !gameMap.isSolid(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
                                 && !gameMap.isSolid(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
 
-                        boolean isLethalArea = !gameMap.isLethal(startX, startY)
-                                && !gameMap.isLethal(startX + skeletonWidth - 1, startY)
-                                && !gameMap.isLethal(startX, startY + skeletonHeight - 1)
-                                && !gameMap.isLethal(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
-                                && !gameMap.isLethal(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
+                        boolean isLethalArea = gameMap.isLethal(startX, startY)
+                                && gameMap.isLethal(startX + skeletonWidth - 1, startY)
+                                && gameMap.isLethal(startX, startY + skeletonHeight - 1)
+                                && gameMap.isLethal(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
+                                && gameMap.isLethal(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
                         
-                        boolean isHazardArea = !gameMap.isHazard(startX, startY)
-                                && !gameMap.isHazard(startX + skeletonWidth - 1, startY)
-                                && !gameMap.isHazard(startX, startY + skeletonHeight - 1)
-                                && !gameMap.isHazard(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
-                                && !gameMap.isHazard(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
+                        boolean isHazardArea = gameMap.isHazard(startX, startY)
+                                && gameMap.isHazard(startX + skeletonWidth - 1, startY)
+                                && gameMap.isHazard(startX, startY + skeletonHeight - 1)
+                                && gameMap.isHazard(startX + skeletonWidth - 1, startY + skeletonHeight - 1)
+                                && gameMap.isHazard(startX + skeletonWidth / 2, startY + skeletonHeight / 2);
 
-                        if (hasSupport && !isLethalArea && notCeiling && notInMap && isHazardArea) {
+                        if (hasSupport && !isLethalArea && notCeiling && notInMap && !isHazardArea) {
                             validSpawnFound = true;
                             break;
                         }
