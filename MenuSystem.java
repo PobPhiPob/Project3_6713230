@@ -110,7 +110,6 @@ class MenuSystem extends JFrame {
         button.setBorder(BorderFactory.createLineBorder(new Color(150, 150, 150), 2));
 
         button.addMouseListener(new MouseAdapter() {
-            // Handler 1: mouseEntered
             @Override
             public void mouseEntered(MouseEvent e) {
                 button.setBackground(new Color(60, 60, 80, 230));
@@ -118,7 +117,6 @@ class MenuSystem extends JFrame {
                 button.repaint();
             }
 
-            // Handler 2 : mouseExited
             @Override
             public void mouseExited(MouseEvent e) {
                 button.setBackground(new Color(50, 50, 60, 200));

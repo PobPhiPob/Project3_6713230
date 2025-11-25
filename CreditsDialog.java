@@ -163,7 +163,7 @@ class CreditsButton extends JButton {
         }
         g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
 
-        // Stone border
+        //Button border
         if (isHovered) {
             g2d.setColor(new Color(150, 145, 135));
         } else {
