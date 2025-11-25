@@ -523,13 +523,8 @@ public class GameFrame extends JFrame {
             monsters.add(new Skeleton(this, gameMap, 300, 400, gameDifficulty));
             monsters.add(new Skeleton(this, gameMap, 600, 400, gameDifficulty));
         } else if (gameMap.getCurrentLevel() == 1) {
-<<<<<<< HEAD
             monsters.add(new Skeleton(this, gameMap, 600, 300, gameDifficulty));
         } else if (gameMap.getCurrentLevel() == 5){
-=======
-            monsters.add(new Skeleton(this, gameMap, 600, 300));
-        } else if (gameMap.getCurrentLevel() == 5) {
->>>>>>> e1c5151703a8daddd48d180a0e27d1c4e71a8953
             themeSound.stop();
             bossTheme.playLoop();
             golemBoss = new Golem(this, gameMap, 300, 350, gameDifficulty);
@@ -890,8 +885,6 @@ public class GameFrame extends JFrame {
         drawpane.revalidate();
         drawpane.repaint();
     }
-<<<<<<< HEAD
-
     private JButton createDialogButton(String text) {
         JButton button = new JButton(text) {
             @Override
@@ -964,6 +957,4 @@ public class GameFrame extends JFrame {
         drawpane.revalidate();
         drawpane.repaint();
     }
-=======
->>>>>>> e1c5151703a8daddd48d180a0e27d1c4e71a8953
 }
