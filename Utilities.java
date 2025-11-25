@@ -127,8 +127,8 @@ interface GameConstants
     static final int GOLEM_ATK_HEIGHT    = 170;
     static final int GOLEM_JUMP_WIDTH     = 290;
     static final int GOLEM_JUMP_HEIGHT    = 240;
-    static final int GOLEM_MAX_HP        = 400;
-    static final int GOLEM_MELEE_DMG     = 10;
+    static final int GOLEM_MAX_HP        = 1000;
+    static final int GOLEM_MELEE_DMG     = 25;
     static final int GOLEM_JUMP_SLIDE_DMG= 25;
     static final int GOLEM_ROCK_DMG      = 25;
     static final int GOLEM_RECHARGE_TIME = 2500;

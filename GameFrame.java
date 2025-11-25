@@ -384,16 +384,15 @@ public class GameFrame extends JFrame {
         final int MAX_Y = 550;
         final int AIR_MAX_Y = 300;
 
-        if (gameMap.getCurrentLevel() == 5) {
-            themeSound.stop();
-            bossTheme.playLoop();
-            golemBoss = new Golem(this, gameMap, 300, 350);
-        }
         if (gameMap.getCurrentLevel() == 0) {
             monsters.add(new Skeleton(this, gameMap, 300, 400));
             monsters.add(new Skeleton(this, gameMap, 600, 400));
         } else if (gameMap.getCurrentLevel() == 1) {
             monsters.add(new Skeleton(this, gameMap, 600, 300));
+        } else if (gameMap.getCurrentLevel() == 5){
+            themeSound.stop();
+            bossTheme.playLoop();
+            golemBoss = new Golem(this, gameMap, 300, 350);
         } else {
             // Random spawning for other levels
             int minMonsters = 3;
@@ -479,7 +478,6 @@ public class GameFrame extends JFrame {
                         }
                         monsters.add(new Bat(this, gameMap, startX, startY));
                     } catch (Exception ex) {
-                        // If Bat class doesn't exist, spawn Skeleton instead
                         monsters.add(new Skeleton(this, gameMap, startX, startY));
                     }
                 }
