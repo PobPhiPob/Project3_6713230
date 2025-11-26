@@ -28,11 +28,6 @@ class MenuSystem extends JFrame {
     private float MenuVolume = 0.5f;
     private String gameDifficulty = "Normal";
 
-    public static void main(String[] args) {
-        MenuSystem menu = new MenuSystem();
-        menu.setVisible(true);
-    }
-
     public MenuSystem() {
         setTitle("ROCK & SLASH - Main Menu");
         setSize(framewidth, frameheight);
