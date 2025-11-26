@@ -5,8 +5,6 @@
  * @author 6713235_Teetath Prapasanon
  * @author 6713239_Nitich Uanjityanon
  * @author 6713243_Puttipong Chutipongwanit
- *
- * Golem Boss: State Machine & Fair Play Logic
  */
 package Project3_6713230;
 
