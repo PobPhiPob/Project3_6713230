@@ -124,7 +124,7 @@ public class Knight extends JLabel {
     
     private void setInitialStats() {
         if ("Easy".equals(difficulty)) {
-            attackPoint = 9999;
+            attackPoint = 40;
             potion = 20;
         } else if ("Normal".equals(difficulty)) {
             attackPoint = 25;

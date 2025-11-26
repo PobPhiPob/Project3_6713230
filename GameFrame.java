@@ -67,7 +67,6 @@ public class GameFrame extends JFrame {
 
     public GameFrame(String difficulty) {
         setTitle("Rock & Slash Game");
-        setUndecorated(true);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         currentFrame = this;
